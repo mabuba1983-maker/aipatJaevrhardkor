@@ -11,4 +11,5 @@ android {
 dependencies {
     // Bundled on-device model: image analysis works offline after installation.
     implementation("com.google.mlkit:image-labeling:17.0.9")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
 }
