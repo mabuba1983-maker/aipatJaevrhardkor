@@ -824,11 +824,11 @@ class MainActivity : Activity() {
                         if (!frame.isRecycled) frame.recycle()
                         val c = conv
                         if (c != null) thread {
-                            val observation = visual + if (screenText.isNotBlank()) "\\nالنص من قارئ الشاشة: " + screenText else ""
+                            val observation = visual + if (screenText.isNotBlank()) "\nالنص من قارئ الشاشة: " + screenText else ""
                             val result = try {
                                 brain.answerVisual("لقطة شاشة مباشرة", ScreenShareService.goal, observation, c.id).text
                             } catch (e: Throwable) { "تعذر تحليل الإطار: " + (e.message ?: e.javaClass.simpleName) }
-                            runOnUiThread { adviceView.text = "تحليل بصري محلي للإطار الأخير:\\n" + result.take(1500) }
+                            runOnUiThread { adviceView.text = "تحليل بصري محلي للإطار الأخير:\n" + result.take(1500) }
                         }
                     }
                 }
@@ -1009,7 +1009,6 @@ class MainActivity : Activity() {
             studioShot.setImageBitmap(bmp)
             studioShot.visibility = View.VISIBLE
             visionEngine.analyze(bmp) { visual ->
-                if (!bmp.isRecycled) bmp.recycle()
                 val prompt = "راجع مشروع HTML التالي مراجعة برمجية وبصرية. لديك الكود، النص المستخرج، وملاحظات محلل الصورة المحلي. " +
                     "لا تدّع رؤية تفاصيل لم يحددها المحلل، ولا تخترع ألوانا أو مواضع. اذكر ما تؤكده الأدلة ثم ما يحتاج فحصا بشريا.\n\n" +
                     "كود المشروع:\n" + code.take(10000) +
