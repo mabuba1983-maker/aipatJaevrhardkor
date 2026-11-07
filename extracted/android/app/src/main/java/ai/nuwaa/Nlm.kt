@@ -75,6 +75,8 @@ class NMem {
 
     /** Longest context that was seen: (order, counts) or null. */
     @Synchronized fun dist(ctx: String, minO: Int = 1): Pair<Int, HashMap<Char, Int>>? {
+        // Re-evaluate heap pressure during generation too, not only when new text arrives.
+        enforceBudget()
         var o = minOf(8, ctx.length)
         while (o >= minO) {
             val c = t[ctx.substring(ctx.length - o)]
