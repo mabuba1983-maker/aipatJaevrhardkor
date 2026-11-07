@@ -340,6 +340,17 @@ class Brain private constructor(private val ctx: Context) {
         return Answer(FileTools.answer(att.name, att.size, att.truncated, text, q, kb), "file")
     }
 
+    /**
+     * Sends a locally generated visual description into Nuwaa's language model.
+     * The current GRU receives text concepts, not pixels or image embeddings.
+     */
+    fun answerVisual(imageName: String, question: String, visualDescription: String, convId: String): Answer {
+        val ask = question.ifBlank { "صف لي ما الذي يظهر في هذه الصورة." }
+        val prompt = "حلّل الصورة المرفقة باسم «" + imageName.take(100) + "». هذه ملاحظات محلل الرؤية المحلي: " +
+            visualDescription.take(1600) + ". استخدمها كأدلة محدودة، ولا تخترع تفاصيل غير مكتشفة، وميّز بين ما رُصد وما لا يمكن الجزم به. سؤال المستخدم: " + ask
+        return answer(prompt, convId)
+    }
+
     /** Honest limit: this reads the TEXT on the screen (through the accessibility reader) and matches it with the knowledge base. It does not understand images. */
     fun adviseScreen(screen: String, goalText: String): String {
         val t = screen.trim()
