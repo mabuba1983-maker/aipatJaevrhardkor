@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Typeface
 import android.media.projection.MediaProjectionManager
@@ -25,6 +26,13 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import java.io.ByteArrayOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import android.widget.*
 import kotlin.concurrent.thread
 
@@ -50,6 +58,11 @@ class MainActivity : Activity() {
     private lateinit var goalInput: EditText
     private lateinit var editor: EditText
     private lateinit var codeIdea: EditText
+    private lateinit var studioPreview: WebView
+    private lateinit var studioStatus: TextView
+    private lateinit var studioShot: ImageView
+    private var lastPreviewText: String = ""
+    private var studioBusy = false
     private val REQ_CAPTURE = 41
     private val REQ_NOTIF = 42
     private val REQ_PICK = 43
@@ -140,7 +153,7 @@ class MainActivity : Activity() {
     }
 
     private fun showMenu() {
-        val base = arrayOf("💬  محادثة جديدة", "🧠  تطوير النفس", "🗂  المحادثات السابقة", "📱  مشاركة الشاشة", "💻  كتابة الأكواد", "🗑  حذف كل المحادثات", "ℹ️  عن التطبيق", "⚡  رفع الفهم (تدريب)", "🔍  اكتشاف من الإنترنت")
+        val base = arrayOf("💬  محادثة جديدة", "🧠  تطوير النفس", "🗂  المحادثات السابقة", "📱  مشاركة الشاشة", "🛠  استوديو البرمجة", "🗑  حذف كل المحادثات", "ℹ️  عن التطبيق", "⚡  رفع الفهم (تدريب)", "🔍  اكتشاف من الإنترنت")
         val items = if (revealedGrowMenu) base + "⚙  تطوير متقدم" else base
         AlertDialog.Builder(this).setItems(items) { _, i ->
             when (i) {
@@ -742,6 +755,7 @@ class MainActivity : Activity() {
         if (requestCode == REQ_CREATE) {
             val u = data?.data
             if (resultCode == RESULT_OK && u != null) writeCreated(u)
+            else { pendingBytes = null; pendingFile = "" }
             return
         }
         if (requestCode != REQ_CAPTURE) return
@@ -761,37 +775,200 @@ class MainActivity : Activity() {
     override fun onResume() { super.onResume(); if (::shareBtn.isInitialized) refreshShareUi() }
 
     // ---------------- code writing ----------------
+    // ---------------- mobile coding studio ----------------
     private fun buildCodePage() {
-        codePage = LinearLayout(this); codePage.orientation = LinearLayout.VERTICAL; codePage.setPadding(dp(12), dp(10), dp(12), dp(10))
-        codePage.addView(Ui.label(this, "كتابة الأكواد", 18f, Ui.DARK, true))
-        codeIdea = EditText(this); codeIdea.hint = "صف ما تريد: (مثال: حلقة for في بايثون)"
-        codeIdea.background = Ui.bg(this, Color.WHITE, 14); codeIdea.setPadding(dp(14), dp(10), dp(14), dp(10)); codeIdea.setSingleLine(true)
-        codePage.addView(codeIdea, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also { it.setMargins(0, dp(8), 0, dp(6)) })
-        val row = LinearLayout(this); row.orientation = LinearLayout.HORIZONTAL
-        val suggest = Ui.btn(this, "اقترح كودا", Ui.PRIMARY) { suggestCode() }
-        val copy = Ui.btn(this, "نسخ", Ui.DARK) { copyText(editor.text.toString()); Toast.makeText(this, "تم النسخ", Toast.LENGTH_SHORT).show() }
-        val share = Ui.btn(this, "مشاركة", Ui.DARK) { shareCode() }
-        val clear = Ui.btn(this, "مسح", Color.parseColor("#8A3B3B")) { editor.setText("") }
-        for (v in listOf(suggest, copy, share, clear)) row.addView(v, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).also { it.setMargins(dp(3), 0, dp(3), 0) })
-        codePage.addView(row)
-        val strip = Ui.btn(this, "🔢  إزالة الأرقام الجانبية", Ui.PRIMARY) { stripNumbers() }
-        codePage.addView(strip, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also { it.setMargins(dp(3), dp(8), dp(3), 0) })
-        editor = EditText(this); editor.typeface = Typeface.MONOSPACE; editor.textSize = 13f; editor.setTextColor(Color.parseColor("#D7E3EA")); editor.setHintTextColor(Color.parseColor("#6B7F8C"))
-        editor.hint = "# اكتب كودك هنا أو اضغط «اقترح كودا»"; editor.gravity = Gravity.TOP or Gravity.START; editor.layoutDirection = View.LAYOUT_DIRECTION_LTR; editor.textDirection = View.TEXT_DIRECTION_LTR
+        val page = ScrollView(this)
+        codePage = LinearLayout(this)
+        codePage.orientation = LinearLayout.VERTICAL
+        codePage.setPadding(dp(10), dp(8), dp(10), dp(14))
+        val top = LinearLayout(this)
+        top.orientation = LinearLayout.HORIZONTAL
+        top.gravity = Gravity.CENTER_VERTICAL
+        top.addView(Ui.label(this, "استوديو نواة", 19f, Ui.DARK, true),
+            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        top.addView(Ui.label(this, "HTML · CSS · JS", 11f, Ui.MUTED, false))
+        codePage.addView(top)
+
+        codeIdea = EditText(this)
+        codeIdea.hint = "صف المشروع الذي تريد من نواة بناءه..."
+        codeIdea.background = Ui.bg(this, Color.WHITE, 12)
+        codeIdea.setPadding(dp(12), dp(9), dp(12), dp(9))
+        codePage.addView(codeIdea, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also { it.setMargins(0, dp(7), 0, dp(7)) })
+
+        val actions = LinearLayout(this)
+        actions.orientation = LinearLayout.HORIZONTAL
+        val generate = Ui.btn(this, "اكتب بالكود", Ui.PRIMARY) { generateStudioCode() }
+        val run = Ui.btn(this, "تشغيل", Ui.DARK) { runStudioCode() }
+        val snap = Ui.btn(this, "لقطة", Ui.DARK) { captureStudioPreview(true) }
+        for (v in listOf(generate, run, snap)) actions.addView(v, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).also { it.setMargins(dp(2), 0, dp(2), 0) })
+        codePage.addView(actions)
+
+        val exportRow = LinearLayout(this)
+        exportRow.orientation = LinearLayout.HORIZONTAL
+        val export = Ui.btn(this, "تصدير المشروع ZIP", Color.parseColor("#176B55")) { exportStudioProject() }
+        val copy = Ui.btn(this, "نسخ الكود", Color.parseColor("#596A78")) {
+            copyText(editor.text.toString())
+            Toast.makeText(this, "تم نسخ الكود", Toast.LENGTH_SHORT).show()
+        }
+        exportRow.addView(export, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).also { it.setMargins(dp(2), 0, dp(2), 0) })
+        exportRow.addView(copy, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).also { it.setMargins(dp(2), 0, dp(2), 0) })
+        codePage.addView(exportRow, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also { it.setMargins(0, dp(5), 0, 0) })
+
+        studioStatus = Ui.label(this, "اكتب HTML أو اطلب من نواة إنشاء مشروع، ثم اضغط تشغيل.", 12f, Ui.MUTED, false)
+        studioStatus.setPadding(dp(3), dp(6), dp(3), dp(6))
+        codePage.addView(studioStatus)
+        codePage.addView(Ui.label(this, "محرر الكود", 14f, Ui.DARK, true))
+        editor = EditText(this)
+        editor.typeface = Typeface.MONOSPACE
+        editor.textSize = 12f
+        editor.setTextColor(Color.parseColor("#D7E3EA"))
+        editor.setHintTextColor(Color.parseColor("#6B7F8C"))
+        editor.hint = "<!doctype html>\n<html>...</html>"
+        editor.gravity = Gravity.TOP or Gravity.START
+        editor.layoutDirection = View.LAYOUT_DIRECTION_LTR
+        editor.textDirection = View.TEXT_DIRECTION_LTR
         editor.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-        editor.background = Ui.bg(this, Ui.CODE_BG, 12); editor.setPadding(dp(12), dp(12), dp(12), dp(12))
-        codePage.addView(editor, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f).also { it.setMargins(0, dp(8), 0, 0) })
+        editor.background = Ui.bg(this, Ui.CODE_BG, 10)
+        editor.setPadding(dp(10), dp(10), dp(10), dp(10))
+        codePage.addView(editor, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(210)).also { it.setMargins(0, dp(5), 0, dp(8)) })
+
+        codePage.addView(Ui.label(this, "المعاينة الحقيقية للمشروع", 14f, Ui.DARK, true))
+        studioPreview = WebView(this)
+        studioPreview.setBackgroundColor(Color.WHITE)
+        studioPreview.settings.javaScriptEnabled = true
+        studioPreview.settings.domStorageEnabled = false
+        studioPreview.settings.allowFileAccess = false
+        studioPreview.settings.allowContentAccess = false
+        studioPreview.settings.javaScriptCanOpenWindowsAutomatically = false
+        studioPreview.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean = true
+            override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
+                val host = request?.url?.host ?: return WebResourceResponse("text/plain", "UTF-8", null)
+                if (host == "nuwaa.local") return null
+                return WebResourceResponse("text/plain", "UTF-8", null)
+            }
+        }
+        codePage.addView(studioPreview, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(270)).also { it.setMargins(0, dp(5), 0, dp(8)) })
+        studioShot = ImageView(this)
+        studioShot.adjustViewBounds = true
+        studioShot.scaleType = ImageView.ScaleType.FIT_CENTER
+        studioShot.setBackgroundColor(Color.parseColor("#E2E8EC"))
+        studioShot.visibility = View.GONE
+        codePage.addView(studioShot, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(180)))
+        page.addView(codePage)
+        codePage = LinearLayout(this)
+        codePage.orientation = LinearLayout.VERTICAL
+        codePage.addView(page, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
     }
 
-    private fun suggestCode() {
-        val q = codeIdea.text.toString().trim()
-        if (q.isEmpty()) { Toast.makeText(this, "اكتب وصفا أولا", Toast.LENGTH_SHORT).show(); return }
-        val hit = brain.kb.search(q, 6).firstOrNull { h -> h.score >= Kb.LOW && h.item.a.contains("```") }
-        if (hit == null) { Toast.makeText(this, "ما عندي كود جاهز لهذا الوصف. جرّب وصفا أبسط، أو علّمني في المحادثة.", Toast.LENGTH_LONG).show(); return }
-        val code = hit.item.a.substringAfter("```").substringAfter('\n').substringBefore("```").trim('\n')
-        val mark = when (hit.item.v) { 2 -> "# ✓ شُغِّل واختُبر ناتجه"; 1 -> "# ✓ شُغِّل بدون أخطاء"; 0 -> "# ✓ فُحصت صياغته فقط"; else -> "# ⚠ لم يُشغَّل هنا، جرّبه" }
-        val cur = editor.text.toString()
-        editor.setText((if (cur.isBlank()) "" else cur.trimEnd() + "\n\n") + mark + "\n" + code)
+    private fun generateStudioCode() {
+        val prompt = codeIdea.text.toString().trim()
+        if (prompt.isEmpty()) { Toast.makeText(this, "اكتب وصف المشروع أولا", Toast.LENGTH_SHORT).show(); return }
+        if (studioBusy) return
+        studioBusy = true
+        studioStatus.text = "نواة تكتب المشروع..."
+        val c = conv ?: store.create().also { conv = it }
+        thread {
+            val answer = try {
+                brain.answer(
+                    "اكتب مشروع ويب كامل يعمل محليا داخل WebView باستخدام HTML وCSS وJavaScript فقط. " +
+                    "لا تستخدم مكتبات أو روابط خارجية. أعد الكود كاملا داخل كتلة كود HTML واحدة فقط، " +
+                    "واجعل التصميم متجاوبا مع شاشة الهاتف. وصف المشروع: " + prompt, c.id
+                ).text
+            } catch (e: Throwable) { "تعذر التوليد: " + (e.message ?: e.javaClass.simpleName) }
+            val marker = "\u0060\u0060\u0060"
+            val match = Regex("(?s)" + marker + "(?:html|htm)?\\s*(.*?)" + marker, RegexOption.IGNORE_CASE).find(answer)
+            val code = match?.groupValues?.get(1)?.trim()
+            runOnUiThread {
+                studioBusy = false
+                if (!code.isNullOrBlank() && (code.contains("<html", true) || code.contains("<!doctype", true))) {
+                    editor.setText(code)
+                    studioStatus.text = "وصل الكود إلى المحرر. لم يُشغّل بعد؛ اضغط تشغيل لمعاينته."
+                } else {
+                    studioStatus.text = "لم يرجع النموذج مشروع HTML كاملا. جرّب وصفا أبسط."
+                    Toast.makeText(this, "لم أستطع استخراج مشروع HTML صالح من الرد", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun runStudioCode() {
+        val raw = editor.text.toString().trim()
+        if (raw.isEmpty()) { Toast.makeText(this, "المحرر فارغ", Toast.LENGTH_SHORT).show(); return }
+        if (!(raw.contains("<html", true) || raw.contains("<!doctype", true))) {
+            studioStatus.text = "المعاينة الحالية تشغّل مشاريع HTML/CSS/JavaScript فقط."
+            return
+        }
+        val html = if (raw.contains("<html", true)) raw else
+            "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"></head><body>$raw</body></html>"
+        lastPreviewText = ""
+        studioStatus.text = "جارٍ تشغيل المشروع داخل معاينة محلية..."
+        studioPreview.loadDataWithBaseURL("https://nuwaa.local/", html, "text/html", "UTF-8", null)
+        studioPreview.postDelayed({
+            studioPreview.evaluateJavascript("(function(){return document.body ? document.body.innerText : '';})()") { value ->
+                lastPreviewText = try { org.json.JSONTokener(value ?: "\"\"").nextValue().toString() } catch (_: Throwable) { "" }
+                studioStatus.text = "تم تشغيل HTML. النص المقروء من الصفحة: " +
+                    (if (lastPreviewText.isBlank()) "لا يوجد نص ظاهر" else lastPreviewText.take(180).replace("\n", " "))
+            }
+        }, 900)
+    }
+
+    private fun captureStudioPreview(save: Boolean) {
+        if (!::studioPreview.isInitialized || studioPreview.width <= 0 || studioPreview.height <= 0) {
+            Toast.makeText(this, "شغّل المشروع أولا", Toast.LENGTH_SHORT).show()
+            return
+        }
+        studioPreview.post {
+            try {
+                val bmp = Bitmap.createBitmap(studioPreview.width, studioPreview.height, Bitmap.Config.ARGB_8888)
+                studioPreview.draw(Canvas(bmp))
+                studioShot.setImageBitmap(bmp)
+                studioShot.visibility = View.VISIBLE
+                studioStatus.text = "التقطت لقطة فعلية من نافذة المعاينة."
+                if (save) {
+                    val out = ByteArrayOutputStream()
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, out)
+                    pendingBytes = out.toByteArray()
+                    pendingFile = ""
+                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("image/png").putExtra(Intent.EXTRA_TITLE, "nuwaa-preview.png")
+                    try { startActivityForResult(intent, REQ_CREATE) }
+                    catch (e: Throwable) { pendingBytes = null; Toast.makeText(this, "تعذر فتح مدير الملفات", Toast.LENGTH_LONG).show() }
+                }
+            } catch (e: Throwable) {
+                studioStatus.text = "تعذر التقاط المعاينة: " + (e.message ?: "خطأ غير معروف")
+            }
+        }
+    }
+
+    private fun exportStudioProject() {
+        val code = editor.text.toString().trim()
+        if (!(code.contains("<html", true) || code.contains("<!doctype", true))) {
+            Toast.makeText(this, "لن أصدّر نصا عشوائيا. اكتب أو أنشئ مشروع HTML صالحا أولا.", Toast.LENGTH_LONG).show()
+            return
+        }
+        val html = if (code.contains("<html", true)) code else
+            "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"></head><body>$code</body></html>"
+        try {
+            val bytes = ByteArrayOutputStream()
+            ZipOutputStream(bytes).use { zip ->
+                zip.putNextEntry(ZipEntry("index.html"))
+                zip.write(html.toByteArray(Charsets.UTF_8))
+                zip.closeEntry()
+                zip.putNextEntry(ZipEntry("README.txt"))
+                zip.write("Nuwaa Studio project\nOpen index.html in a browser.\n".toByteArray(Charsets.UTF_8))
+                zip.closeEntry()
+            }
+            pendingBytes = bytes.toByteArray()
+            pendingFile = ""
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("application/zip").putExtra(Intent.EXTRA_TITLE, "nuwaa-project.zip")
+            startActivityForResult(intent, REQ_CREATE)
+            studioStatus.text = "جهّزت حزمة المشروع من الكود الموجود في المحرر فقط."
+        } catch (e: Throwable) {
+            pendingBytes = null
+            studioStatus.text = "تعذر تجهيز التصدير: " + (e.message ?: "خطأ غير معروف")
+        }
     }
 
     private fun stripNumbers() {
