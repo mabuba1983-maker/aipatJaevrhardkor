@@ -68,9 +68,14 @@ class NMem {
     }
 
     /** Add only to the RAM working set. The caller must archive the original text before calling this. */
-    @Synchronized fun add(text: String) {
+    @Synchronized fun add(text: String) = addInternal(text, newestFirst = false)
+
+    /** During archive restore, records arrive newest-first; addFirst preserves chronological FIFO order. */
+    @Synchronized fun addNewestFirst(text: String) = addInternal(text, newestFirst = true)
+
+    private fun addInternal(text: String, newestFirst: Boolean) {
         if (text.isEmpty()) return
-        activeTexts.addLast(text)
+        if (newestFirst) activeTexts.addFirst(text) else activeTexts.addLast(text)
         addToIndex(text)
         estimatedBytes += 48L + text.length * 2L
         enforceBudget()
