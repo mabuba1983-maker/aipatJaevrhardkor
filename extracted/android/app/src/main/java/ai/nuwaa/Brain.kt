@@ -62,6 +62,12 @@ class Brain private constructor(private val ctx: Context) {
         loadNlm()
     }
 
+    private fun refreshMemoryStatus(m: Nlm) {
+        modelStatus = "نموذج نواة (GRU): " + m.paramCount() + " معامل · ذاكرة RAM نشطة " + m.long.activeRecordCount() +
+            " سجل (~" + (m.long.estimatedMemoryBytes() / 1024L) + " KB) · مرحّل من RAM منذ التشغيل " + m.long.archivedFromRam +
+            " · أرشيف التخزين " + storage.count() + " سجل"
+    }
+
     /** assets/nlm2.bin = the pretrained start; filesDir/nlm2_user.bin = what it learned on this phone (the long-term memory of the weights). */
     private fun loadNlm() {
         try {
@@ -84,9 +90,7 @@ class Brain private constructor(private val ctx: Context) {
                 m.long.add(if (line.length > 512) line.takeLast(512) else line)
             }
             nlm = m
-            modelStatus = "نموذج نواة (GRU): " + m.paramCount() + " معامل · ذاكرة RAM نشطة " + m.long.activeRecordCount() +
-                " سجل (~" + (m.long.estimatedMemoryBytes() / 1024L) + " KB) · مرحّل من RAM " + m.long.archivedFromRam +
-                " · أرشيف التخزين " + storage.count() + " سجل"
+            refreshMemoryStatus(m)
         } catch (e: java.io.FileNotFoundException) {
             modelStatus = "النموذج غير موجود في التطبيق (nlm2.bin)"
         } catch (e: Throwable) {
@@ -197,6 +201,7 @@ class Brain private constructor(private val ctx: Context) {
                 val memories = try { storage.searchRelevant(q, 3).filter { it.score >= 0.18 } } catch (_: Throwable) { emptyList() }
                 // Restore only relevant archived memories into the RAM working set; FIFO spillover keeps it bounded.
                 for (memory in memories) m.long.add(memory.text)
+                refreshMemoryStatus(m)
                 val verifiedExamples = try { kb.search(q, 2).filter { it.score >= Kb.LOW && it.item.v >= 1 } } catch (_: Throwable) { emptyList() }
                 val generationPrompt = if (memories.isEmpty() && verifiedExamples.isEmpty()) q else buildString {
                     if (memories.isNotEmpty()) {
@@ -246,6 +251,7 @@ class Brain private constructor(private val ctx: Context) {
         if (archived) {
             m.observe(line)
             m.long.enforceBudget()
+            refreshMemoryStatus(m)
         }
         observed++
         if (observed % 10 == 0) saveNlm()
