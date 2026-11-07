@@ -27,6 +27,21 @@ class NMemTest {
     }
 
     @Test
+    fun restoringNewestFirstKeepsNewestRecordWhenBudgetIsExceeded() {
+        var budget = Long.MAX_VALUE
+        val memory = NMem()
+        memory.setBudgetProvider { budget }
+        memory.addNewestFirst("newest archived memory")
+        budget = memory.estimatedMemoryBytes() + 1L
+        memory.addNewestFirst("older archived memory")
+
+        assertEquals(1, memory.activeRecordCount())
+        assertEquals(1L, memory.archivedFromRam)
+        assertNotNull(memory.dist("newest", 4))
+        assertNull(memory.dist("older", 4))
+    }
+
+    @Test
     fun repeatedMemoriesReinforceCountsWithoutLinearDuplicateFiltering() {
         val memory = NMem()
         memory.setBudgetProvider { Long.MAX_VALUE }
