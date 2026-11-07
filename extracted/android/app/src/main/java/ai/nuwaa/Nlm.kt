@@ -597,7 +597,7 @@ class NlmSession(private val m: Nlm, seed: Long) {
     /** Agreement is a stability signal, NOT proof that an answer is true. */
     private fun lexicalAgreement(a: String, b: String): Float {
         fun words(s: String): Set<String> = Nlp.norm(s)
-            .split(Regex("[^\p{L}\p{N}_]+"))
+            .split(Regex("[^\\p{L}\\p{N}_]+"))
             .filter { it.length >= 2 }
             .toSet()
         val x = words(a); val y = words(b)
@@ -611,7 +611,7 @@ class NlmSession(private val m: Nlm, seed: Long) {
         val t = Nlp.norm(text).trim()
         if (t.isEmpty()) return 0f
         var score = 1f
-        val words = t.split(Regex("[^\p{L}\p{N}_]+")).filter { it.isNotBlank() }
+        val words = t.split(Regex("[^\\p{L}\\p{N}_]+")).filter { it.isNotBlank() }
         if (words.size < 3) score -= 0.18f
         if (words.size >= 6) {
             val counts = words.groupingBy { it }.eachCount()
