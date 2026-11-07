@@ -105,11 +105,11 @@ object Effort {
         val note = if (capped) "وضع التوفير (" + dev.second + ")" else ""
         val longOutput = q.length >= 500 || Regex("طويل|بالتفصيل|كامل|جدول|مشروع|عدة ملفات|صفحات|اسطر|سطور").containsMatchIn(Nlp.norm(q))
         return when (lvl) {
-            0 -> Plan(Level.FAST, runtimeOutputChars(1), 0.55f, 1, note)
-            1 -> Plan(Level.NORMAL, runtimeOutputChars(1), 0.7f, 1, note)
+            0 -> Plan(Level.FAST, outputCharBudget(1), 0.55f, 1, note)
+            1 -> Plan(Level.NORMAL, outputCharBudget(1), 0.7f, 1, note)
             else -> {
                 val tries = if (longOutput) 2 else 4
-                Plan(Level.THINK, runtimeOutputChars(tries), 0.7f, tries, note)
+                Plan(Level.THINK, outputCharBudget(tries), 0.7f, tries, note)
             }
         }
     }
