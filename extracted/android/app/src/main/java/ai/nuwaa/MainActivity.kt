@@ -75,6 +75,9 @@ class MainActivity : Activity() {
     private lateinit var discoverResult: TextView
     private lateinit var growPage: LinearLayout
     private lateinit var growResult: TextView
+    private lateinit var settingsPage: LinearLayout
+    private val visionEngine = VisionEngine()
+    private val REQ_IMAGE_PICK = 45
     private var titleTaps = 0; private var titleTapsAt = 0L
     private var revealedGrowMenu = false
     private lateinit var trainInfo: TextView
@@ -142,7 +145,7 @@ class MainActivity : Activity() {
 
         pages = FrameLayout(this)
         rootView.addView(pages, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
-        buildChatPage(); buildHistPage(); buildScreenPage(); buildCodePage(); buildDevPage(); buildTrainPage(); buildDiscoverPage(); buildGrowPage()
+        buildChatPage(); buildHistPage(); buildScreenPage(); buildCodePage(); buildDevPage(); buildTrainPage(); buildDiscoverPage(); buildGrowPage(); buildSettingsPage()
     }
 
     // ---------------- pages ----------------
@@ -153,7 +156,7 @@ class MainActivity : Activity() {
     }
 
     private fun showMenu() {
-        val base = arrayOf("💬  محادثة جديدة", "🧠  تطوير النفس", "🗂  المحادثات السابقة", "📱  مشاركة الشاشة", "🛠  استوديو البرمجة", "🗑  حذف كل المحادثات", "ℹ️  عن التطبيق", "⚡  رفع الفهم (تدريب)", "🔍  اكتشاف من الإنترنت")
+        val base = arrayOf("💬  محادثة جديدة", "🧠  تطوير النفس", "🗂  المحادثات السابقة", "📱  مشاركة الشاشة", "🛠  استوديو البرمجة", "🗑  حذف كل المحادثات", "ℹ️  عن التطبيق", "⚡  رفع الفهم (تدريب)", "🔍  اكتشاف من الإنترنت", "⚙  الإعدادات")
         val items = if (revealedGrowMenu) base + "⚙  تطوير متقدم" else base
         AlertDialog.Builder(this).setItems(items) { _, i ->
             when (i) {
@@ -166,7 +169,8 @@ class MainActivity : Activity() {
                 6 -> showAbout()
                 7 -> showPage(trainPage)
                 8 -> showPage(discoverPage)
-                9 -> openGrowPage()
+                9 -> showPage(settingsPage)
+                10 -> openGrowPage()
             }
         }.show()
     }
@@ -324,7 +328,10 @@ class MainActivity : Activity() {
             val lastBot = c.msgs.lastOrNull { it.role == "b" }?.text ?: ""
             val a = try {
                 val fr = if (q.isNotEmpty() && att == null && fileMode) brain.fileRequest(q, c.id, lastBot, true) else null      // a sent file is being reviewed: never create files then
-                if (fr != null) createFileAnswer(fr) else if (att != null) brain.answerAbout(att, q) else brain.answer(q, c.id)
+                if (fr != null) createFileAnswer(fr) else if (att != null && isImageAttachment(att)) {
+                    val visual = visionEngine.analyzeBlocking(att.bytes)
+                    brain.answerVisual(att.name, q, visual, c.id)
+                } else if (att != null) brain.answerAbout(att, q) else brain.answer(q, c.id)
             } catch (e: Throwable) { Answer("حصل خطأ داخلي: " + (e.message ?: e.javaClass.simpleName), "error") }
             // only the model's own words are shown as its reply; everything else is labelled as coming from the app (reports, notices, exact arithmetic)
             val shown = when (a.source) { "lm" -> a.text; "math" -> "🧮 حساب دقيق (من التطبيق، ليس من النموذج):\n" + a.text; else -> "⚙ رسالة من التطبيق (ليست من النموذج):\n" + a.text }
@@ -378,8 +385,8 @@ class MainActivity : Activity() {
 
     // ---------------- the + button: send a file / create a file ----------------
     private fun showPlus() {
-        AlertDialog.Builder(this).setItems(arrayOf("📎  إرسال ملف", "📝  إنشاء ملف")) { _, i ->
-            if (i == 0) pickFile() else askCreateFile()
+        AlertDialog.Builder(this).setItems(arrayOf("📎  إرسال ملف", "🖼  إرسال صورة للفهم البصري", "📝  إنشاء ملف")) { _, i ->
+            when (i) { 0 -> pickFile(); 1 -> pickImage(); else -> askCreateFile() }
         }.show()
     }
 
@@ -496,6 +503,34 @@ class MainActivity : Activity() {
         AlertDialog.Builder(this).setTitle("أدخل الرمز السري").setView(input)
             .setPositiveButton("دخول") { _, _ -> if (SecretGrowth.verify(this, input.text.toString())) showPage(growPage) else Toast.makeText(this, "رمز خاطئ", Toast.LENGTH_SHORT).show() }
             .setNegativeButton("إلغاء", null).show()
+    }
+
+    // ---------------- experimental Android Cast entry ----------------
+    private fun buildSettingsPage() {
+        settingsPage = LinearLayout(this)
+        settingsPage.orientation = LinearLayout.VERTICAL
+        settingsPage.setPadding(dp(16), dp(14), dp(16), dp(12))
+        settingsPage.addView(Ui.label(this, "الإعدادات", 20f, Ui.DARK, true))
+        settingsPage.addView(Ui.label(this,
+            "خيار تجريبي لفتح واجهة Cast الموجودة في نظام Android. هذا يستدعي إعدادات النظام فقط؛ لا يعني أن واجهة نواة أو جلسة الويب بدأت على التلفزيون.",
+            14f, Ui.MUTED, false).also { it.setPadding(0, dp(8), 0, dp(12)) })
+        settingsPage.addView(Ui.btn(this, "📺  فتح قائمة Android Cast", Ui.PRIMARY) {
+            openAndroidCastSettings()
+        }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        settingsPage.addView(Ui.label(this,
+            "بعد اختيار التلفزيون ارجع إلى نواة. ربط مستقبل ويب وعرض المحادثة عليه يحتاج مرحلة اتصال مستقلة، ولا أعتبر مجرد فتح قائمة Cast دليلا على اكتمال البث.",
+            13f, Ui.MUTED, false).also { it.setPadding(0, dp(10), 0, 0) })
+    }
+
+    private fun openAndroidCastSettings() {
+        val intents = listOf(
+            Intent("android.settings.CAST_SETTINGS"),
+            Intent(Settings.ACTION_WIRELESS_SETTINGS)
+        )
+        for (intent in intents) {
+            try { startActivity(intent); return } catch (_: Throwable) { }
+        }
+        Toast.makeText(this, "هذا الجهاز لا يوفّر صفحة Cast يمكن فتحها من التطبيق.", Toast.LENGTH_LONG).show()
     }
 
     private fun buildGrowPage() {
@@ -625,6 +660,21 @@ class MainActivity : Activity() {
         try { startActivityForResult(i, REQ_PICK) } catch (e: Exception) { Toast.makeText(this, "ما لقيت تطبيق ملفات في جوالك", Toast.LENGTH_LONG).show() }
     }
 
+    @Suppress("DEPRECATION")
+    private fun pickImage() {
+        val i = Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("image/*")
+        try { startActivityForResult(i, REQ_IMAGE_PICK) }
+        catch (e: Exception) { Toast.makeText(this, "ما لقيت تطبيق صور", Toast.LENGTH_LONG).show() }
+    }
+
+    private fun isImageAttachment(att: Attached): Boolean {
+        val n = att.name.lowercase(java.util.Locale.ROOT)
+        return n.endsWith(".png") || n.endsWith(".jpg") || n.endsWith(".jpeg") ||
+            n.endsWith(".webp") || n.endsWith(".bmp") || n.endsWith(".gif") ||
+            (att.bytes.size >= 3 && att.bytes[0] == 0xFF.toByte() && att.bytes[1] == 0xD8.toByte()) ||
+            (att.bytes.size >= 8 && att.bytes[0] == 0x89.toByte() && att.bytes[1] == 0x50.toByte())
+    }
+
     private fun loadAttachment(uri: Uri) {
         thread {
             try {
@@ -747,7 +797,7 @@ class MainActivity : Activity() {
     @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQ_PICK) {
+        if (requestCode == REQ_PICK || requestCode == REQ_IMAGE_PICK) {
             val u = data?.data
             if (resultCode == RESULT_OK && u != null) loadAttachment(u)
             return
