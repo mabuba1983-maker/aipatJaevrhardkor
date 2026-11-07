@@ -1009,7 +1009,7 @@ class MainActivity : Activity() {
                 lastPreviewText = try { org.json.JSONTokener(value ?: "\"\"").nextValue().toString() } catch (_: Throwable) { "" }
                 val controlsScript = "(function(){return JSON.stringify(Array.from(document.querySelectorAll('button,a,input,select,textarea,[role=button]')).slice(0,60).map(function(e){var r=e.getBoundingClientRect();return {tag:e.tagName.toLowerCase(),type:e.type||'',text:(e.innerText||e.value||e.getAttribute('aria-label')||'').trim().slice(0,100),placeholder:e.placeholder||'',disabled:!!e.disabled,visible:r.width>0&&r.height>0,x:Math.round(r.x),y:Math.round(r.y),width:Math.round(r.width),height:Math.round(r.height)};}));})()"
                 studioPreview.evaluateJavascript(controlsScript) { controls ->
-                    lastPreviewControls = try { org.json.JSONTokener(controls ?: "\"\\\"\\\"").nextValue().toString() } catch (_: Throwable) { "" }
+                    lastPreviewControls = try { org.json.JSONTokener(controls ?: "\"[]\"").nextValue().toString() } catch (_: Throwable) { "" }
                     studioStatus.text = "تم تشغيل HTML. النص المقروء: " +
                         (if (lastPreviewText.isBlank()) "لا يوجد نص ظاهر" else lastPreviewText.take(180).replace("\n", " ")) +
                         " · عناصر تفاعلية مرصودة: " + (try { org.json.JSONArray(lastPreviewControls).length() } catch (_: Throwable) { 0 })
