@@ -161,10 +161,19 @@ class Brain private constructor(private val ctx: Context) {
     val modelLock: Any get() = lock
     fun trainModel(): Nlm? = nlm
     fun saveTrained() = saveNlm()
-    /** The training text shipped with the app: one pair per line, the two lines of a pair joined by a tab. Returned as «س:..\nج:..\n» blocks. */
-    fun trainPairs(): List<String> = try {
-        readAsset("train.txt").split("\n").filter { it.length > 6 }.map { it.replace('\t', '\n') + "\n" }
-    } catch (e: Exception) { emptyList() }
+    /**
+     * Base supervised pairs plus the user's explicitly approved/corrected dialogue examples.
+     * Raw user prompts and unapproved model replies are never included as training targets.
+     */
+    fun trainPairs(): List<String> {
+        val base = try {
+            readAsset("train.txt").split("\n").filter { it.length > 6 }.map { it.replace('\t', '\n') + "\n" }
+        } catch (_: Exception) { emptyList() }
+        val userApproved = try {
+            storage.sampleTexts(Effort.trainingSampleBudgetBytes(), "dialogue")
+        } catch (_: Throwable) { emptyList() }
+        return base + userApproved
+    }
 
     // ---------------------------------------------------------------- the conversation
     private fun replaySessionMessage(s: NlmSession, role: String, chunk: String, start: Boolean, end: Boolean) {
