@@ -85,6 +85,22 @@ class NuwaaStorage(private val dir: File) {
         best.sortedByDescending { it.score }
     }
 
+    /** Stream the complete archive chronologically, one record at a time. The caller must keep its own working set bounded. */
+    fun forEachText(action: (String) -> Unit): Long = synchronized(lock) {
+        if (!data.exists()) return@synchronized 0L
+        var visited = 0L
+        data.bufferedReader(Charsets.UTF_8, 8192).use { reader ->
+            while (true) {
+                val line = reader.readLine() ?: break
+                try {
+                    val text = JSONObject(line).optString("text")
+                    if (text.isNotBlank()) { action(text); visited++ }
+                } catch (_: Throwable) { /* skip a damaged record, keep the archive scan going */ }
+            }
+        }
+        visited
+    }
+
     /** Read only the latest N entries, without loading the full archive. */
     fun lastTexts(limit: Int): List<String> = synchronized(lock) {
         if (limit <= 0 || !data.exists()) return@synchronized emptyList()
