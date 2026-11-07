@@ -594,23 +594,50 @@ class NlmSession(private val m: Nlm, seed: Long) {
     private fun snap() = Snap(p.copyOf(), s1.copyOf(), s2.copyOf(), contextTail.toString())
     private fun restore(x: Snap) { p = x.p.copyOf(); System.arraycopy(x.a, 0, s1, 0, s1.size); System.arraycopy(x.b, 0, s2, 0, s2.size); contextTail.setLength(0); contextTail.append(x.tail) }
 
-    /** Thinking mode: several separate attempts from the same starting point (cooler and warmer sampling); the one the model itself was most
-     *  sure about wins, and only that one enters the conversation. Costs `tries` times the time of one reply, so Brain uses it for hard questions only. */
+    /** Agreement is a stability signal, NOT proof that an answer is true. */
+    private fun lexicalAgreement(a: String, b: String): Float {
+        fun words(s: String): Set<String> = Nlp.norm(s)
+            .split(Regex("[^\\p{L}\\p{N}_]+"))
+            .filter { it.length >= 2 }
+            .toSet()
+        val x = words(a); val y = words(b)
+        if (x.isEmpty() && y.isEmpty()) return 1f
+        if (x.isEmpty() || y.isEmpty()) return 0f
+        return x.intersect(y).size.toFloat() / x.union(y).size.toFloat()
+    }
+
+    /** Thinking mode: sample independent drafts, then rank by model likelihood + agreement with the other drafts.
+     *  Agreement reduces unstable guesses but is never treated as factual verification. */
     fun replyThink(user: String, maxChars: Int, tries: Int, accept: ((String) -> Boolean)? = null): Pair<String, List<Float>> {
         val start = snap()
         val temps = floatArrayOf(0.55f, 0.7f, 0.85f, 0.65f, 0.75f)
-        var bestScore = -1f; var best: Pair<String, List<Float>>? = null; var bestEnd: Snap? = null
+        val attempts = ArrayList<Triple<Pair<String, List<Float>>, Snap, Float>>()
         for (i in 0 until minOf(tries, temps.size)) {
             restore(start)
             val r = reply(user, maxChars, temps[i], 8, 0.15f, false)
-            var sc = if (r.second.isEmpty()) 0f else r.second.sum() / r.second.size
-            if (r.first.length < 8) sc -= 0.2f
-            if (accept != null && !accept(r.first)) sc -= 1f              // an attempt that fails the cheap check is only chosen if all fail
-            if (sc > bestScore) { bestScore = sc; best = r; bestEnd = snap() }
+            var likelihood = if (r.second.isEmpty()) 0f else r.second.sum() / r.second.size
+            if (r.first.length < 8) likelihood -= 0.2f
+            if (accept != null && !accept(r.first)) likelihood -= 1f
+            attempts.add(Triple(r, snap(), likelihood))
             Thread.yield()
         }
-        val fin = best ?: return reply(user, maxChars)
-        restore(bestEnd ?: start)
+        if (attempts.isEmpty()) return reply(user, maxChars)
+        var bestIndex = 0
+        var bestScore = -Float.MAX_VALUE
+        for (i in attempts.indices) {
+            var agreement = 0f
+            var compared = 0
+            for (j in attempts.indices) if (j != i) {
+                agreement += lexicalAgreement(attempts[i].first.first, attempts[j].first.first)
+                compared++
+            }
+            if (compared > 0) agreement /= compared.toFloat()
+            // The model's own token likelihood is weak evidence; cross-draft agreement is a separate stability signal.
+            val score = 0.55f * attempts[i].third + 0.45f * agreement
+            if (score > bestScore) { bestScore = score; bestIndex = i }
+        }
+        val fin = attempts[bestIndex].first
+        restore(attempts[bestIndex].second)
         val u = user.replace("\n", " ¶ ").trim()
         replies.add(Pair(u.split(Regex("\\s+")).joinToString(" "), fin.first)); while (replies.size > 12) replies.removeAt(0)
         refreshShortMemory()
