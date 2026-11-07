@@ -245,7 +245,7 @@ object FileTools {
             val body = m.groupValues[2]
             if (body.isBlank() || body.length > 20000) continue
             total += body.length
-            if (made.size >= 12 || total > 60000) break
+            if (made.size >= 24 || total > 180000) break
             if (made.any { it.name == name }) continue
             made.add(MadeFile(name, (body.trimEnd('\n') + "\n").toByteArray(Charsets.UTF_8), "المحتوى كتبه النموذج نفسه"))
         }
