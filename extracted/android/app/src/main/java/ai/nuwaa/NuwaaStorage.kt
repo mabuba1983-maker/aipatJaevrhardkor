@@ -220,10 +220,15 @@ class NuwaaStorage(private val dir: File) {
                 firstUser = value
                 return
             }
-            recent.addLast(value)
-            recentChars += value.length
             val firstCost = minOf(firstUser!!.length, maxChars / 2)
             val allowance = (maxChars - firstCost).coerceAtLeast(0)
+            if (allowance <= 0) return
+            val retained = if (value.length <= allowance) value else {
+                val side = maxOf(1, allowance / 2)
+                value.take(side) + " […] " + value.takeLast(side)
+            }
+            recent.addLast(retained)
+            recentChars += retained.length
             while (recent.isNotEmpty() && recentChars > allowance) {
                 recentChars -= recent.removeFirst().length
             }
