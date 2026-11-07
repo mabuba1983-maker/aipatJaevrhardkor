@@ -63,7 +63,7 @@ class NuwaaStorage(private val dir: File) {
                     val phraseBonus = if (query.length >= 8 && text.contains(query, ignoreCase = true)) 1.0 else 0.0
                     val score = coverage * 0.75 + precision * 0.25 + phraseBonus
                     if (score < 0.12) continue
-                    val item = MemoryMatch(text.take(1200), score, row.optString("type"), row.optLong("time", 0L))
+                    val item = MemoryMatch(text, score, row.optString("type"), row.optLong("time", 0L))
                     if (best.size < limit) {
                         best.add(item)
                     } else {
