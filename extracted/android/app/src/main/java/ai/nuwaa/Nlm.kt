@@ -46,7 +46,10 @@ class NMem {
         t.clear()
         chars = 0
         estimatedBytes = 0L
-        for (text in activeTexts) addToIndex(text)
+        for (text in activeTexts) {
+            addToIndex(text)
+            estimatedBytes += 48L + text.length * 2L
+        }
     }
 
     /** Add only to the RAM working set. The caller must archive the original text before calling this. */
@@ -54,6 +57,7 @@ class NMem {
         if (text.isEmpty()) return
         activeTexts.addLast(text)
         addToIndex(text)
+        estimatedBytes += 48L + text.length * 2L
         enforceBudget()
     }
 
