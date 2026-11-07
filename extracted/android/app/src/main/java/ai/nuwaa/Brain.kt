@@ -234,7 +234,7 @@ class Brain private constructor(private val ctx: Context) {
                 val made = maxOf(20, r.first.length) * plan.tries
                 val ms = (System.nanoTime() - t0) / 1_000_000.0 / made
                 Effort.msPerChar = if (Effort.msPerChar <= 0.0) ms else 0.7 * Effort.msPerChar + 0.3 * ms
-                hear(m, q)
+                hear(m, q, historyAnswer)
                 var foot = ""
                 if (plan.level == Level.THINK) foot = "\n\n🧠 وضع التفكير: جربت " + plan.tries + " محاولات واخترت الأوضح."
                 else if (plan.note.isNotEmpty()) foot = "\n\n🔋 " + plan.note + ": رديت بإيجاز."
@@ -247,10 +247,10 @@ class Brain private constructor(private val ctx: Context) {
     }
 
     /** Learning by listening: nothing to type, nothing announced. Long-term memory at once, the weights by a few small steps. */
-    private fun hear(m: Nlm, q: String) {
+    private fun hear(m: Nlm, q: String, answer: String) {
         val line = q.replace("\n", " ").trim()
         if (line.isEmpty()) return
-        // Persist first. Only after durable archival do we add the text to the bounded RAM working set.
+        // The user-memory archive stores the user's words; the separate dialogue record stores a real input/output pair for later supervised learning.
         val archived = try {
             storage.append("conversation", line)
             true
@@ -259,6 +259,9 @@ class Brain private constructor(private val ctx: Context) {
         }
         // Never let a RAM-only copy be evicted as though it were safely archived.
         if (archived) {
+            val prompt = "س:" + q.replace("\n", " ¶ ").trim()
+            val response = "ج:" + answer.replace("\n", "¶").trim()
+            try { storage.append("dialogue", prompt + "\n" + response + "\n") } catch (_: Throwable) { /* memory remains saved even if training-pair storage fails */ }
             m.observe(line)
             m.long.enforceBudget()
             refreshMemoryStatus(m)
@@ -360,8 +363,8 @@ class Brain private constructor(private val ctx: Context) {
     fun develop(): String {
         val m = nlm ?: return "النموذج غير محمّل."
         val sampleBudget = Effort.trainingSampleBudgetBytes()
-        val texts = storage.sampleTexts(sampleBudget)
-        if (texts.size < 3) return "ما فيه بيانات كافية ضمن مساحة الذاكرة المتاحة لتحضير عينة تدريب من الأرشيف. أضف أمثلة أكثر أو أعد المحاولة عندما تتوفر ذاكرة."
+        val texts = storage.sampleTexts(sampleBudget, "dialogue")
+        if (texts.size < 3) return "ما فيه أزواج محادثة كافية (سؤال وجواب) ضمن مساحة الذاكرة المتاحة لتحضير عينة تدريب من الأرشيف. أضف أمثلة أكثر أو أعد المحاولة عندما تتوفر ذاكرة."
         val trainingChars = (sampleBudget / 2L).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
         val r = synchronized(lock) { m.develop(texts, 2, 3e-4f, rehearsal, trainingChars) }
         saveNlm()
