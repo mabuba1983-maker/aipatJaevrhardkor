@@ -27,6 +27,19 @@ class NMemTest {
     }
 
     @Test
+    fun repeatedMemoriesReinforceCountsWithoutLinearDuplicateFiltering() {
+        val memory = NMem()
+        memory.setBudgetProvider { Long.MAX_VALUE }
+        memory.add("repeat this memory")
+        memory.add("repeat this memory")
+
+        assertEquals(2, memory.activeRecordCount())
+        val distribution = memory.dist("repea", 4)
+        assertNotNull(distribution)
+        assertEquals(2, distribution!!.second['t'])
+    }
+
+    @Test
     fun zeroRamBudgetKeepsArchiveOutsideWorkingSet() {
         var budget = 0L
         val memory = NMem()
