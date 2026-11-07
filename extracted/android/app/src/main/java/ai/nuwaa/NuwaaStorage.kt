@@ -9,7 +9,7 @@ import java.io.RandomAccessFile
  * Append-only disk storage. Complete history stays on disk; only bounded tails are read into RAM.
  * There is no arbitrary record-count cap. Real limits are available device storage and filesystem limits.
  */
-data class MemoryMatch(val text: String, val score: Double, val type: String)
+data class MemoryMatch(val text: String, val score: Double, val type: String, val timestamp: Long = 0L)
 
 class NuwaaStorage(private val dir: File) {
     private val data = File(dir, "records.jsonl")
@@ -63,19 +63,25 @@ class NuwaaStorage(private val dir: File) {
                     val phraseBonus = if (query.length >= 8 && text.contains(query, ignoreCase = true)) 1.0 else 0.0
                     val score = coverage * 0.75 + precision * 0.25 + phraseBonus
                     if (score < 0.12) continue
-                    val item = MemoryMatch(text.take(1200), score, row.optString("type"))
-                    if (best.size < limit || score > best.minOf { it.score }) {
-                        if (best.size == limit) {
-                            var worstIndex = 0
-                            for (candidate in 1 until best.size) if (best[candidate].score < best[worstIndex].score) worstIndex = candidate
-                            best.removeAt(worstIndex)
-                        }
+                    val item = MemoryMatch(text.take(1200), score, row.optString("type"), row.optLong("time", 0L))
+                    if (best.size < limit) {
                         best.add(item)
+                    } else {
+                        var worstIndex = 0
+                        for (candidate in 1 until best.size) {
+                            val current = best[candidate]
+                            val worst = best[worstIndex]
+                            if (current.score < worst.score ||
+                                (current.score == worst.score && current.timestamp < worst.timestamp)) worstIndex = candidate
+                        }
+                        val worst = best[worstIndex]
+                        if (item.score > worst.score ||
+                            (item.score == worst.score && item.timestamp > worst.timestamp)) best[worstIndex] = item
                     }
                 } catch (_: Throwable) { /* skip one damaged record; keep scanning the archive */ }
             }
         }
-        best.sortedByDescending { it.score }
+        best.sortedWith(compareByDescending<MemoryMatch> { it.score }.thenByDescending { it.timestamp })
     }
 
     /** Stream the complete archive chronologically, one record at a time. The caller must keep its own working set bounded. */
