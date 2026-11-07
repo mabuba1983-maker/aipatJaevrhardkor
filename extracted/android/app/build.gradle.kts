@@ -7,3 +7,8 @@ android {
     kotlinOptions { jvmTarget = "17" }
     androidResources { noCompress += "bin" }
 }
+
+dependencies {
+    // Bundled on-device model: image analysis works offline after installation.
+    implementation("com.google.mlkit:image-labeling:17.0.9")
+}
