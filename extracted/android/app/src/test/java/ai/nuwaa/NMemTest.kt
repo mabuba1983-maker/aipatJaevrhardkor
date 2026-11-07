@@ -27,6 +27,15 @@ class NMemTest {
     }
 
     @Test
+    fun noFixedMemoryRecordCountWhenRamBudgetAllows() {
+        val memory = NMem()
+        memory.setBudgetProvider { Long.MAX_VALUE }
+        repeat(1000) { memory.add("memory record number $it") }
+
+        assertEquals(1000, memory.activeRecordCount())
+    }
+
+    @Test
     fun generationLookupRechecksShrinkingRamBudget() {
         var budget = Long.MAX_VALUE
         val memory = NMem()
