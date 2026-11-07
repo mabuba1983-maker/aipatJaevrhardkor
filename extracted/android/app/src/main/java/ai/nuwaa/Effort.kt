@@ -82,8 +82,10 @@ object Effort {
             0 -> Plan(Level.FAST, chars(180, 8000.0), 0.55f, 1, note)
             1 -> Plan(Level.NORMAL, chars(450, 25000.0), 0.7f, 1, note)
             else -> {
-                val c = chars(900, 45000.0)
-                val tries = if (per > 0.0 && per * c * 4 > 180000.0) 2 else 4          // more than ~3 minutes for 4 attempts: think with 2
+                // Long writing/code requests get more room; measured device speed still caps the work.
+                val longOutput = q.length >= 500 || Regex("طويل|بالتفصيل|كامل|جدول|مشروع|عدة ملفات|صفحات").containsMatchIn(Nlp.norm(q))
+                val c = chars(if (longOutput) 1800 else 900, if (longOutput) 90000.0 else 45000.0)
+                val tries = if (per > 0.0 && per * c * 4 > 180000.0) 2 else 4
                 Plan(Level.THINK, c, 0.7f, tries, note)
             }
         }
