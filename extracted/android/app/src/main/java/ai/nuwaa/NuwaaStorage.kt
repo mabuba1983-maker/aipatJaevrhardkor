@@ -89,7 +89,7 @@ class NuwaaStorage(private val dir: File) {
                 try {
                     val row = JSONObject(line)
                     val text = row.optString("text")
-                    if (text.isBlank()) continue
+                    if (text.isBlank() || row.optString("type") == "dialogue") continue
                     val found = terms(text)
                     val overlap = wanted.count { it in found }
                     if (overlap == 0) continue
@@ -172,13 +172,16 @@ class NuwaaStorage(private val dir: File) {
      * Select a chronological, evenly spaced sample across the COMPLETE archive.
      * Only a caller-supplied byte budget is retained; no fixed message-count limit is used.
      */
-    fun sampleTexts(maxTextBytes: Long): List<String> = synchronized(lock) {
+    fun sampleTexts(maxTextBytes: Long, kind: String? = null): List<String> = synchronized(lock) {
         if (maxTextBytes <= 0L || !data.exists()) return@synchronized emptyList()
         var totalRows = 0L
         data.bufferedReader(Charsets.UTF_8, 8192).use { reader ->
             while (true) {
                 val line = reader.readLine() ?: break
-                try { if (JSONObject(line).optString("text").isNotBlank()) totalRows++ } catch (_: Throwable) { }
+                try {
+                    val row = JSONObject(line)
+                    if (row.optString("text").isNotBlank() && (kind == null || row.optString("type") == kind)) totalRows++
+                } catch (_: Throwable) { }
             }
         }
         if (totalRows == 0L) return@synchronized emptyList()
@@ -192,8 +195,9 @@ class NuwaaStorage(private val dir: File) {
             while (true) {
                 val line = reader.readLine() ?: break
                 try {
-                    val text = JSONObject(line).optString("text")
-                    if (text.isBlank()) continue
+                    val row = JSONObject(line)
+                    val text = row.optString("text")
+                    if (text.isBlank() || (kind != null && row.optString("type") != kind)) continue
                     if (rowIndex % stride == 0L && usedBytes < maxTextBytes) {
                         val remainingChars = ((maxTextBytes - usedBytes - 64L).coerceAtLeast(0L) / 2L)
                             .coerceAtMost(perRecordChars.toLong()).toInt()
