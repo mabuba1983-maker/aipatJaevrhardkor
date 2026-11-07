@@ -97,7 +97,7 @@ class Trainer(private val ctx: Context, private val brain: Brain) {
                 val work = (System.nanoTime() - t0) / 1_000_000
                 if (pct < 100) sleepSafe(work * (100 - pct) / pct)       // average share of one core = pct; everything counts (measurement and self-review too)
             }
-            synchronized(brain.modelLock) { m.restoreSnapshot(snap) }       // always end on the best state: the button can never make the model worse
+            synchronized(brain.modelLock) { m.restoreTrainingSnapshot(snap) }       // always end on the best state: the button can never make the model worse
             brain.saveTrained()
             last = "⏹ توقفت وحفظت أفضل حالة. القياس: " + f(startHeld) + " ← " + f(bestHeld) + " بت/حرف (الأقل أفضل)."
             onUpdate(report())
