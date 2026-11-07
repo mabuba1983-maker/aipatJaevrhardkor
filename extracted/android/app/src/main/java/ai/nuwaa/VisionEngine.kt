@@ -12,6 +12,18 @@ import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
  * grounded description. This is not an end-to-end multimodal neural model.
  */
 class VisionEngine {
+    fun analyzeBlocking(bytes: ByteArray, timeoutMs: Long = 20000): String {
+        val latch = java.util.concurrent.CountDownLatch(1)
+        var result = "انتهت مهلة تحليل الصورة."
+        analyze(bytes) {
+            result = it
+            latch.countDown()
+        }
+        try { latch.await(timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS) }
+        catch (_: InterruptedException) { Thread.currentThread().interrupt() }
+        return result
+    }
+
     fun analyze(bytes: ByteArray, callback: (String) -> Unit) {
         val bitmap = try {
             val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
