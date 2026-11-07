@@ -189,10 +189,19 @@ class Brain private constructor(private val ctx: Context) {
                 val hit = try { kb.search(q, 1).firstOrNull()?.score ?: 0.0 } catch (e: Throwable) { 0.0 }
                 val plan = Effort.plan(ctx, q, hit)
                 val memories = try { storage.searchRelevant(q, 3).filter { it.score >= 0.18 } } catch (_: Throwable) { emptyList() }
-                val generationPrompt = if (memories.isEmpty()) q else buildString {
-                    append("سياق مسترجع من ذاكرة المستخدم، استخدمه فقط إذا كان مرتبطاً بالطلب ولا تخترع تفاصيل غير موجودة فيه:\n")
-                    for ((index, item) in memories.withIndex()) {
-                        append("[ذكرى ").append(index + 1).append("] ").append(item.text).append("\n")
+                val verifiedExamples = try { kb.search(q, 2).filter { it.score >= Kb.LOW && it.item.v >= 1 } } catch (_: Throwable) { emptyList() }
+                val generationPrompt = if (memories.isEmpty() && verifiedExamples.isEmpty()) q else buildString {
+                    if (memories.isNotEmpty()) {
+                        append("سياق مسترجع من ذاكرة المستخدم، استخدمه فقط إذا كان مرتبطاً بالطلب ولا تخترع تفاصيل غير موجودة فيه:\n")
+                        for ((index, item) in memories.withIndex()) {
+                            append("[ذكرى ").append(index + 1).append("] ").append(item.text).append("\n")
+                        }
+                    }
+                    if (verifiedExamples.isNotEmpty()) {
+                        append("أمثلة برمجية سابقة اجتازت فحصاً بدرجة تشغيل واحدة على الأقل؛ استخدمها كمرجع ولا تدّعِ أنك شغّلت كود الطلب الحالي:\n")
+                        for ((index, hit) in verifiedExamples.withIndex()) {
+                            append("[مثال متحقق ").append(index + 1).append("] ").append(hit.item.a.take(1800)).append("\n")
+                        }
                     }
                     append("طلب المستخدم الحالي:\n").append(q)
                 }
