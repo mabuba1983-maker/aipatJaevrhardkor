@@ -43,21 +43,22 @@ class NuwaaStorage(private val dir: File) {
         val rows = ArrayList<String>(limit)
         RandomAccessFile(data, "r").use { f ->
             var pointer = f.length() - 1
-            var line = StringBuilder()
+            var line = ByteArrayOutputStream()
+            fun consumeLine() {
+                if (line.size() == 0) return
+                try {
+                    val bytes = line.toByteArray().reversedArray()
+                    rows.add(JSONObject(String(bytes, Charsets.UTF_8)).optString("text"))
+                } catch (_: Throwable) { }
+                line = ByteArrayOutputStream()
+            }
             while (pointer >= 0 && rows.size < limit) {
                 f.seek(pointer)
-                val ch = f.read().toChar()
-                if (ch == '\n') {
-                    if (line.isNotEmpty()) {
-                        try { rows.add(JSONObject(line.reverse().toString()).optString("text")) } catch (_: Throwable) { }
-                        line = StringBuilder()
-                    }
-                } else line.append(ch)
+                val ch = f.read()
+                if (ch == 10) consumeLine() else if (ch >= 0) line.write(ch)
                 pointer--
             }
-            if (line.isNotEmpty() && rows.size < limit) {
-                try { rows.add(JSONObject(line.reverse().toString()).optString("text")) } catch (_: Throwable) { }
-            }
+            if (rows.size < limit) consumeLine()
         }
         rows.reverse()
         rows
