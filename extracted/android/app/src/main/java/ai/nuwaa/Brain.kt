@@ -197,7 +197,30 @@ class Brain private constructor(private val ctx: Context) {
             val s = sessionFor(m, convId)
             val math = Skills.tryMath(q)
             var historyAnswer = ""
-            val result = if (!Scope.inScope(q)) {
+            val normalizedApproval = Nlp.norm(q)
+            val approvePrevious = listOf(
+                "اعتمد الرد السابق", "اعتمد الاجابه السابقه", "اعتمد الاجابة السابقة",
+                "احفظ الرد السابق", "احفظ الاجابه السابقه", "سجل الرد السابق",
+                "اعتبر الرد السابق صحيح", "الرد السابق صحيح"
+            ).any { normalizedApproval.contains(Nlp.norm(it)) }
+            val result = if (approvePrevious) {
+                val previous = try { storage.lastSessionExchange(convId) } catch (_: Throwable) { null }
+                historyAnswer = if (previous == null) {
+                    "ما لقيت إجابة مكتملة سابقة في هذه المحادثة لاعتمادها."
+                } else {
+                    val pair = "س:" + previous.first.replace("\n", " ¶ ").trim() +
+                        "\nج:" + previous.second.replace("\n", "¶").trim() + "\n"
+                    try {
+                        storage.append("dialogue", pair)
+                        "اعتمدت الإجابة السابقة وحفظتها كزوج سؤال وجواب للتدريب المستقبلي. لم يبدأ أي تدريب الآن."
+                    } catch (_: Throwable) {
+                        "تعذر حفظ الإجابة المعتمدة في التخزين؛ لم أضفها إلى بيانات التدريب."
+                    }
+                }
+                s.feed("س:" + q.replace("\n", " ¶ ").trim() + "\nج:" + historyAnswer.replace("\n", "¶") + "\n")
+                hear(m, q)
+                Answer(historyAnswer, "learning")
+            } else if (!Scope.inScope(q)) {
                 historyAnswer = Scope.REFUSAL
                 s.feed("س:" + q.replace("\n", " ¶ ").trim() + "\nج:" + historyAnswer.replace("\n", "¶") + "\n")
                 Answer(historyAnswer, "scope")
@@ -234,7 +257,7 @@ class Brain private constructor(private val ctx: Context) {
                 val made = maxOf(20, r.first.length) * plan.tries
                 val ms = (System.nanoTime() - t0) / 1_000_000.0 / made
                 Effort.msPerChar = if (Effort.msPerChar <= 0.0) ms else 0.7 * Effort.msPerChar + 0.3 * ms
-                hear(m, q, historyAnswer)
+                hear(m, q)
                 var foot = ""
                 if (plan.level == Level.THINK) foot = "\n\n🧠 وضع التفكير: جربت " + plan.tries + " محاولات واخترت الأوضح."
                 else if (plan.note.isNotEmpty()) foot = "\n\n🔋 " + plan.note + ": رديت بإيجاز."
@@ -247,10 +270,10 @@ class Brain private constructor(private val ctx: Context) {
     }
 
     /** Learning by listening: nothing to type, nothing announced. Long-term memory at once, the weights by a few small steps. */
-    private fun hear(m: Nlm, q: String, answer: String) {
+    private fun hear(m: Nlm, q: String) {
         val line = q.replace("\n", " ").trim()
         if (line.isEmpty()) return
-        // The user-memory archive stores the user's words; the separate dialogue record stores a real input/output pair for later supervised learning.
+        // Only the user's words enter long-term memory. Assistant answers enter training data only after explicit approval.
         val archived = try {
             storage.append("conversation", line)
             true
@@ -259,9 +282,6 @@ class Brain private constructor(private val ctx: Context) {
         }
         // Never let a RAM-only copy be evicted as though it were safely archived.
         if (archived) {
-            val prompt = "س:" + q.replace("\n", " ¶ ").trim()
-            val response = "ج:" + answer.replace("\n", "¶").trim()
-            try { storage.append("dialogue", prompt + "\n" + response + "\n") } catch (_: Throwable) { /* memory remains saved even if training-pair storage fails */ }
             m.observe(line)
             m.long.enforceBudget()
             refreshMemoryStatus(m)
