@@ -397,8 +397,8 @@ class Nlm private constructor(val e: Int, val h: Int, val chars: List<String>) {
     }
 }
 
-/** One conversation. The hidden state and the short-term memory live here and nowhere else: when the conversation ends, the session is dropped.
- *  (What the user said has already been learned into the long-term memory by Nlm.observe.) Mirror of Session in nuwaa/lm/gru.py. */
+/** One active conversation state. Brain archives the complete transcript and replays it in chunks if this session is evicted or recreated.
+ *  The in-memory n-gram helper is deliberately limited to the latest 12 exchanges. */
 class NlmSession(private val m: Nlm, seed: Long) {
     private val s1 = FloatArray(m.h); private val s2 = FloatArray(m.h)
     private var p: FloatArray = FloatArray(m.v)
