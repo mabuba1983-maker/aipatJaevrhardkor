@@ -201,7 +201,8 @@ class Brain private constructor(private val ctx: Context) {
             // the MODEL builds the file: it chooses the name and writes the content (thinking mode: several attempts, the surest one wins)
             val project = Regex("مشروع|مجلد|ملفات|عدة|فولدر").containsMatchIn(q)
             val table = Regex("جدول|csv|بيانات|صفوف|أعمدة").containsMatchIn(q)
-            val outputLimit = when { project -> 2600; table -> 2400; else -> 1200 }
+            // The same live heap-based budget used by chat; no separate tiny file/table cap.
+            val outputLimit = Effort.outputCharBudget(attempts)
             val attempts = when { project -> 3; table -> 2; else -> 3 }
             val written = synchronized(lock) {
                 sessionFor(m, convId).replyThink(q, outputLimit, attempts) { FileTools.allSane(it) }.first
