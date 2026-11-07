@@ -280,25 +280,25 @@ class Brain private constructor(private val ctx: Context) {
             } catch (_: Throwable) { emptyList() }
             val projectPrompt = if (projectMemories.isEmpty() && codeExamples.isEmpty()) q else buildString {
                 if (projectMemories.isNotEmpty()) {
-                    append("متطلبات وسياق سابق استُرجع من أرشيف المستخدم. اعتبرها قيوداً للمشروع فقط إذا كانت تخص المشروع الحالي، ولا تستبدل بها طلبه الحالي:\\n")
+                    append("متطلبات وسياق سابق استُرجع من أرشيف المستخدم. اعتبرها قيوداً للمشروع فقط إذا كانت تخص المشروع الحالي، ولا تستبدل بها طلبه الحالي:\n")
                     for ((index, memory) in projectMemories.withIndex()) {
                         append("[سياق سابق ").append(index + 1).append("] ")
-                            .append(memory.text.take(1000)).append("\\n")
+                            .append(memory.text.take(1000)).append("\n")
                     }
                 }
                 if (codeExamples.isNotEmpty()) {
-                    append("أمثلة كود سابقة اجتازت تشغيلًا أو اختبارًا. هي مراجع فقط وليست دليلاً على تشغيل الملف الحالي:\\n")
+                    append("أمثلة كود سابقة اجتازت تشغيلًا أو اختبارًا. هي مراجع فقط وليست دليلاً على تشغيل الملف الحالي:\n")
                     for ((index, example) in codeExamples.withIndex()) {
                         append("[مثال ").append(index + 1).append("] ")
-                            .append(example.item.a.take(1400)).append("\\n")
+                            .append(example.item.a.take(1400)).append("\n")
                     }
                 }
-                append("تعليمات صارمة للمهمة الحالية:\\n")
-                append("- حافظ على كل شرط ذكره المستخدم في الطلب الحالي والسياق السابق المرتبط به.\\n")
-                append("- لا تحذف ميزة موجودة ولا تغيّر ملفات غير مطلوبة.\\n")
-                append("- لا تدّعِ أن الكود بُني أو شُغّل أو اختُبر؛ لم يحدث ذلك ضمن توليد النص.\\n")
-                append("- إذا تعارضت المتطلبات أو نقصت معلومة تمنع إنشاء ملف صحيح، صرّح بالنقص بدلاً من اختراع قيمة.\\n")
-                append("طلب المستخدم الحالي:\\n").append(q)
+                append("تعليمات صارمة للمهمة الحالية:\n")
+                append("- حافظ على كل شرط ذكره المستخدم في الطلب الحالي والسياق السابق المرتبط به.\n")
+                append("- لا تحذف ميزة موجودة ولا تغيّر ملفات غير مطلوبة.\n")
+                append("- لا تدّعِ أن الكود بُني أو شُغّل أو اختُبر؛ لم يحدث ذلك ضمن توليد النص.\n")
+                append("- إذا تعارضت المتطلبات أو نقصت معلومة تمنع إنشاء ملف صحيح، صرّح بالنقص بدلاً من اختراع قيمة.\n")
+                append("طلب المستخدم الحالي:\n").append(q)
             }
             val written = synchronized(lock) {
                 sessionFor(m, convId).replyThink(projectPrompt, outputLimit, attempts) { FileTools.allSane(it) }.first
