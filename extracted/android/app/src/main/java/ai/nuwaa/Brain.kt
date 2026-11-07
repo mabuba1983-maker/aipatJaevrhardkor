@@ -115,7 +115,7 @@ class Brain private constructor(private val ctx: Context) {
                     if (nlmBackupFile.exists() && !nlmUserFile.exists()) nlmBackupFile.renameTo(nlmUserFile)
                     throw IllegalStateException("تعذر تثبيت ملف الأوزان الجديد")
                 }
-                if (nlmBackupFile.exists()) nlmBackupFile.delete()
+                // Keep the previous good checkpoint as a persistent fallback until the next successful save.
             }
         } catch (_: Throwable) { /* retain the previous checkpoint; a later save can retry */ }
     }
