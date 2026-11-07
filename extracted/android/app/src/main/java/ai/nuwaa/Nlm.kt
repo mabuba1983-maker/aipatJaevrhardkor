@@ -42,14 +42,29 @@ class NMem {
         chars += s.length
     }
 
-    private fun rebuild() {
-        t.clear()
-        chars = 0
-        estimatedBytes = 0L
-        for (text in activeTexts) {
-            addToIndex(text)
-            estimatedBytes += 48L + text.length * 2L
+    /** Remove one archived record's exact n-gram contribution without rebuilding the whole working set. */
+    private fun removeFromIndex(text: String) {
+        val s = "\n" + text + "\n"
+        for (i in 1 until s.length) {
+            for (o in 1..8) {
+                if (i - o < 0) break
+                val key = s.substring(i - o, i)
+                val counts = t[key] ?: continue
+                val count = counts[s[i]] ?: continue
+                if (count <= 1) {
+                    counts.remove(s[i])
+                    estimatedBytes -= 40L
+                } else {
+                    counts[s[i]] = count - 1
+                }
+                if (counts.isEmpty()) {
+                    t.remove(key)
+                    estimatedBytes -= 72L + key.length * 2L
+                }
+            }
         }
+        chars = (chars - s.length).coerceAtLeast(0)
+        estimatedBytes = (estimatedBytes - 48L - text.length * 2L).coerceAtLeast(0L)
     }
 
     /** Add only to the RAM working set. The caller must archive the original text before calling this. */
@@ -64,14 +79,11 @@ class NMem {
     /** Evict oldest RAM records until the current device-derived budget is met. Evicted text remains in persistent storage. */
     @Synchronized fun enforceBudget() {
         val budget = try { budgetProvider?.invoke() ?: Long.MAX_VALUE } catch (_: Throwable) { 0L }
-        var changed = false
         while (activeTexts.isNotEmpty() && estimatedBytes > budget) {
-            activeTexts.removeFirst()
+            val oldest = activeTexts.removeFirst()
+            removeFromIndex(oldest)
             archivedFromRam++
-            changed = true
-            rebuild()
         }
-        if (activeTexts.isEmpty() && estimatedBytes > budget) rebuild()
     }
 
     @Synchronized fun activeRecordCount(): Int = activeTexts.size
