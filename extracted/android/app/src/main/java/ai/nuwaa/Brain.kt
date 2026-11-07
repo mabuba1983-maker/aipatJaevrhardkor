@@ -163,8 +163,16 @@ class Brain private constructor(private val ctx: Context) {
             } else {
                 val hit = try { kb.search(q, 1).firstOrNull()?.score ?: 0.0 } catch (e: Throwable) { 0.0 }
                 val plan = Effort.plan(ctx, q, hit)
+                val memories = try { storage.searchRelevant(q, 3).filter { it.score >= 0.18 } } catch (_: Throwable) { emptyList() }
+                val generationPrompt = if (memories.isEmpty()) q else buildString {
+                    append("سياق مسترجع من ذاكرة المستخدم، استخدمه فقط إذا كان مرتبطاً بالطلب ولا تخترع تفاصيل غير موجودة فيه:\\n")
+                    for ((index, item) in memories.withIndex()) {
+                        append("[ذكرى ").append(index + 1).append("] ").append(item.text).append("\\n")
+                    }
+                    append("طلب المستخدم الحالي:\\n").append(q)
+                }
                 val t0 = System.nanoTime()
-                val r = if (plan.tries > 1) s.replyThink(q, plan.maxChars, plan.tries) else s.reply(q, plan.maxChars, plan.temp)
+                val r = if (plan.tries > 1) s.replyThink(generationPrompt, plan.maxChars, plan.tries) else s.reply(generationPrompt, plan.maxChars, plan.temp)
                 historyAnswer = r.first
                 val made = maxOf(20, r.first.length) * plan.tries
                 val ms = (System.nanoTime() - t0) / 1_000_000.0 / made
