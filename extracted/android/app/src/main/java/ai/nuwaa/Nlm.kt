@@ -54,7 +54,7 @@ class NMem {
 
     /** Add only to the RAM working set. The caller must archive the original text before calling this. */
     @Synchronized fun add(text: String) {
-        if (text.isEmpty()) return
+        if (text.isEmpty() || activeTexts.contains(text)) return
         activeTexts.addLast(text)
         addToIndex(text)
         estimatedBytes += 48L + text.length * 2L
