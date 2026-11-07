@@ -13,6 +13,7 @@ class NuwaaStorage(private val dir: File) {
     private val data = File(dir, "records.jsonl")
     private val meta = File(dir, "index.json")
     private val lock = Any()
+    private val sessionsDir = File(dir, "sessions")
 
     init { if (!dir.exists()) dir.mkdirs() }
 
@@ -62,6 +63,40 @@ class NuwaaStorage(private val dir: File) {
         }
         rows.reverse()
         rows
+    }
+
+
+    /** Persist one turn of a conversation separately from model weights and global learning records. */
+    fun appendSessionMessage(convId: String, role: String, text: String) = synchronized(lock) {
+        if (text.isEmpty()) return@synchronized
+        if (role != "u" && role != "a") throw IllegalArgumentException("Unknown session role")
+        if (!sessionsDir.exists() && !sessionsDir.mkdirs()) throw IllegalStateException("تعذر إنشاء مجلد جلسات الذاكرة")
+        val file = sessionFile(convId)
+        val row = JSONObject().put("role", role).put("text", text).toString()
+        file.appendText(row + "\n", Charsets.UTF_8)
+    }
+
+    /** Replay a whole conversation sequentially from disk; only one JSONL record is held at a time. */
+    fun forEachSessionMessage(convId: String, action: (String, String) -> Unit): Boolean = synchronized(lock) {
+        val file = sessionFile(convId)
+        if (!file.exists() || file.length() == 0L) return@synchronized false
+        file.bufferedReader(Charsets.UTF_8).use { reader ->
+            while (true) {
+                val line = reader.readLine() ?: break
+                try {
+                    val row = JSONObject(line)
+                    action(row.optString("role"), row.optString("text"))
+                } catch (_: Throwable) { /* skip a damaged row and continue */ }
+            }
+        }
+        true
+    }
+
+    private fun sessionFile(convId: String): File {
+        val key = java.security.MessageDigest.getInstance("SHA-256")
+            .digest(convId.toByteArray(Charsets.UTF_8))
+            .joinToString("") { "%02x".format(it) }
+        return File(sessionsDir, "$key.jsonl")
     }
 
     /** Plain-text compatibility export for the existing developer bundle. */
