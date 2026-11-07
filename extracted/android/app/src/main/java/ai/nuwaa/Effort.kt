@@ -74,7 +74,7 @@ object Effort {
      * There is no fixed character/line ceiling; this estimate changes with heap pressure
      * and with the number of draft attempts retained in memory.
      */
-    private fun runtimeOutputChars(tries: Int): Int {
+    fun outputCharBudget(tries: Int = 1): Int {
         val rt = Runtime.getRuntime()
         val used = rt.totalMemory() - rt.freeMemory()
         val available = (rt.maxMemory() - used).coerceAtLeast(0L)
