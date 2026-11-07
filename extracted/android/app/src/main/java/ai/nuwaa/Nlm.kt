@@ -490,7 +490,7 @@ class NlmSession(private val m: Nlm, seed: Long) {
 
     /** Writes a reply to `user`, character by character, until the model ends the line. No gate, no canned phrase: it always answers.
      *  A no-repeat sampler keeps it from repeating itself or its earlier replies. Returns the reply and the probability the model gave each character. */
-    fun reply(user: String, maxChars: Int = 700, temp: Float = 0.7f, topk: Int = 8, minP: Float = 0.15f, commit: Boolean = true, memGain: Float = 0.6f, shortGain: Float = 0.6f): Pair<String, List<Float>> {
+    fun reply(user: String, maxChars: Int = 700, temp: Float = 0.7f, topk: Int = 8, minP: Float = 0.15f, commit: Boolean = true, memGain: Float = 0.6f, shortGain: Float = 0.6f, allowMultiline: Boolean = false): Pair<String, List<Float>> {
         val u = user.replace("\n", " ¶ ").trim()
         val nq = u.split(Regex("\\s+")).joinToString(" ")
         feed("س:" + u + "\nج:")
@@ -510,6 +510,7 @@ class NlmSession(private val m: Nlm, seed: Long) {
             val fileMode = outNow.contains("<<ملف:")           // code legitimately repeats itself: the anti-repetition rules are off inside a file reply
             val openBlock = outNow.lastIndexOf("<<ملف:") > outNow.lastIndexOf("<<نهاية>>")
             if (out.length < 3 || openBlock) pm[nl] = 0f     // a reply cannot end before it began, nor inside an open file block
+            if (out.endsWith("\n")) pm[nl] = 0f             // avoid endless blank lines in multiline mode
             run { var tot = 0f; for (j in 0 until m.v) tot += pm[j]; if (tot <= 0f) pm[nl] = 1f }       // nothing left to write: end the reply
             if (!fileMode && out.length >= ngPrev - 1) {
                 var any = false
@@ -542,7 +543,10 @@ class NlmSession(private val m: Nlm, seed: Long) {
             track.add(p[pick])
             val ch = m.chars[pick]
             feedChar(ch)
-            if (ch == "\n") break
+            if (ch == "\n") {
+                if (allowMultiline) { out.append('\n'); continue }
+                break
+            }
             out.append(ch)
             if (out.length >= ngSelf) selfG.add(out.substring(out.length - ngSelf))
             if (!fileMode && out.length >= 48 && out.substring(0, out.length - 24).contains(out.substring(out.length - 24))) { out.setLength(out.length - 24); break }   // a loop: cut it off and stop
