@@ -25,8 +25,19 @@ class NuwaaStorage(private val dir: File) {
         val next = count() + 1L
         val row = JSONObject().put("id", next).put("time", System.currentTimeMillis())
             .put("type", kind).put("text", text).toString()
-        data.appendText(row + "\n", Charsets.UTF_8)
-        meta.writeText(JSONObject().put("count", next).put("updated", System.currentTimeMillis()).toString(), Charsets.UTF_8)
+        // The archive is the source of truth: force the record to disk before Brain admits it to RAM.
+        java.io.FileOutputStream(data, true).use { out ->
+            out.write((row + "\n").toByteArray(Charsets.UTF_8))
+            out.fd.sync()
+        }
+        val metaTemp = File(dir, "index.json.tmp")
+        if (metaTemp.exists()) metaTemp.delete()
+        java.io.FileOutputStream(metaTemp).use { out ->
+            out.write(JSONObject().put("count", next).put("updated", System.currentTimeMillis()).toString().toByteArray(Charsets.UTF_8))
+            out.fd.sync()
+        }
+        if (meta.exists() && !meta.delete()) throw IllegalStateException("تعذر تحديث فهرس الذاكرة")
+        if (!metaTemp.renameTo(meta)) throw IllegalStateException("تعذر تثبيت فهرس الذاكرة")
     }
 
     fun count(): Long = synchronized(lock) {
