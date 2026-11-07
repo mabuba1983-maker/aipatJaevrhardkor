@@ -1,6 +1,7 @@
 package ai.nuwaa
 
 import org.json.JSONArray
+import java.io.Reader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -401,7 +402,7 @@ class Nlm private constructor(val e: Int, val h: Int, val chars: List<String>) {
 class NlmSession(private val m: Nlm, seed: Long) {
     private val s1 = FloatArray(m.h); private val s2 = FloatArray(m.h)
     private var p: FloatArray = FloatArray(m.v)
-    private val text = StringBuilder()
+    private val contextTail = StringBuilder(8)
     val short = NMem()
     private val rng = java.util.Random(seed)
     private val replies = ArrayList<Pair<String, String>>()      // (normalised question, reply) of this conversation
@@ -411,14 +412,34 @@ class NlmSession(private val m: Nlm, seed: Long) {
 
     init { feed("\n") }      // every pair in training follows a line end: a fresh conversation starts the same way
 
-    fun feed(s: String) {
-        for (ch in s) { p = m.stepChar(m.cid(ch), s1, s2); text.append(ch) }
+    fun feed(s: String) { for (ch in s) feedChar(ch) }
+
+    /** Stream a long source in bounded chunks while preserving the GRU state. Caller closes Reader. */
+    fun feed(reader: Reader, chunkChars: Int = 4096): Long {
+        require(chunkChars > 0) { "chunkChars must be positive" }
+        val buffer = CharArray(chunkChars)
+        var total = 0L
+        while (true) {
+            val n = reader.read(buffer, 0, buffer.size)
+            if (n < 0) break
+            for (i in 0 until n) feedChar(buffer[i])
+            total += n.toLong()
+        }
+        return total
     }
+
+    private fun feedChar(ch: Char) {
+        p = m.stepChar(m.cid(ch), s1, s2)
+        contextTail.append(ch)
+        if (contextTail.length > 8) contextTail.delete(0, contextTail.length - 8)
+    }
+
+    fun retainedContextChars(): Int = contextTail.length
 
     /** Mixes the neural distribution with the long-term and the short-term memory. Always returns a NEW array. */
     private fun mix(p0: FloatArray, gainLong: Float, gainShort: Float): FloatArray {
         var q0 = p0.copyOf()
-        val ctx = if (text.length > 8) text.substring(text.length - 8) else text.toString()
+        val ctx = contextTail.toString()
         val mems = listOf(Pair(m.long, gainLong), Pair(short, gainShort))
         for (item in mems) {
             if (item.second <= 0f) continue
@@ -511,7 +532,7 @@ class NlmSession(private val m: Nlm, seed: Long) {
             }
             track.add(p[pick])
             val ch = m.chars[pick]
-            p = m.stepChar(pick, s1, s2); text.append(ch)
+            feedChar(ch)
             if (ch == "\n") break
             out.append(ch)
             if (out.length >= ngSelf) selfG.add(out.substring(out.length - ngSelf))
@@ -560,9 +581,9 @@ class NlmSession(private val m: Nlm, seed: Long) {
         return nm.endsWith(".txt") || nm.endsWith(".md")
     }
 
-    private class Snap(val p: FloatArray, val a: FloatArray, val b: FloatArray, val text: String)
-    private fun snap() = Snap(p.copyOf(), s1.copyOf(), s2.copyOf(), text.toString())
-    private fun restore(x: Snap) { p = x.p.copyOf(); System.arraycopy(x.a, 0, s1, 0, s1.size); System.arraycopy(x.b, 0, s2, 0, s2.size); text.setLength(0); text.append(x.text) }
+    private class Snap(val p: FloatArray, val a: FloatArray, val b: FloatArray, val tail: String)
+    private fun snap() = Snap(p.copyOf(), s1.copyOf(), s2.copyOf(), contextTail.toString())
+    private fun restore(x: Snap) { p = x.p.copyOf(); System.arraycopy(x.a, 0, s1, 0, s1.size); System.arraycopy(x.b, 0, s2, 0, s2.size); contextTail.setLength(0); contextTail.append(x.tail) }
 
     /** Thinking mode: several separate attempts from the same starting point (cooler and warmer sampling); the one the model itself was most
      *  sure about wins, and only that one enters the conversation. Costs `tries` times the time of one reply, so Brain uses it for hard questions only. */
