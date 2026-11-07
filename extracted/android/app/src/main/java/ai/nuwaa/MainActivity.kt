@@ -970,20 +970,41 @@ class MainActivity : Activity() {
         if (studioBusy) return
         val code = editor.text.toString().trim()
         if (code.isEmpty()) { Toast.makeText(this, "اكتب الكود أولا", Toast.LENGTH_SHORT).show(); return }
+        if (!::studioPreview.isInitialized || studioPreview.width <= 0 || studioPreview.height <= 0) {
+            Toast.makeText(this, "شغّل المشروع أولا حتى أراجع لقطة فعلية.", Toast.LENGTH_SHORT).show()
+            return
+        }
         studioBusy = true
-        studioStatus.text = "نواة تراجع الكود والنص المستخرج من المعاينة..."
-        val prompt = "راجع مشروع HTML التالي مراجعة برمجية. لا تدّع أنك رأيت الصورة أو الألوان؛ لديك الكود والنص الذي استطعت الصفحة عرضه فقط. " +
-            "اذكر الأخطاء المؤكدة أولا، ثم التحسينات المقترحة، ولا تقل إن المشروع يعمل إذا لم تتأكد.\n\n" +
-            "كود المشروع:\n" + code.take(10000) +
-            "\n\nالنص المستخرج من صفحة المعاينة:\n" + lastPreviewText.take(2500)
-        val c = conv ?: store.create().also { conv = it }
-        thread {
-            val answer = try { brain.answer(prompt, c.id).text } catch (e: Throwable) {
-                "تعذر إكمال المراجعة: " + (e.message ?: e.javaClass.simpleName)
-            }
-            runOnUiThread {
+        studioStatus.text = "ألتقط المعاينة وأحلل الصورة محليا..."
+        studioPreview.post {
+            val bmp = try {
+                Bitmap.createBitmap(studioPreview.width, studioPreview.height, Bitmap.Config.ARGB_8888).also {
+                    studioPreview.draw(Canvas(it))
+                }
+            } catch (e: Throwable) {
                 studioBusy = false
-                studioStatus.text = "مراجعة نواة (اعتمادا على الكود والنص، لا على فهم الصورة):\n" + answer.take(1800)
+                studioStatus.text = "تعذر التقاط المعاينة: " + (e.message ?: e.javaClass.simpleName)
+                return@post
+            }
+            studioShot.setImageBitmap(bmp)
+            studioShot.visibility = View.VISIBLE
+            visionEngine.analyze(bmp) { visual ->
+                if (!bmp.isRecycled) bmp.recycle()
+                val prompt = "راجع مشروع HTML التالي مراجعة برمجية وبصرية. لديك الكود، النص المستخرج، وملاحظات محلل الصورة المحلي. " +
+                    "لا تدّع رؤية تفاصيل لم يحددها المحلل، ولا تخترع ألوانا أو مواضع. اذكر ما تؤكده الأدلة ثم ما يحتاج فحصا بشريا.\n\n" +
+                    "كود المشروع:\n" + code.take(10000) +
+                    "\n\nالنص المستخرج من المعاينة:\n" + lastPreviewText.take(2500) +
+                    "\n\nملاحظات الصورة:\n" + visual.take(1600)
+                val c = conv ?: store.create().also { conv = it }
+                thread {
+                    val answer = try { brain.answer(prompt, c.id).text } catch (e: Throwable) {
+                        "تعذر إكمال المراجعة: " + (e.message ?: e.javaClass.simpleName)
+                    }
+                    runOnUiThread {
+                        studioBusy = false
+                        studioStatus.text = "مراجعة نواة بالكود والنص ومؤشرات الصورة المحلية:\n" + answer.take(1800)
+                    }
+                }
             }
         }
     }
