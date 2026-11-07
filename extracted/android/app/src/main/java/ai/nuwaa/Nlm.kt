@@ -33,9 +33,9 @@ class NMem {
                 if (m == null) {
                     m = HashMap()
                     t[key] = m
-                    estimatedBytes += 72L + key.length * 2L
+                    estimatedBytes += 112L + key.length * 2L
                 }
-                if (!m.containsKey(s[i])) estimatedBytes += 40L
+                if (!m.containsKey(s[i])) estimatedBytes += 64L
                 m[s[i]] = (m[s[i]] ?: 0) + 1
             }
         }
@@ -53,13 +53,13 @@ class NMem {
                 val count = counts[s[i]] ?: continue
                 if (count <= 1) {
                     counts.remove(s[i])
-                    estimatedBytes -= 40L
+                    estimatedBytes -= 64L
                 } else {
                     counts[s[i]] = count - 1
                 }
                 if (counts.isEmpty()) {
                     t.remove(key)
-                    estimatedBytes -= 72L + key.length * 2L
+                    estimatedBytes -= 112L + key.length * 2L
                 }
             }
         }
@@ -69,7 +69,7 @@ class NMem {
 
     /** Add only to the RAM working set. The caller must archive the original text before calling this. */
     @Synchronized fun add(text: String) {
-        if (text.isEmpty() || activeTexts.contains(text)) return
+        if (text.isEmpty()) return
         activeTexts.addLast(text)
         addToIndex(text)
         estimatedBytes += 48L + text.length * 2L
