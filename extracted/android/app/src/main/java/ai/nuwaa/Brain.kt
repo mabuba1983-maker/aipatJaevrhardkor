@@ -190,11 +190,11 @@ class Brain private constructor(private val ctx: Context) {
                 val plan = Effort.plan(ctx, q, hit)
                 val memories = try { storage.searchRelevant(q, 3).filter { it.score >= 0.18 } } catch (_: Throwable) { emptyList() }
                 val generationPrompt = if (memories.isEmpty()) q else buildString {
-                    append("سياق مسترجع من ذاكرة المستخدم، استخدمه فقط إذا كان مرتبطاً بالطلب ولا تخترع تفاصيل غير موجودة فيه:\\n")
+                    append("سياق مسترجع من ذاكرة المستخدم، استخدمه فقط إذا كان مرتبطاً بالطلب ولا تخترع تفاصيل غير موجودة فيه:\n")
                     for ((index, item) in memories.withIndex()) {
-                        append("[ذكرى ").append(index + 1).append("] ").append(item.text).append("\\n")
+                        append("[ذكرى ").append(index + 1).append("] ").append(item.text).append("\n")
                     }
-                    append("طلب المستخدم الحالي:\\n").append(q)
+                    append("طلب المستخدم الحالي:\n").append(q)
                 }
                 val t0 = System.nanoTime()
                 val r = if (plan.tries > 1) s.replyThink(generationPrompt, plan.maxChars, plan.tries) else s.reply(generationPrompt, plan.maxChars, plan.temp)
