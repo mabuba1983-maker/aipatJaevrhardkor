@@ -472,7 +472,7 @@ class Nlm private constructor(val e: Int, val h: Int, val chars: List<String>) {
 
         val after = bpc(validationIds)
         val rehearsalAfter = if (rehearsalIds != null) bpc(rehearsalIds) else 0f
-        if (after > before || (rehearsalIds != null && rehearsalAfter > rehearsalBefore * 1.03f)) {
+        if (after >= before || (rehearsalIds != null && rehearsalAfter > rehearsalBefore * 1.03f)) {
             restoreTrainingSnapshot(checkpoint)
             return Pair(before, before)
         }
