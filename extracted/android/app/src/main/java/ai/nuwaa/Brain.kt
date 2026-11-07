@@ -200,7 +200,12 @@ class Brain private constructor(private val ctx: Context) {
         if (m != null) {
             // the MODEL builds the file: it chooses the name and writes the content (thinking mode: several attempts, the surest one wins)
             val project = Regex("مشروع|مجلد|ملفات|عدة|فولدر").containsMatchIn(q)
-            val written = synchronized(lock) { sessionFor(m, convId).replyThink(q, if (project) 1500 else 900, if (project) 5 else 4) { FileTools.allSane(it) }.first }
+            val table = Regex("جدول|csv|بيانات|صفوف|أعمدة").containsMatchIn(q)
+            val outputLimit = when { project -> 2600; table -> 2400; else -> 1200 }
+            val attempts = when { project -> 3; table -> 2; else -> 3 }
+            val written = synchronized(lock) {
+                sessionFor(m, convId).replyThink(q, outputLimit, attempts) { FileTools.allSane(it) }.first
+            }
             val own = FileTools.fromModel(written)
             if (own != null) return Pair(own, "")
             val code = if (written.contains("```")) written.substringAfter("```").substringAfter('\n').substringBefore("```").trim('\n') else ""
