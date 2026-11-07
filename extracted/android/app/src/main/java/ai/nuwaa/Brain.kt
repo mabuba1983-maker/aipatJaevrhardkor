@@ -69,7 +69,7 @@ class Brain private constructor(private val ctx: Context) {
             if (base.size * 3.0 / 1e6 > heapMb * 0.85) { modelStatus = "النموذج: تخطيته لأن ذاكرة هذا الجهاز للتطبيق ${heapMb.toInt()} MB فقط"; return }
             val m = try { if (nlmUserFile.exists()) Nlm.load(nlmUserFile.readBytes()) else Nlm.load(base) } catch (e: Exception) { Nlm.load(base) }     // a damaged user file never blocks the start
             // Load only a bounded recent window; the complete archive stays on disk.
-            for (line in storage.lastTexts(2000)) if (line.isNotBlank()) m.long.add(line)
+            for (line in storage.lastTexts(300)) if (line.isNotBlank()) m.long.add(if (line.length > 512) line.takeLast(512) else line)
             nlm = m
             modelStatus = "نموذج نواة (GRU): " + m.paramCount() + " معامل · محفوظ في التخزين " + storage.count() + " سجل"
         } catch (e: java.io.FileNotFoundException) {
@@ -210,7 +210,7 @@ class Brain private constructor(private val ctx: Context) {
     /** The self-development button: re-read everything heard, train on it, keep the result only if it got better. */
     fun develop(): String {
         val m = nlm ?: return "النموذج غير محمّل."
-        val texts = storage.lastTexts(400)
+        val texts = storage.lastTexts(400).map { if (it.length > 2048) it.takeLast(2048) else it }
         if (texts.size < 3) return "ما فيه بيانات كافية في التخزين للتدريب بعد. أضف أمثلة أكثر ثم أعد المحاولة."
         val r = synchronized(lock) { m.develop(texts, 2, 3e-4f, rehearsal) }
         saveNlm()
