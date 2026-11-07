@@ -9,6 +9,8 @@ import java.io.RandomAccessFile
  * Append-only disk storage. Complete history stays on disk; only bounded tails are read into RAM.
  * There is no arbitrary record-count cap. Real limits are available device storage and filesystem limits.
  */
+data class MemoryMatch(val text: String, val score: Double, val type: String)
+
 class NuwaaStorage(private val dir: File) {
     private val data = File(dir, "records.jsonl")
     private val meta = File(dir, "index.json")
@@ -36,6 +38,47 @@ class NuwaaStorage(private val dir: File) {
                 n
             } else 0L
         } catch (_: Throwable) { 0L }
+    }
+
+    /** Search the append-only archive one record at a time. The archive is never loaded into RAM as a whole.
+     *  Only the best few matches are retained as a bounded working set; older records remain searchable on disk. */
+    fun searchRelevant(query: String, limit: Int = 4): List<MemoryMatch> = synchronized(lock) {
+        if (limit <= 0 || !data.exists() || query.isBlank()) return@synchronized emptyList()
+        fun terms(value: String): Set<String> {
+            val normalized = value.lowercase(java.util.Locale.ROOT)
+                .replace(Regex("[\\u064B-\\u065F\\u0670]"), "")
+                .replace(Regex("[إأآا]"), "ا").replace("ى", "ي").replace("ة", "ه")
+            return Regex("[\\p{L}\\p{N}_+#.-]{2,}").findAll(normalized)
+                .map { it.value }.filter { it !in setOf("من", "في", "على", "عن", "الى", "هذا", "هذه", "ذلك", "انا", "انت", "هو", "هي", "the", "and", "for", "with", "that", "this") }
+                .toSet()
+        }
+        val wanted = terms(query)
+        if (wanted.isEmpty()) return@synchronized emptyList()
+        val best = ArrayList<MemoryMatch>(limit)
+        data.bufferedReader(Charsets.UTF_8, 8192).use { reader ->
+            while (true) {
+                val line = reader.readLine() ?: break
+                try {
+                    val row = JSONObject(line)
+                    val text = row.optString("text")
+                    if (text.isBlank()) continue
+                    val found = terms(text)
+                    val overlap = wanted.count { it in found }
+                    if (overlap == 0) continue
+                    val coverage = overlap.toDouble() / wanted.size.toDouble()
+                    val precision = overlap.toDouble() / found.size.coerceAtLeast(1).toDouble()
+                    val phraseBonus = if (query.length >= 8 && text.contains(query, ignoreCase = true)) 1.0 else 0.0
+                    val score = coverage * 0.75 + precision * 0.25 + phraseBonus
+                    if (score < 0.12) continue
+                    val item = MemoryMatch(text.take(1200), score, row.optString("type"))
+                    if (best.size < limit || score > best.minOf { it.score }) {
+                        if (best.size == limit) best.removeAt(best.indices.minBy { best[it].score })
+                        best.add(item)
+                    }
+                } catch (_: Throwable) { /* skip one damaged record; keep scanning the archive */ }
+            }
+        }
+        best.sortedByDescending { it.score }
     }
 
     /** Read only the latest N entries, without loading the full archive. */
