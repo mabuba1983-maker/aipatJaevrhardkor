@@ -283,8 +283,8 @@ class Brain private constructor(private val ctx: Context) {
             } else ""
             val projectPrompt = if (sessionRequirements.isEmpty() && projectMemories.isEmpty() && codeExamples.isEmpty()) q else buildString {
                 if (sessionRequirements.isNotEmpty()) {
-                    append("متطلبات المحادثة الحالية، ابدأ بأول طلب ولا تتجاهل شروطه، ثم طبّق أحدث التعديلات اللاحقة:\\n")
-                    append(sessionRequirements).append("\\n")
+                    append("متطلبات المحادثة الحالية، ابدأ بأول طلب ولا تتجاهل شروطه، ثم طبّق أحدث التعديلات اللاحقة:\n")
+                    append(sessionRequirements).append("\n")
                 }
                 if (projectMemories.isNotEmpty()) {
                     append("متطلبات وسياق سابق استُرجع من أرشيف المستخدم. اعتبرها قيوداً للمشروع فقط إذا كانت تخص المشروع الحالي، ولا تستبدل بها طلبه الحالي:\n")
