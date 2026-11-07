@@ -84,8 +84,9 @@ class Brain private constructor(private val ctx: Context) {
                 m.long.add(if (line.length > 512) line.takeLast(512) else line)
             }
             nlm = m
-            modelStatus = "نموذج نواة (GRU): " + m.paramCount() + " معامل · ذاكرة نشطة " + m.long.activeRecordCount() +
-                " سجل · الأرشيف " + storage.count() + " سجل"
+            modelStatus = "نموذج نواة (GRU): " + m.paramCount() + " معامل · ذاكرة RAM نشطة " + m.long.activeRecordCount() +
+                " سجل (~" + (m.long.estimatedMemoryBytes() / 1024L) + " KB) · مرحّل من RAM " + m.long.archivedFromRam +
+                " · أرشيف التخزين " + storage.count() + " سجل"
         } catch (e: java.io.FileNotFoundException) {
             modelStatus = "النموذج غير موجود في التطبيق (nlm2.bin)"
         } catch (e: Throwable) {
