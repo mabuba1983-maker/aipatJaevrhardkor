@@ -21,7 +21,6 @@ object Effort {
     @Volatile var msPerChar = 0.0
     private val hardWords = listOf("اشرح", "شرح", "لماذا", "ليش", "قارن", "الفرق", "اكتب دالة", "اكتب لي", "اكتب كود", "برنامج", "خوارزمية", "حلل", "سبب", "صحح", "اصلح", "مثال", "كيف")
     private val codeWords = listOf("كود", "دال", "برنام", "مشروع", "سكربت", "خوارزم", "راجع", "صحح", "اصلح", "ملف")
-    private val ramSoftLimit = 1_200_000_000L          // the app should stay under about 1.2 GB; real use is far below (model + a file in memory)
 
     /** 0 easy, 1 normal, 2 hard. kbScore = how close the message is to a verified example (known things are easy). */
     fun difficulty(q: String, kbScore: Double): Int {
@@ -64,10 +63,27 @@ object Effort {
         try {
             val rt = Runtime.getRuntime()
             val used = rt.totalMemory() - rt.freeMemory()
-            val limit = minOf(rt.maxMemory(), ramSoftLimit)
+            val limit = rt.maxMemory()
             if (used > limit * 0.85) lower(0, "الذاكرة ممتلئة") else if (used > limit * 0.65) lower(1, "الذاكرة مشغولة")
         } catch (e: Throwable) { }
         return Pair(cap, why)
+    }
+
+    /**
+     * Derive the safety ceiling from the heap this process actually has available now.
+     * There is no fixed character/line ceiling; this estimate changes with heap pressure
+     * and with the number of draft attempts retained in memory.
+     */
+    private fun runtimeOutputChars(tries: Int): Int {
+        val rt = Runtime.getRuntime()
+        val used = rt.totalMemory() - rt.freeMemory()
+        val available = (rt.maxMemory() - used).coerceAtLeast(0L)
+        // Keep 35% of currently available heap free for the model, Android and UI.
+        // Account for StringBuilder, probability trace, sampler arrays and retained drafts.
+        val usable = (available * 0.65).toLong()
+        val estimatedBytesPerCharPerDraft = 24L
+        val safe = usable / (estimatedBytesPerCharPerDraft * maxOf(1, tries))
+        return safe.coerceIn(1L, Int.MAX_VALUE.toLong()).toInt()
     }
 
     fun plan(ctx: Context, q: String, kbScore: Double): Plan {
@@ -76,17 +92,13 @@ object Effort {
         val lvl = minOf(want, dev.first)
         val capped = lvl < want
         val note = if (capped) "وضع التوفير (" + dev.second + ")" else ""
-        val per = msPerChar
-        fun chars(base: Int, budgetMs: Double): Int = if (per <= 0.0) base else minOf(base, maxOf(60, (budgetMs / per).toInt()))
+        val longOutput = q.length >= 500 || Regex("طويل|بالتفصيل|كامل|جدول|مشروع|عدة ملفات|صفحات|اسطر|سطور").containsMatchIn(Nlp.norm(q))
         return when (lvl) {
-            0 -> Plan(Level.FAST, chars(180, 8000.0), 0.55f, 1, note)
-            1 -> Plan(Level.NORMAL, chars(450, 25000.0), 0.7f, 1, note)
+            0 -> Plan(Level.FAST, runtimeOutputChars(1), 0.55f, 1, note)
+            1 -> Plan(Level.NORMAL, runtimeOutputChars(1), 0.7f, 1, note)
             else -> {
-                // Long writing/code requests get more room; measured device speed still caps the work.
-                val longOutput = q.length >= 500 || Regex("طويل|بالتفصيل|كامل|جدول|مشروع|عدة ملفات|صفحات").containsMatchIn(Nlp.norm(q))
-                val c = chars(if (longOutput) 1800 else 900, if (longOutput) 90000.0 else 45000.0)
-                val tries = if (per > 0.0 && per * c * 4 > 180000.0) 2 else 4
-                Plan(Level.THINK, c, 0.7f, tries, note)
+                val tries = if (longOutput) 2 else 4
+                Plan(Level.THINK, runtimeOutputChars(tries), 0.7f, tries, note)
             }
         }
     }
