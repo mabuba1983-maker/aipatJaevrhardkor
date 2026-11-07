@@ -122,8 +122,24 @@ class Brain private constructor(private val ctx: Context) {
     } catch (e: Exception) { emptyList() }
 
     // ---------------------------------------------------------------- the conversation
+    private fun replaySessionMessage(s: NlmSession, role: String, chunk: String, start: Boolean, end: Boolean) {
+        if (start) s.feed(if (role == "u") "س:" else "ج:")
+        s.feed(chunk)
+        if (end) s.feed("\n")
+    }
+
+    private fun persistSessionMessage(convId: String, role: String, text: String) {
+        val normalized = if (role == "u") text.replace("\n", " ¶ ").trim() else text.replace("\n", "¶").trim()
+        try { storage.appendSessionMessage(convId, role, normalized) } catch (_: Throwable) { /* conversation still works if disk is unavailable */ }
+    }
+
     private fun sessionFor(m: Nlm, convId: String): NlmSession {
-        val s = sessions.remove(convId) ?: NlmSession(m, System.nanoTime())
+        val existing = sessions.remove(convId)
+        val s = existing ?: NlmSession(m, System.nanoTime()).also { fresh ->
+            storage.forEachSessionChunk(convId) { role, chunk, start, end ->
+                replaySessionMessage(fresh, role, chunk, start, end)
+            }
+        }
         sessions[convId] = s
         while (sessions.size > 8) { val k = sessions.keys.first(); sessions.remove(k) }
         return s
@@ -134,18 +150,22 @@ class Brain private constructor(private val ctx: Context) {
         val m = nlm ?: return Answer("النموذج غير محمّل: " + modelStatus, "none")
         return synchronized(lock) {
             val s = sessionFor(m, convId)
-            val math = Skills.tryMath(q)                  // exact arithmetic first: a character model must never guess at sums
-            if (!Scope.inScope(q)) {
-                s.feed("س:" + q.replace("\n", " ¶ ").trim() + "\nج:" + Scope.REFUSAL.replace("\n", "¶") + "\n")
-                Answer(Scope.REFUSAL, "scope")
+            val math = Skills.tryMath(q)
+            var historyAnswer = ""
+            val result = if (!Scope.inScope(q)) {
+                historyAnswer = Scope.REFUSAL
+                s.feed("س:" + q.replace("\n", " ¶ ").trim() + "\nج:" + historyAnswer.replace("\n", "¶") + "\n")
+                Answer(historyAnswer, "scope")
             } else if (math != null) {
-                s.feed("س:" + q.replace("\n", " ¶ ").trim() + "\nج:" + math.replace("\n", "¶") + "\n")      // the conversation still remembers it
-                Answer(math, "math")
+                historyAnswer = math
+                s.feed("س:" + q.replace("\n", " ¶ ").trim() + "\nج:" + historyAnswer.replace("\n", "¶") + "\n")
+                Answer(historyAnswer, "math")
             } else {
-                val hit = try { kb.search(q, 1).firstOrNull()?.score ?: 0.0 } catch (e: Throwable) { 0.0 }      // only to judge how hard the question is, never to answer it
+                val hit = try { kb.search(q, 1).firstOrNull()?.score ?: 0.0 } catch (e: Throwable) { 0.0 }
                 val plan = Effort.plan(ctx, q, hit)
                 val t0 = System.nanoTime()
                 val r = if (plan.tries > 1) s.replyThink(q, plan.maxChars, plan.tries) else s.reply(q, plan.maxChars, plan.temp)
+                historyAnswer = r.first
                 val made = maxOf(20, r.first.length) * plan.tries
                 val ms = (System.nanoTime() - t0) / 1_000_000.0 / made
                 Effort.msPerChar = if (Effort.msPerChar <= 0.0) ms else 0.7 * Effort.msPerChar + 0.3 * ms
@@ -155,6 +175,9 @@ class Brain private constructor(private val ctx: Context) {
                 else if (plan.note.isNotEmpty()) foot = "\n\n🔋 " + plan.note + ": رديت بإيجاز."
                 Answer(FileTools.display(r.first) + foot, "lm")
             }
+            persistSessionMessage(convId, "u", q)
+            persistSessionMessage(convId, "a", historyAnswer)
+            result
         }
     }
 
@@ -190,19 +213,25 @@ class Brain private constructor(private val ctx: Context) {
     /** The conversation ended: its short-term memory is gone. (What was said is already in the long-term memory.) */
     fun endConversation(convId: String) { synchronized(lock) { sessions.remove(convId) } }
 
-    /** Opening an old conversation: its short-term memory is rebuilt from the end of its own transcript. */
+    /** Rebuild the full conversation state. New archives replay from disk in bounded chunks; legacy chats stream every stored message. */
     fun resume(convId: String, msgs: List<Msg>) {
         val m = nlm ?: return
         synchronized(lock) {
-            if (sessions.containsKey(convId)) return                       // it already has its short-term memory
+            if (sessions.containsKey(convId)) return
             val s = NlmSession(m, System.nanoTime())
-            val sb = StringBuilder()
-            for (x in msgs) {
-                if (x.role == "u") sb.append("س:").append(x.text.replace("\n", " ¶ ").trim()).append("\n")
-                else sb.append("ج:").append(x.text.replace("\n", "¶").trim()).append("\n")
+            val archived = storage.forEachSessionChunk(convId) { role, chunk, start, end ->
+                replaySessionMessage(s, role, chunk, start, end)
             }
-            s.feed(if (sb.length > 1500) sb.substring(sb.length - 1500) else sb.toString())
-            sessions.remove(convId); sessions[convId] = s
+            if (!archived) {
+                for (x in msgs) {
+                    val role = if (x.role == "u") "u" else "a"
+                    persistSessionMessage(convId, role, x.text)
+                    val normalized = if (role == "u") x.text.replace("\n", " ¶ ").trim() else x.text.replace("\n", "¶").trim()
+                    replaySessionMessage(s, role, normalized, true, true)
+                }
+            }
+            sessions[convId] = s
+            while (sessions.size > 8) sessions.remove(sessions.keys.first())
         }
     }
 
