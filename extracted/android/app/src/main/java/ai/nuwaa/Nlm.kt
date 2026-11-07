@@ -438,7 +438,7 @@ class Nlm private constructor(val e: Int, val h: Int, val chars: List<String>) {
         fun appendBounded(target: StringBuilder, value: String, budget: Int) {
             val remaining = budget - target.length
             if (remaining <= 0 || value.isEmpty()) return
-            val record = "س:" + value + "\n"
+            val record = if (value.startsWith("س:") && value.contains("\nج:")) value.trimEnd() + "\n" else "س:" + value + "\n"
             if (record.length <= remaining) target.append(record)
             else if (remaining >= 48) {
                 val head = remaining / 2
