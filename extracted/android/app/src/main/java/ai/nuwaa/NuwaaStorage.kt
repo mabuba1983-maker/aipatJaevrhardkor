@@ -94,6 +94,39 @@ class NuwaaStorage(private val dir: File) {
         visited
     }
 
+    /** Restore the newest archive records up to a byte budget. Reads backward and never scans the entire history. */
+    fun forEachRecentText(maxTextBytes: Long, action: (String) -> Unit): Long = synchronized(lock) {
+        if (maxTextBytes <= 0L || !data.exists()) return@synchronized 0L
+        val newestFirst = ArrayList<String>()
+        var usedBytes = 0L
+        RandomAccessFile(data, "r").use { file ->
+            var pointer = file.length() - 1L
+            var line = ByteArrayOutputStream()
+            fun consumeLine() {
+                if (line.size() == 0) return
+                try {
+                    val bytes = line.toByteArray().reversedArray()
+                    val text = JSONObject(String(bytes, Charsets.UTF_8)).optString("text")
+                    if (text.isNotBlank() && usedBytes < maxTextBytes) {
+                        val selected = if (text.length > 512) text.takeLast(512) else text
+                        newestFirst.add(selected)
+                        usedBytes += selected.length.toLong() * 2L
+                    }
+                } catch (_: Throwable) { /* ignore one damaged record */ }
+                line = ByteArrayOutputStream()
+            }
+            while (pointer >= 0L && usedBytes < maxTextBytes) {
+                file.seek(pointer)
+                val value = file.read()
+                if (value == 10) consumeLine() else if (value >= 0) line.write(value)
+                pointer--
+            }
+            if (usedBytes < maxTextBytes) consumeLine()
+        }
+        for (text in newestFirst) action(text)
+        newestFirst.size.toLong()
+    }
+
     /** Read only the latest N entries, without loading the full archive. */
     fun lastTexts(limit: Int): List<String> = synchronized(lock) {
         if (limit <= 0 || !data.exists()) return@synchronized emptyList()
