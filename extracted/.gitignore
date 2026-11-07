@@ -1,0 +1,8 @@
+__pycache__/
+memory.db
+knowledge/
+android/.gradle/
+android/app/build/
+
+mind_press.json
+learned.old/

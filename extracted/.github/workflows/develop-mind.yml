@@ -1,0 +1,36 @@
+name: Mind (study / develop) - button only
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "button = ONE button (teaches the basics first if needed, then develops) | study | develop"
+        default: "button"
+      approve:
+        description: "Accept automatically if every check passes AND it is strictly better"
+        type: boolean
+        default: true
+permissions:
+  contents: write
+jobs:
+  mind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Safety tests first
+        run: pip install numpy && python -m unittest tests.test_mind tests.test_validator -q
+      - name: Record the button press (single use, expires)
+        run: python -m nuwaa.mind.develop press
+      - name: Run
+        run: |
+          ARGS=""
+          if [ "${{ inputs.approve }}" = "true" ]; then ARGS="--approve"; fi
+          python -m nuwaa.mind.develop ${{ inputs.mode }} $ARGS
+      - name: Save the decision and the learned data
+        run: |
+          git config user.name nuwaa-bot && git config user.email nuwaa-bot@users.noreply.github.com
+          git add learned mind_log.jsonl versions_mind weights 2>/dev/null || true
+          git commit -m "mind ${{ inputs.mode }}" || true
+          git push || true

@@ -1,0 +1,71 @@
+# -*- coding: utf-8 -*-
+"""Advanced programming seeds (written by Claude). DS=(question variants, idea, [steps], code) data structures built from scratch.
+PATTERNS=(name, Arabic explanation, code) OOP design patterns. TESTING=(question variants, Arabic explanation, code) unit testing with unittest.
+Every code example is run by tools/gen_adv.py; its real output is appended."""
+
+DS = [
+ (["اكتب Stack من الصفر", "كيف ابني مكدسا Stack بنفسي"],
+  "المكدس بنية LIFO: آخر ما يدخل أول ما يخرج. نبنيه فوق قائمة بايثون باستعمال append وpop من النهاية فقط.",
+  ["push تضيف في النهاية", "pop تحذف من النهاية وتعيد القيمة", "peek تعيد الأخير بلا حذف"],
+  "class Stack:\n    def __init__(self):\n        self.items = []\n\n    def push(self, x):\n        self.items.append(x)\n\n    def pop(self):\n        return self.items.pop()\n\n    def peek(self):\n        return self.items[-1]\n\n    def is_empty(self):\n        return len(self.items) == 0\n\ns = Stack()\ns.push(1)\ns.push(2)\ns.push(3)\nprint(s.pop())\nprint(s.peek())\nprint(s.is_empty())"),
+ (["اكتب Queue من الصفر", "كيف ابني طابورا Queue بنفسي"],
+  "الطابور بنية FIFO: أول ما يدخل أول ما يخرج. نستعمل deque لأن الحذف من البداية فيها سريع، بعكس القائمة العادية.",
+  ["enqueue تضيف في النهاية", "dequeue تحذف من البداية وتعيد القيمة"],
+  "from collections import deque\n\nclass Queue:\n    def __init__(self):\n        self.items = deque()\n\n    def enqueue(self, x):\n        self.items.append(x)\n\n    def dequeue(self):\n        return self.items.popleft()\n\n    def is_empty(self):\n        return len(self.items) == 0\n\nq = Queue()\nq.enqueue(1)\nq.enqueue(2)\nq.enqueue(3)\nprint(q.dequeue())\nprint(q.dequeue())\nprint(list(q.items))"),
+ (["اكتب قائمة مرتبطة Linked List", "كيف ابني Linked List بنفسي"],
+  "القائمة المرتبطة سلسلة عقد، كل عقدة فيها قيمة ومؤشر للتي بعدها. الإضافة في البداية سريعة جدا بعكس القائمة العادية.",
+  ["كل Node فيه value و next", "head يشير لأول عقدة", "الإضافة تجعل العقدة الجديدة head وتربطها بالقديم"],
+  "class Node:\n    def __init__(self, value):\n        self.value = value\n        self.next = None\n\nclass LinkedList:\n    def __init__(self):\n        self.head = None\n\n    def push_front(self, value):\n        node = Node(value)\n        node.next = self.head\n        self.head = node\n\n    def to_list(self):\n        out = []\n        node = self.head\n        while node:\n            out.append(node.value)\n            node = node.next\n        return out\n\nl = LinkedList()\nl.push_front(3)\nl.push_front(2)\nl.push_front(1)\nprint(l.to_list())"),
+ (["اكتب شجرة بحث ثنائية Binary Search Tree", "كيف ابني BST بنفسي"],
+  "شجرة البحث الثنائية: كل عقدة قيمتها أكبر من كل ما في شجرتها اليسرى وأصغر من كل ما في شجرتها اليمنى، فالبحث فيها سريع.",
+  ["insert تقارن وتنزل يسارا أو يمينا حتى تجد مكانا فارغا", "inorder تمر يسار ثم العقدة ثم يمين فتعطي القيم مرتبة"],
+  "class Node:\n    def __init__(self, v):\n        self.v = v\n        self.left = None\n        self.right = None\n\nclass BST:\n    def __init__(self):\n        self.root = None\n\n    def insert(self, v):\n        self.root = self._insert(self.root, v)\n\n    def _insert(self, node, v):\n        if node is None:\n            return Node(v)\n        if v < node.v:\n            node.left = self._insert(node.left, v)\n        else:\n            node.right = self._insert(node.right, v)\n        return node\n\n    def inorder(self):\n        out = []\n        def walk(node):\n            if node:\n                walk(node.left)\n                out.append(node.v)\n                walk(node.right)\n        walk(self.root)\n        return out\n\nt = BST()\nfor x in [5, 3, 8, 1, 4, 7, 9]:\n    t.insert(x)\nprint(t.inorder())"),
+ (["اكتب كومة Min-Heap من الصفر", "كيف ابني min-heap بنفسي بدون heapq"],
+  "المكدس الأدنى شجرة ثنائية مكتملة تقريبا: كل عقدة أصغر من أبنائها. نمثلها بقائمة: ابن العقدة i في 2i+1 و2i+2، وأبوه في (i-1)//2.",
+  ["push تضيف في النهاية ثم تصعدها (sift up) ما دامت أصغر من أبيها", "pop تأخذ الجذر وتضع آخر عنصر مكانه ثم تنزله (sift down)"],
+  "class MinHeap:\n    def __init__(self):\n        self.a = []\n\n    def push(self, x):\n        self.a.append(x)\n        i = len(self.a) - 1\n        while i > 0 and self.a[(i - 1) // 2] > self.a[i]:\n            p = (i - 1) // 2\n            self.a[i], self.a[p] = self.a[p], self.a[i]\n            i = p\n\n    def pop(self):\n        top = self.a[0]\n        last = self.a.pop()\n        if self.a:\n            self.a[0] = last\n            i = 0\n            while True:\n                l, r, s = 2 * i + 1, 2 * i + 2, i\n                if l < len(self.a) and self.a[l] < self.a[s]:\n                    s = l\n                if r < len(self.a) and self.a[r] < self.a[s]:\n                    s = r\n                if s == i:\n                    break\n                self.a[i], self.a[s] = self.a[s], self.a[i]\n                i = s\n        return top\n\nh = MinHeap()\nfor x in [5, 2, 8, 1, 9, 3]:\n    h.push(x)\nprint([h.pop() for _ in range(6)])"),
+ (["اكتب جدول هاش Hash Table من الصفر", "كيف ابني hash table بنفسي"],
+  "جدول الهاش يخزن أزواجا في دلاء (buckets) حسب باقي قسمة هاش المفتاح على عدد الدلاء، ويحل تصادم المفاتيح بقائمة داخل كل دلو.",
+  ["hash(key) % size يحدد الدلو", "البحث يمر على عناصر نفس الدلو فقط فيكون سريعا في المتوسط"],
+  "class HashTable:\n    def __init__(self, size=8):\n        self.size = size\n        self.buckets = [[] for _ in range(size)]\n\n    def _idx(self, key):\n        return hash(key) % self.size\n\n    def set(self, key, value):\n        b = self.buckets[self._idx(key)]\n        for i, (k, v) in enumerate(b):\n            if k == key:\n                b[i] = (key, value)\n                return\n        b.append((key, value))\n\n    def get(self, key):\n        for k, v in self.buckets[self._idx(key)]:\n            if k == key:\n                return v\n        raise KeyError(key)\n\nh = HashTable()\nh.set(\"a\", 1)\nh.set(\"b\", 2)\nh.set(\"a\", 99)\nprint(h.get(\"a\"), h.get(\"b\"))"),
+ (["اكتب Trie شجرة بادئات من الصفر", "كيف ابني Trie للبحث عن الكلمات"],
+  "الـTrie شجرة تخزن الكلمات حرفا حرفا على مسارات مشتركة، فمراجعة وجود كلمة أو بادئة تأخذ وقتا بعدد حروفها فقط.",
+  ["كل عقدة فيها قاموس أبناء وعلامة end", "insert ينزل حرفا حرفا منشئا عقدا جديدة عند الحاجة", "search يتتبع المسار ويتأكد من علامة end"],
+  "class TrieNode:\n    def __init__(self):\n        self.kids = {}\n        self.end = False\n\nclass Trie:\n    def __init__(self):\n        self.root = TrieNode()\n\n    def insert(self, word):\n        node = self.root\n        for c in word:\n            node = node.kids.setdefault(c, TrieNode())\n        node.end = True\n\n    def search(self, word):\n        node = self.root\n        for c in word:\n            if c not in node.kids:\n                return False\n            node = node.kids[c]\n        return node.end\n\nt = Trie()\nfor w in [\"cat\", \"car\", \"care\"]:\n    t.insert(w)\nprint(t.search(\"car\"), t.search(\"ca\"), t.search(\"care\"))"),
+ (["اكتب مجموعات منفصلة Union-Find من الصفر", "كيف ابني Union-Find"],
+  "Union-Find يتتبع مجموعات عناصر منفصلة: find تجد ممثل المجموعة، وunion تدمج مجموعتين. نستعمل ضغط المسار path compression لتسريع find.",
+  ["parent[i] يشير لنفسه في البداية", "find تتبع الآباء حتى تصل لعنصر هو ممثل نفسه، وتضغط المسار", "union تجعل ممثل أحد الطرفين يشير لممثل الآخر"],
+  "class UnionFind:\n    def __init__(self, n):\n        self.parent = list(range(n))\n\n    def find(self, x):\n        if self.parent[x] != x:\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n\n    def union(self, a, b):\n        ra, rb = self.find(a), self.find(b)\n        if ra != rb:\n            self.parent[ra] = rb\n\nuf = UnionFind(5)\nuf.union(0, 1)\nuf.union(1, 2)\nprint(uf.find(0) == uf.find(2), uf.find(0) == uf.find(3))"),
+]
+
+PATTERNS = [
+ ("Singleton", "نمط التفرد يضمن وجود نسخة واحدة فقط من الكلاس في كل البرنامج، ونستعمله لإعدادات مشتركة أو اتصال قاعدة بيانات واحد.",
+  "class Config:\n    _instance = None\n\n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n            cls._instance.value = 0\n        return cls._instance\n\na = Config()\na.value = 5\nb = Config()\nprint(b.value, a is b)"),
+ ("Factory", "نمط المصنع يفصل إنشاء الكائنات عن الكود الذي يستعملها: دالة واحدة تقرر أي كلاس تبني حسب مدخل.",
+  "class Dog:\n    def speak(self):\n        return \"woof\"\n\nclass Cat:\n    def speak(self):\n        return \"meow\"\n\ndef make_animal(kind):\n    return {\"dog\": Dog, \"cat\": Cat}[kind]()\n\nprint(make_animal(\"dog\").speak(), make_animal(\"cat\").speak())"),
+ ("Strategy", "نمط الاستراتيجية يجعل الخوارزمية قابلة للتبديل أثناء التشغيل بتمرير دالة أو كائن سلوك مختلف.",
+  "def by_price(item):\n    return item[\"price\"]\n\ndef by_name(item):\n    return item[\"name\"]\n\nitems = [{\"name\": \"b\", \"price\": 3}, {\"name\": \"a\", \"price\": 1}]\nprint([i[\"name\"] for i in sorted(items, key=by_price)])\nprint([i[\"name\"] for i in sorted(items, key=by_name)])"),
+ ("Observer", "نمط المراقب يسمح لعدة كائنات بالاشتراك في أحداث كائن آخر والتبليغ عند حدوثها.",
+  "class Publisher:\n    def __init__(self):\n        self.subscribers = []\n\n    def subscribe(self, fn):\n        self.subscribers.append(fn)\n\n    def notify(self, event):\n        for fn in self.subscribers:\n            fn(event)\n\nlog = []\np = Publisher()\np.subscribe(lambda e: log.append(\"got: \" + e))\np.notify(\"update\")\nprint(log)"),
+ ("Decorator pattern", "نمط الديكوريتر (في OOP) يضيف سلوكا لكائن بتغليفه بكائن آخر له نفس الواجهة، بدل تعديل كلاسه.",
+  "class Coffee:\n    def cost(self):\n        return 5\n\nclass MilkDecorator:\n    def __init__(self, drink):\n        self.drink = drink\n\n    def cost(self):\n        return self.drink.cost() + 2\n\nd = MilkDecorator(Coffee())\nprint(d.cost())"),
+ ("Builder", "نمط الباني يبني كائنا معقدا خطوة خطوة بدل مُنشئ طويل بمعاملات كثيرة.",
+  "class PizzaBuilder:\n    def __init__(self):\n        self.toppings = []\n\n    def add(self, t):\n        self.toppings.append(t)\n        return self\n\n    def build(self):\n        return \"Pizza with \" + \", \".join(self.toppings)\n\nprint(PizzaBuilder().add(\"cheese\").add(\"olives\").build())"),
+ ("Adapter", "نمط المحوّل يجعل واجهة غير متوافقة تعمل مع كود يتوقع واجهة أخرى، بتغليفها.",
+  "class OldPrinter:\n    def old_print(self, s):\n        return \"OLD: \" + s\n\nclass PrinterAdapter:\n    def __init__(self, old):\n        self.old = old\n\n    def print_(self, s):\n        return self.old.old_print(s)\n\nprint(PrinterAdapter(OldPrinter()).print_(\"hi\"))"),
+]
+
+TESTING = [
+ (["كيف اكتب اختبارا بوحدة unittest", "اشرح unittest في بايثون مع مثال"],
+  "وحدة unittest توفر إطارا لكتابة اختبارات منظمة: كلاس يرث TestCase، ودوال تبدأ بـ test_، وassertEqual وما شابهها للتحقق.",
+  "import unittest\n\ndef add(a, b):\n    return a + b\n\nclass TestAdd(unittest.TestCase):\n    def test_positive(self):\n        self.assertEqual(add(2, 3), 5)\n    def test_negative(self):\n        self.assertEqual(add(-1, -1), -2)\n\nresult = unittest.TextTestRunner(verbosity=0).run(unittest.TestLoader().loadTestsFromTestCase(TestAdd))\nprint(result.testsRun, len(result.failures))"),
+ (["ما هو test-driven development TDD", "اشرح فكرة اختبار اولا ثم برمجة"],
+  "TDD يعني كتابة اختبار يفشل أولا (لأن الكود غير موجود)، ثم كتابة أقل كود يجعله ينجح، ثم تحسين الكود مع إبقاء الاختبار ناجحا. هذا يضمن أن كل كود له اختبار يغطيه.",
+  "import unittest\n\nclass TestSquare(unittest.TestCase):\n    def test_square(self):\n        self.assertEqual(square(4), 16)\n\ndef square(x):\n    return x * x\n\nr = unittest.TextTestRunner(verbosity=0).run(unittest.TestLoader().loadTestsFromTestCase(TestSquare))\nprint(\"passed\" if not r.failures else \"failed\")"),
+ (["كيف اختبر ان دالة ترفع خطأ", "كيف استخدم assertRaises"],
+  "assertRaises تتحقق أن استدعاء دالة يرفع نوعا معينا من الأخطاء، وتُستعمل في with أو بتمرير الدالة ومعاملاتها.",
+  "import unittest\n\ndef divide(a, b):\n    if b == 0:\n        raise ValueError(\"no zero\")\n    return a / b\n\nclass TestDivide(unittest.TestCase):\n    def test_zero_raises(self):\n        with self.assertRaises(ValueError):\n            divide(1, 0)\n\nr = unittest.TextTestRunner(verbosity=0).run(unittest.TestLoader().loadTestsFromTestCase(TestDivide))\nprint(\"passed\" if not r.failures else \"failed\")"),
+ (["ما هو setUp في unittest", "متى تستخدم setUp و tearDown"],
+  "setUp تعمل قبل كل اختبار لتجهيز بيانات مشتركة، وtearDown تعمل بعده للتنظيف، فلا تتكرر نفس الأسطر في كل دالة اختبار.",
+  "import unittest\n\nclass TestList(unittest.TestCase):\n    def setUp(self):\n        self.data = [1, 2, 3]\n    def test_len(self):\n        self.assertEqual(len(self.data), 3)\n    def test_sum(self):\n        self.assertEqual(sum(self.data), 6)\n\nr = unittest.TextTestRunner(verbosity=0).run(unittest.TestLoader().loadTestsFromTestCase(TestList))\nprint(r.testsRun)"),
+]

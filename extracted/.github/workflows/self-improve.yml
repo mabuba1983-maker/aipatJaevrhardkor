@@ -1,0 +1,67 @@
+name: Self Improve (button only)
+on:
+  workflow_dispatch:
+    inputs:
+      learned:
+        description: "What you taught the model in the app (JSON lines)"
+        default: ""
+      approve:
+        description: "Accept automatically if all checks pass AND it is stronger"
+        type: boolean
+        default: false
+      steps:
+        description: "Training steps"
+        default: "3000"
+      stage:
+        description: "Stage (empty = the one in stage.json)"
+        default: ""
+permissions:
+  contents: write
+jobs:
+  improve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    env:
+      LEARNED: ${{ inputs.learned }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install torch numpy --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+      - name: Safety tests first
+        run: python -m unittest discover -s tests -q
+      - name: Ingest what you taught it (sanitised)
+        run: python -m nuwaa.learning.ingest
+      - name: Record the button press (single use, expires)
+        run: python -m nuwaa.selfimprove.button press app
+      - name: One improvement cycle
+        run: |
+          ARGS="--steps ${{ inputs.steps }}"
+          if [ -n "${{ inputs.stage }}" ]; then ARGS="$ARGS --stage ${{ inputs.stage }}"; fi
+          if [ "${{ inputs.approve }}" = "true" ]; then ARGS="$ARGS --approve"; fi
+          python -m nuwaa.selfimprove.cycle $ARGS
+      - name: Save decision (model file only if small enough for git)
+        run: |
+          git config user.name nuwaa-bot && git config user.email nuwaa-bot@users.noreply.github.com
+          if [ -f model_accepted/model.bin ] && [ $(stat -c%s model_accepted/model.bin) -gt 90000000 ]; then rm -rf model_accepted; echo "model too big for git"; fi
+          git add stage.json stage_state.json stage_reports self_improve_log.jsonl model_accepted data/user_feedback.jsonl 2>/dev/null || true
+          git commit -m "self-improve cycle decision" || true
+          git push || true
+      - name: Use the accepted model in the app
+        run: |
+          if [ -f model_accepted/model.bin ]; then cp model_accepted/model.bin android/app/src/main/assets/model.bin; fi
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "17" }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: "8.7" }
+      - run: gradle -p android assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Nuwaa-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cycle-report
+          path: |
+            stage_reports
+            self_improve_log.jsonl

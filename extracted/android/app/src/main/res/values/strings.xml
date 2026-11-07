@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_desc">يسمح لنواة بقراءة النص الظاهر على الشاشة فقط لتنصحك. لا يضغط ولا يكتب شيئا.</string>
+</resources>
