@@ -80,6 +80,13 @@ object Effort {
         return minOf(heapShare, pressureShare).coerceAtLeast(0L)
     }
 
+    /** A small, live-heap-derived budget for preparing later training samples; this does not start training. */
+    fun trainingSampleBudgetBytes(): Long {
+        val rt = Runtime.getRuntime()
+        val available = (rt.maxMemory() - (rt.totalMemory() - rt.freeMemory())).coerceAtLeast(0L)
+        return minOf(available / 40L, rt.maxMemory() / 50L).coerceAtLeast(0L)
+    }
+
     /**
      * Derive the safety ceiling from the heap this process actually has available now.
      * There is no fixed character/line ceiling; this estimate changes with heap pressure
