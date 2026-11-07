@@ -618,7 +618,7 @@ class NlmSession(private val m: Nlm, seed: Long) {
             }
             track.add(p[pick])
             val ch = m.chars[pick]
-            feedChar(ch)
+            feed(ch)
             if (ch == "\n") {
                 if (allowMultiline) { out.append('\n'); continue }
                 break
