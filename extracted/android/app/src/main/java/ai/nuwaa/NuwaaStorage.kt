@@ -347,6 +347,40 @@ class NuwaaStorage(private val dir: File) {
         out.toString()
     }
 
+    /** Retrieve the most recent COMPLETE user/assistant exchange for explicit user approval. */
+    fun lastSessionExchange(convId: String): Pair<String, String>? = synchronized(lock) {
+        val file = sessionFile(convId)
+        if (!file.exists()) return@synchronized null
+        var role = ""
+        var message = StringBuilder()
+        var pendingUser: String? = null
+        var lastPair: Pair<String, String>? = null
+        file.bufferedReader(Charsets.UTF_8).use { reader ->
+            while (true) {
+                val line = reader.readLine() ?: break
+                try {
+                    val row = JSONObject(line)
+                    if (row.optBoolean("start")) {
+                        role = row.optString("role")
+                        message = StringBuilder()
+                    }
+                    message.append(row.optString("text"))
+                    if (row.optBoolean("end")) {
+                        val complete = message.toString()
+                        if (role == "u") pendingUser = complete
+                        else if (role == "a" && pendingUser != null) {
+                            lastPair = Pair(pendingUser!!, complete)
+                            pendingUser = null
+                        }
+                        role = ""
+                        message = StringBuilder()
+                    }
+                } catch (_: Throwable) { /* skip a damaged chunk */ }
+            }
+        }
+        lastPair
+    }
+
     private fun sessionFile(convId: String): File {
         val key = java.security.MessageDigest.getInstance("SHA-256")
             .digest(convId.toByteArray(Charsets.UTF_8))
