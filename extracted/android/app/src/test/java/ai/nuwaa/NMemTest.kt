@@ -18,7 +18,7 @@ class NMemTest {
         assertNotNull(memory.dist("abcdefgh", 4))
 
         budget = firstRecordBytes + 1L
-        memory.add("pqrstuvwxyz12345")
+        memory.add("pqrstuvwxyz1234")
 
         assertEquals(1, memory.activeRecordCount())
         assertEquals(1L, memory.archivedFromRam)
