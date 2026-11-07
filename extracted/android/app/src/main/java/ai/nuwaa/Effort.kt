@@ -69,6 +69,17 @@ object Effort {
         return Pair(cap, why)
     }
 
+    /** Live budget for the long-memory RAM working set. It shrinks as heap pressure rises and
+     *  never claims storage is unlimited; older memory is already persisted in NuwaaStorage. */
+    fun memoryWorkingSetBytes(): Long {
+        val rt = Runtime.getRuntime()
+        val used = rt.totalMemory() - rt.freeMemory()
+        val available = (rt.maxMemory() - used).coerceAtLeast(0L)
+        val heapShare = (rt.maxMemory() * 0.08).toLong()
+        val pressureShare = (available * 0.15).toLong()
+        return minOf(heapShare, pressureShare).coerceAtLeast(0L)
+    }
+
     /**
      * Derive the safety ceiling from the heap this process actually has available now.
      * There is no fixed character/line ceiling; this estimate changes with heap pressure
