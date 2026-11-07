@@ -80,7 +80,9 @@ class Brain private constructor(private val ctx: Context) {
             // RAM is only the active working set. Its budget is recalculated from live heap pressure;
             // older records remain in the append-only disk archive and can be retrieved when relevant.
             m.long.setBudgetProvider { Effort.memoryWorkingSetBytes() }
-            for (line in storage.lastTexts(300)) if (line.isNotBlank()) m.long.add(if (line.length > 512) line.takeLast(512) else line)
+            storage.forEachText { line ->
+                m.long.add(if (line.length > 512) line.takeLast(512) else line)
+            }
             nlm = m
             modelStatus = "نموذج نواة (GRU): " + m.paramCount() + " معامل · ذاكرة نشطة " + m.long.activeRecordCount() +
                 " سجل · الأرشيف " + storage.count() + " سجل"
