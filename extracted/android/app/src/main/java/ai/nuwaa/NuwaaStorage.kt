@@ -72,7 +72,11 @@ class NuwaaStorage(private val dir: File) {
                     if (score < 0.12) continue
                     val item = MemoryMatch(text.take(1200), score, row.optString("type"))
                     if (best.size < limit || score > best.minOf { it.score }) {
-                        if (best.size == limit) best.removeAt(best.indices.minBy { best[it].score })
+                        if (best.size == limit) {
+                            var worstIndex = 0
+                            for (candidate in 1 until best.size) if (best[candidate].score < best[worstIndex].score) worstIndex = candidate
+                            best.removeAt(worstIndex)
+                        }
                         best.add(item)
                     }
                 } catch (_: Throwable) { /* skip one damaged record; keep scanning the archive */ }
