@@ -228,14 +228,14 @@ object FileTools {
     /** «folder/name.ext»: at most one folder, both parts cleaned (no «..», no odd characters), the file part with a known extension. */
     fun cleanPath(raw: String): String? {
         val parts = raw.trim().replace('\\', '/').split('/').filter { it.isNotBlank() }
-        if (parts.isEmpty() || parts.size > 2) return null
+        if (parts.isEmpty() || parts.size > 6) return null
         val file = cleanName(parts.last()) ?: return null
-        if (parts.size == 1) return file
-        val dir = parts[0].replace(Regex("[^\\p{L}\\p{N}_\\-]"), "").take(40)
-        if (dir.isEmpty()) return null
-        return dir + "/" + file
+        val dirs = parts.dropLast(1).map { part ->
+            part.replace(Regex("[^\\p{L}\\p{N}_\\-]"), "").take(40)
+        }
+        if (dirs.any { it.isBlank() || it == "." || it == ".." }) return null
+        return (dirs + file).joinToString("/")
     }
-
     /** The file(s) the model wrote in its reply, or null if it wrote none (or only broken blocks). One block = one file; several blocks = a project:
      *  the first file comes back with the others in `more`. Nothing here is invented by the app. */
     fun fromModel(text: String): MadeFile? {
