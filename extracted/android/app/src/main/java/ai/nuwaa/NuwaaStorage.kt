@@ -66,18 +66,31 @@ class NuwaaStorage(private val dir: File) {
     }
 
 
-    /** Persist one turn of a conversation separately from model weights and global learning records. */
+    /** Persist a conversation message in bounded JSONL chunks, without a message-count cap. */
     fun appendSessionMessage(convId: String, role: String, text: String) = synchronized(lock) {
         if (text.isEmpty()) return@synchronized
         if (role != "u" && role != "a") throw IllegalArgumentException("Unknown session role")
         if (!sessionsDir.exists() && !sessionsDir.mkdirs()) throw IllegalStateException("تعذر إنشاء مجلد جلسات الذاكرة")
         val file = sessionFile(convId)
-        val row = JSONObject().put("role", role).put("text", text).toString()
-        file.appendText(row + "\n", Charsets.UTF_8)
+        file.bufferedWriter(Charsets.UTF_8, 8192).use { writer ->
+            var offset = 0
+            var first = true
+            while (offset < text.length) {
+                val next = minOf(offset + 4096, text.length)
+                val row = JSONObject()
+                    .put("role", if (first) role else "")
+                    .put("start", first)
+                    .put("end", next == text.length)
+                    .put("text", text.substring(offset, next))
+                writer.append(row.toString()).append('\n')
+                first = false
+                offset = next
+            }
+        }
     }
 
-    /** Replay a whole conversation sequentially from disk; only one JSONL record is held at a time. */
-    fun forEachSessionMessage(convId: String, action: (String, String) -> Unit): Boolean = synchronized(lock) {
+    /** Replay one small text chunk at a time; start/end mark message boundaries. */
+    fun forEachSessionChunk(convId: String, action: (String, String, Boolean, Boolean) -> Unit): Boolean = synchronized(lock) {
         val file = sessionFile(convId)
         if (!file.exists() || file.length() == 0L) return@synchronized false
         file.bufferedReader(Charsets.UTF_8).use { reader ->
@@ -85,7 +98,8 @@ class NuwaaStorage(private val dir: File) {
                 val line = reader.readLine() ?: break
                 try {
                     val row = JSONObject(line)
-                    action(row.optString("role"), row.optString("text"))
+                    action(row.optString("role"), row.optString("text"),
+                        row.optBoolean("start"), row.optBoolean("end"))
                 } catch (_: Throwable) { /* skip a damaged row and continue */ }
             }
         }
