@@ -911,6 +911,7 @@ class MainActivity : Activity() {
                 lastPreviewText = try { org.json.JSONTokener(value ?: "\"\"").nextValue().toString() } catch (_: Throwable) { "" }
                 studioStatus.text = "تم تشغيل HTML. النص المقروء من الصفحة: " +
                     (if (lastPreviewText.isBlank()) "لا يوجد نص ظاهر" else lastPreviewText.take(180).replace("\n", " "))
+                captureStudioPreview(false)
             }
         }, 900)
     }
