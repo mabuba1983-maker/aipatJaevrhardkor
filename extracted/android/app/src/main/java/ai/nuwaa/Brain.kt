@@ -86,9 +86,8 @@ class Brain private constructor(private val ctx: Context) {
             // RAM is only the active working set. Its budget is recalculated from live heap pressure;
             // older records remain in the append-only disk archive and can be retrieved when relevant.
             m.long.setBudgetProvider { Effort.memoryWorkingSetBytes() }
-            storage.forEachText { line ->
-                m.long.add(if (line.length > 512) line.takeLast(512) else line)
-            }
+            val restoreBytes = Effort.memoryWorkingSetBytes() / 32L
+            storage.forEachRecentText(restoreBytes) { line -> m.long.addNewestFirst(line) }
             nlm = m
             refreshMemoryStatus(m)
         } catch (e: java.io.FileNotFoundException) {
