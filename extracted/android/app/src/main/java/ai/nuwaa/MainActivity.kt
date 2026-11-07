@@ -400,15 +400,42 @@ class MainActivity : Activity() {
     }
 
     private fun askCreateFile() {
-        val text = contentForFile()
-        if (text.isBlank()) { Toast.makeText(this, "اكتب النص في خانة الكتابة أولا، أو اطلب مني كودا ثم اضغط ＋", Toast.LENGTH_LONG).show(); return }
-        val name = EditText(this); name.setSingleLine(true); name.setText(if (text.contains("def ") || text.contains("import ")) "nuwaa.py" else "nuwaa.txt")
-        AlertDialog.Builder(this).setTitle("اسم الملف").setView(name)
-            .setPositiveButton("إنشاء") { _, _ ->
-                pendingFile = text; pendingBytes = null
-                val n = name.text.toString().trim().ifEmpty { "nuwaa.txt" }
-                val i = Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*").putExtra(Intent.EXTRA_TITLE, n)
-                try { startActivityForResult(i, REQ_CREATE) } catch (e: Exception) { Toast.makeText(this, "ما لقيت تطبيق ملفات في جوالك", Toast.LENGTH_LONG).show() }
+        val prompt = EditText(this)
+        prompt.hint = "اكتب ماذا تريد أن أنشئ: ملف، جدول CSV، أو مشروع بعدة ملفات ومجلدات..."
+        prompt.minLines = 3
+        prompt.maxLines = 7
+        prompt.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+        prompt.setPadding(dp(14), dp(12), dp(14), dp(12))
+        AlertDialog.Builder(this).setTitle("ماذا تريد أن أنشئ؟").setView(prompt)
+            .setPositiveButton("ابدأ الإنشاء") { _, _ ->
+                val description = prompt.text.toString().trim()
+                if (description.isBlank()) {
+                    Toast.makeText(this, "اكتب وصف الملف أو المشروع أولا.", Toast.LENGTH_LONG).show()
+                    return@setPositiveButton
+                }
+                val c = conv ?: store.create().also { conv = it }
+                val request = "أنشئ ملف " + description
+                addMsg(c, "u", "📝 إنشاء: " + description)
+                val dots = TextView(this)
+                dots.text = "نواة تنشئ الملفات..."
+                dots.setTextColor(Ui.MUTED)
+                dots.setPadding(dp(16), dp(4), dp(16), dp(4))
+                log.addView(dots)
+                scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
+                thread {
+                    val lastBot = c.msgs.lastOrNull { it.role == "b" }?.text ?: ""
+                    val answer = try {
+                        val fr = brain.fileRequest(request, c.id, lastBot, true)
+                            ?: Pair(null, "لم أتعرف على طلب الإنشاء. أعد وصف نوع الملف ومحتواه.")
+                        createFileAnswer(fr)
+                    } catch (e: Throwable) {
+                        Answer("تعذر إنشاء المطلوب: " + (e.message ?: e.javaClass.simpleName), "file")
+                    }
+                    runOnUiThread {
+                        log.removeView(dots)
+                        addMsg(c, "b", answer.text)
+                    }
+                }
             }.setNegativeButton("إلغاء", null).show()
     }
 
