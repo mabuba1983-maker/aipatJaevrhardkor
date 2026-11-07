@@ -44,6 +44,7 @@ class Brain private constructor(private val ctx: Context) {
     private val lock = Any()
     private val sessions = LinkedHashMap<String, NlmSession>()
     private val nlmUserFile = File(ctx.filesDir, "nlm2_user.bin")
+    private val nlmBackupFile = File(ctx.filesDir, "nlm2_user.bin.bak")
     // All learned material is stored on disk, separately from model parameters.
     // RAM keeps only a bounded working set for current training/retrieval.
     private val storage = NuwaaStorage(File(ctx.filesDir, "storage"))
@@ -67,7 +68,15 @@ class Brain private constructor(private val ctx: Context) {
             val base = ctx.assets.open("nlm2.bin").use { s -> s.readBytes() }
             val heapMb = Runtime.getRuntime().maxMemory() / 1e6      // no budget of mine: the only limit is what this phone really gives the app
             if (base.size * 3.0 / 1e6 > heapMb * 0.85) { modelStatus = "النموذج: تخطيته لأن ذاكرة هذا الجهاز للتطبيق ${heapMb.toInt()} MB فقط"; return }
-            val m = try { if (nlmUserFile.exists()) Nlm.load(nlmUserFile.readBytes()) else Nlm.load(base) } catch (e: Exception) { Nlm.load(base) }     // a damaged user file never blocks the start
+            val m = try {
+                when {
+                    nlmUserFile.exists() -> try { Nlm.load(nlmUserFile.readBytes()) } catch (_: Throwable) {
+                        if (nlmBackupFile.exists()) Nlm.load(nlmBackupFile.readBytes()) else Nlm.load(base)
+                    }
+                    nlmBackupFile.exists() -> Nlm.load(nlmBackupFile.readBytes())
+                    else -> Nlm.load(base)
+                }
+            } catch (_: Throwable) { Nlm.load(base) }     // a damaged user file or interrupted save never blocks the start
             // Load only a bounded recent window; the complete archive stays on disk.
             for (line in storage.lastTexts(300)) if (line.isNotBlank()) m.long.add(if (line.length > 512) line.takeLast(512) else line)
             nlm = m
@@ -83,7 +92,23 @@ class Brain private constructor(private val ctx: Context) {
     fun loadModel() { /* nothing to do: loadKnowledge() already loaded it when the brain was created */ }
 
     private fun saveNlm() {
-        try { nlm?.let { m -> val bytes = synchronized(lock) { m.toBytes() }; nlmUserFile.outputStream().use { o -> o.write(bytes) } } } catch (e: Throwable) { /* keep running; it will try again */ }
+        try {
+            nlm?.let { m ->
+                val bytes = synchronized(lock) { m.toBytes() }
+                val temp = File(ctx.filesDir, "nlm2_user.bin.tmp")
+                if (temp.exists()) temp.delete()
+                java.io.FileOutputStream(temp).use { out -> out.write(bytes); out.fd.sync() }
+                if (nlmUserFile.exists()) {
+                    if (nlmBackupFile.exists() && !nlmBackupFile.delete()) throw IllegalStateException("تعذر حذف النسخة الاحتياطية القديمة")
+                    if (!nlmUserFile.renameTo(nlmBackupFile)) throw IllegalStateException("تعذر حفظ النسخة الاحتياطية")
+                }
+                if (!temp.renameTo(nlmUserFile)) {
+                    if (nlmBackupFile.exists() && !nlmUserFile.exists()) nlmBackupFile.renameTo(nlmUserFile)
+                    throw IllegalStateException("تعذر تثبيت ملف الأوزان الجديد")
+                }
+                if (nlmBackupFile.exists()) nlmBackupFile.delete()
+            }
+        } catch (_: Throwable) { /* retain the previous checkpoint; a later save can retry */ }
     }
 
     fun usedMb(): Double = android.os.Debug.getPss() / 1024.0
