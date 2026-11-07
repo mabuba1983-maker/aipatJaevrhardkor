@@ -802,6 +802,8 @@ class MainActivity : Activity() {
         val snap = Ui.btn(this, "لقطة", Ui.DARK) { captureStudioPreview(true) }
         for (v in listOf(generate, run, snap)) actions.addView(v, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).also { it.setMargins(dp(2), 0, dp(2), 0) })
         codePage.addView(actions)
+        val review = Ui.btn(this, "راجع النص الناتج", Color.parseColor("#475B78")) { reviewStudioPreview() }
+        codePage.addView(review, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also { it.setMargins(0, dp(5), 0, 0) })
 
         val exportRow = LinearLayout(this)
         exportRow.orientation = LinearLayout.HORIZONTAL
@@ -913,6 +915,28 @@ class MainActivity : Activity() {
         }, 900)
     }
 
+    private fun reviewStudioPreview() {
+        if (studioBusy) return
+        val code = editor.text.toString().trim()
+        if (code.isEmpty()) { Toast.makeText(this, "اكتب الكود أولا", Toast.LENGTH_SHORT).show(); return }
+        studioBusy = true
+        studioStatus.text = "نواة تراجع الكود والنص المستخرج من المعاينة..."
+        val prompt = "راجع مشروع HTML التالي مراجعة برمجية. لا تدّع أنك رأيت الصورة أو الألوان؛ لديك الكود والنص الذي استطعت الصفحة عرضه فقط. " +
+            "اذكر الأخطاء المؤكدة أولا، ثم التحسينات المقترحة، ولا تقل إن المشروع يعمل إذا لم تتأكد.\n\n" +
+            "كود المشروع:\n" + code.take(10000) +
+            "\n\nالنص المستخرج من صفحة المعاينة:\n" + lastPreviewText.take(2500)
+        val c = conv ?: store.create().also { conv = it }
+        thread {
+            val answer = try { brain.answer(prompt, c.id).text } catch (e: Throwable) {
+                "تعذر إكمال المراجعة: " + (e.message ?: e.javaClass.simpleName)
+            }
+            runOnUiThread {
+                studioBusy = false
+                studioStatus.text = "مراجعة نواة (اعتمادا على الكود والنص، لا على فهم الصورة):\n" + answer.take(1800)
+            }
+        }
+    }
+
     private fun captureStudioPreview(save: Boolean) {
         if (!::studioPreview.isInitialized || studioPreview.width <= 0 || studioPreview.height <= 0) {
             Toast.makeText(this, "شغّل المشروع أولا", Toast.LENGTH_SHORT).show()
@@ -924,7 +948,8 @@ class MainActivity : Activity() {
                 studioPreview.draw(Canvas(bmp))
                 studioShot.setImageBitmap(bmp)
                 studioShot.visibility = View.VISIBLE
-                studioStatus.text = "التقطت لقطة فعلية من نافذة المعاينة."
+                val pos = IntArray(2); studioPreview.getLocationOnScreen(pos)
+                studioStatus.text = "لقطة فعلية للمعاينة · الموضع: ${pos[0]},${pos[1]} · الحجم: ${bmp.width}×${bmp.height}"
                 if (save) {
                     val out = ByteArrayOutputStream()
                     bmp.compress(Bitmap.CompressFormat.PNG, 100, out)
