@@ -77,6 +77,7 @@ class MainActivity : Activity() {
     private lateinit var growResult: TextView
     private lateinit var settingsPage: LinearLayout
     private val visionEngine = VisionEngine()
+    @Volatile private var lastVisualAnalysisAt = 0L
     private val REQ_IMAGE_PICK = 45
     private var titleTaps = 0; private var titleTapsAt = 0L
     private var revealedGrowMenu = false
@@ -813,6 +814,25 @@ class MainActivity : Activity() {
         ScreenShareService.goal = goalInput.text.toString().trim()
         ScreenShareService.frameListener = { bmp: Bitmap, change: Double ->
             runOnUiThread { preview.setImageBitmap(bmp); shareInfo.text = "إطار كل ثانية · تغيّر الشاشة: " + (change * 100).toInt() + "%" + (if (ScreenReader.enabled()) " · قارئ الشاشة ✓" else " · قارئ الشاشة غير مفعّل") }
+            val now = System.currentTimeMillis()
+            if (change >= 0.025 && now - lastVisualAnalysisAt >= 8000L) {
+                lastVisualAnalysisAt = now
+                val frame = try { bmp.copy(Bitmap.Config.ARGB_8888, false) } catch (_: Throwable) { null }
+                if (frame != null) {
+                    visionEngine.analyze(frame) { visual ->
+                        val screenText = ScreenReader.readText().take(1200)
+                        if (!frame.isRecycled) frame.recycle()
+                        val c = conv
+                        if (c != null) thread {
+                            val observation = visual + if (screenText.isNotBlank()) "\\nالنص من قارئ الشاشة: " + screenText else ""
+                            val result = try {
+                                brain.answerVisual("لقطة شاشة مباشرة", ScreenShareService.goal, observation, c.id).text
+                            } catch (e: Throwable) { "تعذر تحليل الإطار: " + (e.message ?: e.javaClass.simpleName) }
+                            runOnUiThread { adviceView.text = "تحليل بصري محلي للإطار الأخير:\\n" + result.take(1500) }
+                        }
+                    }
+                }
+            }
         }
         ScreenShareService.adviceListener = { s: String -> runOnUiThread { adviceView.text = s } }
         ScreenShareService.stopListener = { runOnUiThread { refreshShareUi(); shareInfo.text = "توقفت المشاركة." } }
