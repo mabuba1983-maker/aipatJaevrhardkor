@@ -134,9 +134,20 @@ class Brain private constructor(private val ctx: Context) {
         val heap = Runtime.getRuntime().maxMemory(); val needed = projectedParams * 4.0 * 3.0
         if (needed > heap * 0.6) return "⚠ ما قدرت: هذا الحجم يحتاج تقريبا " + (needed / 1e6).toInt() + " MB، وذاكرة هذا الجهاز للتطبيق الآن " + (heap / 1e6).toInt() + " MB فقط. جرّب حجما أصغر."
         return try {
-            val grown = synchronized(lock) { val g = Nlm.grow(m, newE, newH); nlm = g; sessions.clear(); g }
+            val grown = synchronized(lock) {
+                val g = Nlm.grow(m, newE, newH)
+                // Growing neural weights must not erase the separate long-term memory archive.
+                g.long.setBudgetProvider { Effort.memoryWorkingSetBytes() }
+                val restoreBytes = Effort.memoryWorkingSetBytes() / 32L
+                storage.forEachRecentText(restoreBytes) { line -> g.long.addNewestFirst(line) }
+                nlm = g
+                sessions.clear()
+                refreshMemoryStatus(g)
+                g
+            }
             saveNlm()
-            "✅ كبّرت النموذج فعلا: من " + m.paramCount() + " إلى " + grown.paramCount() + " معامل. يبدأ بنفس سلوك القديم تماما، والمعرفة الإضافية فارغة حتى يتدرب. احفظت الحالة الجديدة؛ افتح ⚡ رفع الفهم لتدريبه."
+            "✅ كبّرت النموذج فعلا: من " + m.paramCount() + " إلى " + grown.paramCount() +
+                " معامل. الأوزان الجديدة تحتاج تدريبًا لاحقًا، لكن أرشيف الذاكرة الطويلة محفوظ واستُعيدت منه الذاكرة النشطة. احفظت الحالة الجديدة."
         } catch (e: Throwable) { "⚠ فشل التكبير: " + (e.message ?: e.javaClass.simpleName) }
     }
 
