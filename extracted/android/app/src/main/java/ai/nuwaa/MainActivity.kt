@@ -62,6 +62,7 @@ class MainActivity : Activity() {
     private lateinit var studioStatus: TextView
     private lateinit var studioShot: ImageView
     private var lastPreviewText: String = ""
+    private var lastPreviewControls: String = ""
     private var studioBusy = false
     private val REQ_CAPTURE = 41
     private val REQ_NOTIF = 42
@@ -1006,10 +1007,15 @@ class MainActivity : Activity() {
         studioPreview.postDelayed({
             studioPreview.evaluateJavascript("(function(){return document.body ? document.body.innerText : '';})()") { value ->
                 lastPreviewText = try { org.json.JSONTokener(value ?: "\"\"").nextValue().toString() } catch (_: Throwable) { "" }
-                studioStatus.text = "تم تشغيل HTML. النص المقروء من الصفحة: " +
-                    (if (lastPreviewText.isBlank()) "لا يوجد نص ظاهر" else lastPreviewText.take(180).replace("\n", " "))
-                captureStudioPreview(false)
-                reviewStudioPreview() // after each run: capture and inspect the rendered frame locally
+                val controlsScript = "(function(){return JSON.stringify(Array.from(document.querySelectorAll('button,a,input,select,textarea,[role=button]')).slice(0,60).map(function(e){var r=e.getBoundingClientRect();return {tag:e.tagName.toLowerCase(),type:e.type||'',text:(e.innerText||e.value||e.getAttribute('aria-label')||'').trim().slice(0,100),placeholder:e.placeholder||'',disabled:!!e.disabled,visible:r.width>0&&r.height>0,x:Math.round(r.x),y:Math.round(r.y),width:Math.round(r.width),height:Math.round(r.height)};}));})()"
+                studioPreview.evaluateJavascript(controlsScript) { controls ->
+                    lastPreviewControls = try { org.json.JSONTokener(controls ?: "\"\\\"\\\"").nextValue().toString() } catch (_: Throwable) { "" }
+                    studioStatus.text = "تم تشغيل HTML. النص المقروء: " +
+                        (if (lastPreviewText.isBlank()) "لا يوجد نص ظاهر" else lastPreviewText.take(180).replace("\n", " ")) +
+                        " · عناصر تفاعلية مرصودة: " + (try { org.json.JSONArray(lastPreviewControls).length() } catch (_: Throwable) { 0 })
+                    captureStudioPreview(false)
+                    reviewStudioPreview()
+                }
             }
         }, 900)
     }
@@ -1041,6 +1047,7 @@ class MainActivity : Activity() {
                     "لا تدّع رؤية تفاصيل لم يحددها المحلل، ولا تخترع ألوانا أو مواضع. اذكر ما تؤكده الأدلة ثم ما يحتاج فحصا بشريا.\n\n" +
                     "كود المشروع:\n" + code.take(10000) +
                     "\n\nالنص المستخرج من المعاينة:\n" + lastPreviewText.take(2500) +
+                    "\n\nعناصر الواجهة التفاعلية المرصودة من DOM (أزرار وروابط وحقول وحالتها ومواقعها):\n" + lastPreviewControls.take(5000) +
                     "\n\nملاحظات الصورة:\n" + visual.take(1600)
                 val c = conv ?: store.create().also { conv = it }
                 thread {
