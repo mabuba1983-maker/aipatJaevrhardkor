@@ -233,9 +233,17 @@ class Brain private constructor(private val ctx: Context) {
         val line = q.replace("\n", " ").trim()
         if (line.isEmpty()) return
         // Persist first. Only after durable archival do we add the text to the bounded RAM working set.
-        try { storage.append("conversation", line) } catch (e: Throwable) { /* keep running; disk errors do not crash chat */ }
-        m.observe(line)
-        m.long.enforceBudget()
+        val archived = try {
+            storage.append("conversation", line)
+            true
+        } catch (_: Throwable) {
+            false
+        }
+        // Never let a RAM-only copy be evicted as though it were safely archived.
+        if (archived) {
+            m.observe(line)
+            m.long.enforceBudget()
+        }
         observed++
         if (observed % 10 == 0) saveNlm()
     }
