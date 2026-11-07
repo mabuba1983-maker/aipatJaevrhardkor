@@ -37,6 +37,14 @@ class NMem {
     }
 }
 
+/** Full optimizer checkpoint used to roll back rejected training without leaving stale Adam momentum. */
+class NlmTrainingSnapshot(
+    val weights: List<FloatArray>,
+    val firstMoment: List<FloatArray>,
+    val secondMoment: List<FloatArray>,
+    val step: Int
+)
+
 /** The Nuwaa language model, written from scratch, running and LEARNING on the phone. Mirror of nuwaa/lm/gru.py (file format NLM2).
  *  Neural part: embedding -> GRU layer 1 -> GRU layer 2 -> softmax over characters. The hidden state is carried from character to character,
  *  so there is NO fixed window (the old 24-character limit is gone). Hand-written backprop through time + Adam.
@@ -316,6 +324,26 @@ class Nlm private constructor(val e: Int, val h: Int, val chars: List<String>) {
     fun snapshot(): List<FloatArray> = P.map { it.copyOf() }
     fun restoreSnapshot(s: List<FloatArray>) { for (k in P.indices) System.arraycopy(s[k], 0, P[k], 0, P[k].size) }
 
+    /** Capture weights AND Adam state so a rejected experiment can be rolled back exactly. */
+    fun trainingSnapshot(): NlmTrainingSnapshot = NlmTrainingSnapshot(
+        P.map { it.copyOf() }, mAdam.map { it.copyOf() }, vAdam.map { it.copyOf() }, tAdam
+    )
+
+    fun restoreTrainingSnapshot(s: NlmTrainingSnapshot) {
+        require(s.weights.size == P.size && s.firstMoment.size == mAdam.size && s.secondMoment.size == vAdam.size) {
+            "training snapshot shape mismatch"
+        }
+        for (k in P.indices) {
+            require(s.weights[k].size == P[k].size && s.firstMoment[k].size == mAdam[k].size && s.secondMoment[k].size == vAdam[k].size) {
+                "training snapshot parameter mismatch"
+            }
+            System.arraycopy(s.weights[k], 0, P[k], 0, P[k].size)
+            System.arraycopy(s.firstMoment[k], 0, mAdam[k], 0, mAdam[k].size)
+            System.arraycopy(s.secondMoment[k], 0, vAdam[k], 0, vAdam[k].size)
+        }
+        tAdam = s.step
+    }
+
     /** Self-development on what was heard. `rehearse` = lines of the original training data ("س:..\nج:..\n"), mixed in so nothing already known is forgotten.
      *  Returns (bits/char before, after) on the heard text. The weights are rolled back if the heard text did not improve OR the rehearsal text got worse by more than 3%.
      *  At most the last 6000 characters of heard text and 4000 of rehearsal are used, so the button finishes in reasonable time on a phone. */
@@ -329,12 +357,12 @@ class Nlm private constructor(val e: Int, val h: Int, val chars: List<String>) {
         val rids = if (reh.length > 8) encode(reh) else null
         val before = bpc(ids)
         val rBefore = if (rids != null) bpc(rids) else 0f
-        val snap = P.map { it.copyOf() }
+        val snap = trainingSnapshot()
         trainOn(encode(heard + reh), epochs, lr, chunk)
         val after = bpc(ids)
         val rAfter = if (rids != null) bpc(rids) else 0f
         if (after > before || (rids != null && rAfter > rBefore * 1.03f)) {
-            for (k in P.indices) System.arraycopy(snap[k], 0, P[k], 0, P[k].size)
+            restoreTrainingSnapshot(snap)
             return Pair(before, before)
         }
         return Pair(before, after)
