@@ -9,28 +9,76 @@ import java.nio.ByteOrder
  *  Used twice: the long-term memory (kept on the phone) and a short-term memory that lives inside one NlmSession. */
 class NMem {
     private val t = HashMap<String, HashMap<Char, Int>>()
+    private val activeTexts = java.util.ArrayDeque<String>()
+    private var budgetProvider: (() -> Long)? = null
+    private var estimatedBytes = 0L
     var chars = 0
         private set
+    var archivedFromRam = 0L
+        private set
 
-    fun add(text: String) {
+    /** The caller supplies a live heap-based budget. No fixed memory-item count is imposed. */
+    fun setBudgetProvider(provider: () -> Long) {
+        budgetProvider = provider
+        enforceBudget()
+    }
+
+    private fun addToIndex(text: String) {
         val s = "\n" + text + "\n"
         for (i in 1 until s.length) {
             for (o in 1..8) {
                 if (i - o < 0) break
                 val key = s.substring(i - o, i)
-                val m = t.getOrPut(key) { HashMap() }
+                var m = t[key]
+                if (m == null) {
+                    m = HashMap()
+                    t[key] = m
+                    estimatedBytes += 72L + key.length * 2L
+                }
+                if (!m.containsKey(s[i])) estimatedBytes += 40L
                 m[s[i]] = (m[s[i]] ?: 0) + 1
             }
         }
         chars += s.length
     }
 
+    private fun rebuild() {
+        t.clear()
+        chars = 0
+        estimatedBytes = 0L
+        for (text in activeTexts) addToIndex(text)
+    }
+
+    /** Add only to the RAM working set. The caller must archive the original text before calling this. */
+    @Synchronized fun add(text: String) {
+        if (text.isEmpty()) return
+        activeTexts.addLast(text)
+        addToIndex(text)
+        enforceBudget()
+    }
+
+    /** Evict oldest RAM records until the current device-derived budget is met. Evicted text remains in persistent storage. */
+    @Synchronized fun enforceBudget() {
+        val budget = try { budgetProvider?.invoke() ?: Long.MAX_VALUE } catch (_: Throwable) { 0L }
+        var changed = false
+        while (activeTexts.isNotEmpty() && estimatedBytes > budget) {
+            activeTexts.removeFirst()
+            archivedFromRam++
+            changed = true
+            rebuild()
+        }
+        if (activeTexts.isEmpty() && estimatedBytes > budget) rebuild()
+    }
+
+    @Synchronized fun activeRecordCount(): Int = activeTexts.size
+    @Synchronized fun estimatedMemoryBytes(): Long = estimatedBytes
+
     /** Longest context that was seen: (order, counts) or null. */
-    fun dist(ctx: String, minO: Int = 1): Pair<Int, HashMap<Char, Int>>? {
+    @Synchronized fun dist(ctx: String, minO: Int = 1): Pair<Int, HashMap<Char, Int>>? {
         var o = minOf(8, ctx.length)
         while (o >= minO) {
             val c = t[ctx.substring(ctx.length - o)]
-            if (c != null) return Pair(o, c)
+            if (c != null) return Pair(o, HashMap(c))
             o--
         }
         return null
