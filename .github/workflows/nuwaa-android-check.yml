@@ -31,4 +31,4 @@ jobs:
           gradle-version: "8.7"
 
       - name: Compile Android Kotlin sources (no APK packaging)
-        run: gradle -p extracted/android :app:compileDebugKotlin --no-daemon
+        run: gradle -p extracted/android :app:compileDebugKotlin :app:testDebugUnitTest --no-daemon
