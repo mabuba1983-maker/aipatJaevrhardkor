@@ -2,6 +2,10 @@ name: Download and extract Google Drive archive
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/download-and-extract.yml"
 
 permissions:
   contents: read
