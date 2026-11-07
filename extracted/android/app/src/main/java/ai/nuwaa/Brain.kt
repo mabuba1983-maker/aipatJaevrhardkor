@@ -14,8 +14,8 @@ class Answer(val text: String, val source: String, val file: MadeFile? = null)
 class Attached(val name: String, val size: Long, val bytes: ByteArray, val truncated: Boolean) { var announced = false }
 
 /** One brain per process. Every chat message is answered by the language model WRITING the reply (no canned phrase, no lookup, no confidence gate);
- *  exact arithmetic is the only tool kept. Short-term memory = one NlmSession per conversation (dropped when the conversation ends).
- *  Long-term memory = the weights (nlm2_user.bin) + everything heard (memory.txt), both loaded again at start. */
+ *  exact arithmetic is the only tool kept. Active sessions are cached in RAM; their complete transcript is archived on disk and replayed in chunks when needed.
+ *  Model parameters, global learning records, and per-conversation history are stored separately. */
 class Brain private constructor(private val ctx: Context) {
     companion object {
         @Volatile private var inst: Brain? = null
