@@ -77,10 +77,13 @@ class Brain private constructor(private val ctx: Context) {
                     else -> Nlm.load(base)
                 }
             } catch (_: Throwable) { Nlm.load(base) }     // a damaged user file or interrupted save never blocks the start
-            // Load only a bounded recent window; the complete archive stays on disk.
+            // RAM is only the active working set. Its budget is recalculated from live heap pressure;
+            // older records remain in the append-only disk archive and can be retrieved when relevant.
+            m.long.setBudgetProvider { Effort.memoryWorkingSetBytes() }
             for (line in storage.lastTexts(300)) if (line.isNotBlank()) m.long.add(if (line.length > 512) line.takeLast(512) else line)
             nlm = m
-            modelStatus = "نموذج نواة (GRU): " + m.paramCount() + " معامل · محفوظ في التخزين " + storage.count() + " سجل"
+            modelStatus = "نموذج نواة (GRU): " + m.paramCount() + " معامل · ذاكرة نشطة " + m.long.activeRecordCount() +
+                " سجل · الأرشيف " + storage.count() + " سجل"
         } catch (e: java.io.FileNotFoundException) {
             modelStatus = "النموذج غير موجود في التطبيق (nlm2.bin)"
         } catch (e: Throwable) {
@@ -189,6 +192,8 @@ class Brain private constructor(private val ctx: Context) {
                 val hit = try { kb.search(q, 1).firstOrNull()?.score ?: 0.0 } catch (e: Throwable) { 0.0 }
                 val plan = Effort.plan(ctx, q, hit)
                 val memories = try { storage.searchRelevant(q, 3).filter { it.score >= 0.18 } } catch (_: Throwable) { emptyList() }
+                // Restore only relevant archived memories into the RAM working set; FIFO spillover keeps it bounded.
+                for (memory in memories) m.long.add(memory.text)
                 val verifiedExamples = try { kb.search(q, 2).filter { it.score >= Kb.LOW && it.item.v >= 1 } } catch (_: Throwable) { emptyList() }
                 val generationPrompt = if (memories.isEmpty() && verifiedExamples.isEmpty()) q else buildString {
                     if (memories.isNotEmpty()) {
@@ -225,10 +230,12 @@ class Brain private constructor(private val ctx: Context) {
 
     /** Learning by listening: nothing to type, nothing announced. Long-term memory at once, the weights by a few small steps. */
     private fun hear(m: Nlm, q: String) {
-        m.observe(q)
         val line = q.replace("\n", " ").trim()
         if (line.isEmpty()) return
+        // Persist first. Only after durable archival do we add the text to the bounded RAM working set.
         try { storage.append("conversation", line) } catch (e: Throwable) { /* keep running; disk errors do not crash chat */ }
+        m.observe(line)
+        m.long.enforceBudget()
         observed++
         if (observed % 10 == 0) saveNlm()
     }
