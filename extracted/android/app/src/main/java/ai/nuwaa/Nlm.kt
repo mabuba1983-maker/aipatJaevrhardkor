@@ -403,12 +403,21 @@ class NlmSession(private val m: Nlm, seed: Long) {
     private val s1 = FloatArray(m.h); private val s2 = FloatArray(m.h)
     private var p: FloatArray = FloatArray(m.v)
     private val contextTail = StringBuilder(8)
-    val short = NMem()
+    private var short = NMem()
     private val rng = java.util.Random(seed)
     private val replies = ArrayList<Pair<String, String>>()      // (normalised question, reply) of this conversation
     private val minOrder = 4        // a memory may speak only when it matches >= 4 characters of context: it completes words but can never hijack the START of a reply
     private val ngSelf = 10         // inside one reply no 10-character piece is written twice
     private val ngPrev = 8          // against earlier replies of this chat: no 8-character piece (unless the user asked the same thing again)
+
+    /** Keep the n-gram helper small; the complete conversation is archived and replayed from disk. */
+    private fun refreshShortMemory() {
+        short = NMem()
+        for ((question, answer) in replies) {
+            short.add("س:$question")
+            short.add("ج:$answer")
+        }
+    }
 
     init { feed("\n") }      // every pair in training follows a line end: a fresh conversation starts the same way
 
@@ -540,7 +549,7 @@ class NlmSession(private val m: Nlm, seed: Long) {
         }
         val raw = out.toString().replace("¶", "\n")
         val fin = (if (raw.contains("<<ملف:")) raw else dedupe(raw)).trim()           // dedupe would delete the second «<<نهاية>>»
-        if (commit) { replies.add(Pair(nq, fin)); while (replies.size > 12) replies.removeAt(0); short.add("س:$u") }
+        if (commit) { replies.add(Pair(nq, fin)); while (replies.size > 12) replies.removeAt(0); refreshShortMemory() }
         return Pair(fin, track)
     }
 
@@ -604,7 +613,7 @@ class NlmSession(private val m: Nlm, seed: Long) {
         restore(bestEnd ?: start)
         val u = user.replace("\n", " ¶ ").trim()
         replies.add(Pair(u.split(Regex("\\s+")).joinToString(" "), fin.first)); while (replies.size > 12) replies.removeAt(0)
-        short.add("س:$u")
+        refreshShortMemory()
         return fin
     }
 }
