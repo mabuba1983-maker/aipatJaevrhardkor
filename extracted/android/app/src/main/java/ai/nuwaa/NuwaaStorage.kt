@@ -251,7 +251,8 @@ class NuwaaStorage(private val dir: File) {
         if (role != "u" && role != "a") throw IllegalArgumentException("Unknown session role")
         if (!sessionsDir.exists() && !sessionsDir.mkdirs()) throw IllegalStateException("تعذر إنشاء مجلد جلسات الذاكرة")
         val file = sessionFile(convId)
-        java.io.FileOutputStream(file, true).bufferedWriter(Charsets.UTF_8).use { writer ->
+        java.io.FileOutputStream(file, true).use { out ->
+            val writer = out.bufferedWriter(Charsets.UTF_8)
             var offset = 0
             var first = true
             while (offset < text.length) {
@@ -268,6 +269,8 @@ class NuwaaStorage(private val dir: File) {
                 first = false
                 offset = next
             }
+            writer.flush()
+            out.fd.sync()
         }
     }
 
