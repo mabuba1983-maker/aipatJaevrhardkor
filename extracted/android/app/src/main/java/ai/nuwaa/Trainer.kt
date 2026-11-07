@@ -53,7 +53,7 @@ class Trainer(private val ctx: Context, private val brain: Brain) {
             val heldIds = m.encode("\n" + heldPairs.take(10).joinToString(""))
             windowsPerPass = maxOf(1, trainPairs.sumOf { it.length } / 100)
             var best = synchronized(brain.modelLock) { m.bpc(heldIds) }
-            var snap = synchronized(brain.modelLock) { m.snapshot() }
+            var snap = synchronized(brain.modelLock) { m.trainingSnapshot() }
             startHeld = best; bestHeld = best; steps = 0; rollbacks = 0; lossEma = 0f
             var lr = 1e-3f
             while (running) {
@@ -73,8 +73,8 @@ class Trainer(private val ctx: Context, private val brain: Brain) {
                 stepMs = if (stepMs == 0L) busy else (stepMs * 9 + busy) / 10
                 if (steps % 40 == 0) {
                     val now = synchronized(brain.modelLock) { m.bpc(heldIds) }
-                    if (now <= best) { best = now; bestHeld = now; synchronized(brain.modelLock) { snap = m.snapshot() }; brain.saveTrained() }
-                    else if (now > best * 1.03f) { synchronized(brain.modelLock) { m.restoreSnapshot(snap) }; lr = maxOf(lr * 0.5f, 1e-4f); rollbacks++ }
+                    if (now <= best) { best = now; bestHeld = now; synchronized(brain.modelLock) { snap = m.trainingSnapshot() }; brain.saveTrained() }
+                    else if (now > best * 1.03f) { synchronized(brain.modelLock) { m.restoreTrainingSnapshot(snap) }; lr = maxOf(lr * 0.5f, 1e-4f); rollbacks++ }
                 }
                 if (teacherOn && GeminiTeacher.configured(ctx) && running) {
                     val gapMs = (60000.0 / teacherPerMinute.coerceIn(1, 60)).toLong()
