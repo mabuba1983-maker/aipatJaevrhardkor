@@ -278,7 +278,14 @@ class Brain private constructor(private val ctx: Context) {
             val codeExamples = try {
                 kb.search(q, if (project) 3 else 2).filter { it.score >= Kb.LOW && it.item.v >= 1 }
             } catch (_: Throwable) { emptyList() }
-            val projectPrompt = if (projectMemories.isEmpty() && codeExamples.isEmpty()) q else buildString {
+            val sessionRequirements = if (project) {
+                try { storage.sessionUserContext(convId, (outputLimit / 4).coerceAtLeast(2048)) } catch (_: Throwable) { "" }
+            } else ""
+            val projectPrompt = if (sessionRequirements.isEmpty() && projectMemories.isEmpty() && codeExamples.isEmpty()) q else buildString {
+                if (sessionRequirements.isNotEmpty()) {
+                    append("متطلبات المحادثة الحالية، ابدأ بأول طلب ولا تتجاهل شروطه، ثم طبّق أحدث التعديلات اللاحقة:\\n")
+                    append(sessionRequirements).append("\\n")
+                }
                 if (projectMemories.isNotEmpty()) {
                     append("متطلبات وسياق سابق استُرجع من أرشيف المستخدم. اعتبرها قيوداً للمشروع فقط إذا كانت تخص المشروع الحالي، ولا تستبدل بها طلبه الحالي:\n")
                     for ((index, memory) in projectMemories.withIndex()) {
