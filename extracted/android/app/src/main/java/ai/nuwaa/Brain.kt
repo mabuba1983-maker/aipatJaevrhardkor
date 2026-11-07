@@ -198,12 +198,31 @@ class Brain private constructor(private val ctx: Context) {
             val math = Skills.tryMath(q)
             var historyAnswer = ""
             val normalizedApproval = Nlp.norm(q)
+            val correction = Regex("(?is)^(?:تصحيح الرد السابق|صحح الرد السابق|الجواب الصحيح|الإجابة الصحيحة)\\s*[:：]\\s*(.+)$").find(q.trim())
             val approvePrevious = listOf(
                 "اعتمد الرد السابق", "اعتمد الاجابه السابقه", "اعتمد الاجابة السابقة",
                 "اعتبر الرد السابق صحيح", "الرد السابق صحيح", "هذا الرد صحيح",
                 "علم النموذج ان الرد السابق صحيح"
             ).any { normalizedApproval.contains(Nlp.norm(it)) }
-            val result = if (approvePrevious) {
+            val result = if (correction != null) {
+                val previous = try { storage.lastSessionExchange(convId) } catch (_: Throwable) { null }
+                val corrected = correction.groupValues[1].trim()
+                historyAnswer = if (previous == null || corrected.isEmpty()) {
+                    "ما لقيت سؤالًا وإجابة مكتملين سابقين لتصحيحها."
+                } else {
+                    val pair = "س:" + previous.first.replace("\n", " ¶ ").trim() +
+                        "\nج:" + corrected.replace("\n", "¶") + "\n"
+                    try {
+                        storage.append("dialogue", pair)
+                        "حفظت تصحيحك كزوج سؤال وجواب للتدريب المستقبلي. لم يبدأ أي تدريب الآن."
+                    } catch (_: Throwable) {
+                        "تعذر حفظ التصحيح في التخزين؛ لم أضفه إلى بيانات التدريب."
+                    }
+                }
+                s.feed("س:" + q.replace("\n", " ¶ ").trim() + "\nج:" + historyAnswer.replace("\n", "¶") + "\n")
+                hear(m, q)
+                Answer(historyAnswer, "learning")
+            } else if (approvePrevious) {
                 val previous = try { storage.lastSessionExchange(convId) } catch (_: Throwable) { null }
                 historyAnswer = if (previous == null) {
                     "ما لقيت إجابة مكتملة سابقة في هذه المحادثة لاعتمادها."
