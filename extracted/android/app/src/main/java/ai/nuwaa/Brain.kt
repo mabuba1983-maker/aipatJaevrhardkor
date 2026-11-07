@@ -269,8 +269,39 @@ class Brain private constructor(private val ctx: Context) {
             // The same live heap-based budget used by chat; no separate tiny file/table cap.
             val attempts = when { project -> 3; table -> 2; else -> 3 }
             val outputLimit = Effort.outputCharBudget(attempts)
+
+            // Code generation must receive the user's earlier project constraints, not just the latest sentence.
+            // Retrieve from the complete disk archive; only the best few relevant records enter this prompt.
+            val projectMemories = try {
+                storage.searchRelevant(q, if (project) 6 else 3).filter { it.score >= 0.16 }
+            } catch (_: Throwable) { emptyList() }
+            val codeExamples = try {
+                kb.search(q, if (project) 3 else 2).filter { it.score >= Kb.LOW && it.item.v >= 1 }
+            } catch (_: Throwable) { emptyList() }
+            val projectPrompt = if (projectMemories.isEmpty() && codeExamples.isEmpty()) q else buildString {
+                if (projectMemories.isNotEmpty()) {
+                    append("متطلبات وسياق سابق استُرجع من أرشيف المستخدم. اعتبرها قيوداً للمشروع فقط إذا كانت تخص المشروع الحالي، ولا تستبدل بها طلبه الحالي:\\n")
+                    for ((index, memory) in projectMemories.withIndex()) {
+                        append("[سياق سابق ").append(index + 1).append("] ")
+                            .append(memory.text.take(1000)).append("\\n")
+                    }
+                }
+                if (codeExamples.isNotEmpty()) {
+                    append("أمثلة كود سابقة اجتازت تشغيلًا أو اختبارًا. هي مراجع فقط وليست دليلاً على تشغيل الملف الحالي:\\n")
+                    for ((index, example) in codeExamples.withIndex()) {
+                        append("[مثال ").append(index + 1).append("] ")
+                            .append(example.item.a.take(1400)).append("\\n")
+                    }
+                }
+                append("تعليمات صارمة للمهمة الحالية:\\n")
+                append("- حافظ على كل شرط ذكره المستخدم في الطلب الحالي والسياق السابق المرتبط به.\\n")
+                append("- لا تحذف ميزة موجودة ولا تغيّر ملفات غير مطلوبة.\\n")
+                append("- لا تدّعِ أن الكود بُني أو شُغّل أو اختُبر؛ لم يحدث ذلك ضمن توليد النص.\\n")
+                append("- إذا تعارضت المتطلبات أو نقصت معلومة تمنع إنشاء ملف صحيح، صرّح بالنقص بدلاً من اختراع قيمة.\\n")
+                append("طلب المستخدم الحالي:\\n").append(q)
+            }
             val written = synchronized(lock) {
-                sessionFor(m, convId).replyThink(q, outputLimit, attempts) { FileTools.allSane(it) }.first
+                sessionFor(m, convId).replyThink(projectPrompt, outputLimit, attempts) { FileTools.allSane(it) }.first
             }
             val own = FileTools.fromModel(written)
             if (own != null) return Pair(own, "")
