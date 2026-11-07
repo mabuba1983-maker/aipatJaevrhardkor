@@ -133,6 +133,51 @@ class NuwaaStorage(private val dir: File) {
         newestFirst.size.toLong()
     }
 
+    /**
+     * Select a chronological, evenly spaced sample across the COMPLETE archive.
+     * Only a caller-supplied byte budget is retained; no fixed message-count limit is used.
+     */
+    fun sampleTexts(maxTextBytes: Long): List<String> = synchronized(lock) {
+        if (maxTextBytes <= 0L || !data.exists()) return@synchronized emptyList()
+        var totalRows = 0L
+        data.bufferedReader(Charsets.UTF_8, 8192).use { reader ->
+            while (true) {
+                val line = reader.readLine() ?: break
+                try { if (JSONObject(line).optString("text").isNotBlank()) totalRows++ } catch (_: Throwable) { }
+            }
+        }
+        if (totalRows == 0L) return@synchronized emptyList()
+        val targetRows = (maxTextBytes / 4096L).coerceAtLeast(1L)
+        val stride = ((totalRows + targetRows - 1L) / targetRows).coerceAtLeast(1L)
+        val perRecordChars = (maxTextBytes / targetRows / 2L).coerceAtLeast(1L).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+        val result = ArrayList<String>()
+        var rowIndex = 0L
+        var usedBytes = 0L
+        data.bufferedReader(Charsets.UTF_8, 8192).use { reader ->
+            while (true) {
+                val line = reader.readLine() ?: break
+                try {
+                    val text = JSONObject(line).optString("text")
+                    if (text.isBlank()) continue
+                    if (rowIndex % stride == 0L && usedBytes < maxTextBytes) {
+                        val remainingChars = ((maxTextBytes - usedBytes - 64L).coerceAtLeast(0L) / 2L)
+                            .coerceAtMost(perRecordChars.toLong()).toInt()
+                        if (remainingChars > 0) {
+                            val selected = if (text.length <= remainingChars) text else if (remainingChars > 48) {
+                                val side = remainingChars / 2
+                                text.take(side) + " […] " + text.takeLast(remainingChars - side - 5)
+                            } else text.take(remainingChars)
+                            result.add(selected)
+                            usedBytes += selected.length.toLong() * 2L + 64L
+                        }
+                    }
+                    rowIndex++
+                } catch (_: Throwable) { /* skip damaged record */ }
+            }
+        }
+        result
+    }
+
     /** Read only the latest N entries, without loading the full archive. */
     fun lastTexts(limit: Int): List<String> = synchronized(lock) {
         if (limit <= 0 || !data.exists()) return@synchronized emptyList()
