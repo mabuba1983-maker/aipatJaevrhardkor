@@ -16,7 +16,8 @@ jobs:
           DRIVE_FILE_ID: "1Qbm6a6_GIrGjj3NH_GAl74m-wfd98ISA"
         run: |
           python -m pip install --disable-pip-version-check gdown
-          gdown --fuzzy "https://drive.google.com/file/d/${DRIVE_FILE_ID}/view" --output source-archive
+          gdown "$DRIVE_FILE_ID" --output source-archive --retries 3 --timeout 60
+          test -s source-archive
 
       - name: Verify and safely extract ZIP
         run: |
@@ -25,11 +26,9 @@ jobs:
           from zipfile import ZipFile, BadZipFile
 
           archive = Path("source-archive")
-          if not archive.is_file() or archive.stat().st_size == 0:
-              raise SystemExit("Download failed: the Google Drive file is empty or missing.")
-
           output = Path("extracted")
           output.mkdir(exist_ok=True)
+
           try:
               with ZipFile(archive) as zf:
                   root = output.resolve()
@@ -39,8 +38,12 @@ jobs:
                           raise SystemExit(f"Unsafe ZIP path rejected: {item.filename}")
                   zf.extractall(output)
           except BadZipFile:
-              raise SystemExit("The downloaded file is not a ZIP archive.")
-          print(f"Extracted archive to: {output.resolve()}")
+              raise SystemExit("Downloaded file is not a valid ZIP archive.")
+
+          files = [p for p in output.rglob("*") if p.is_file()]
+          if not files:
+              raise SystemExit("ZIP archive contained no files.")
+          print(f"Extracted {len(files)} files.")
           PY
 
       - name: Upload extracted project as an artifact
