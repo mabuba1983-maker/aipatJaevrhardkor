@@ -246,15 +246,15 @@ class NuwaaStorage(private val dir: File) {
                 } catch (_: Throwable) { /* skip a damaged chunk */ }
             }
         }
-        val initial = firstUser ?: return@synchronized recent.joinToString("\\n")
+        val initial = firstUser ?: return@synchronized recent.joinToString("\n")
         val firstBudget = maxOf(1, maxChars / 2)
         val keptInitial = if (initial.length <= firstBudget) initial else {
             val side = maxOf(1, firstBudget / 2)
-            initial.take(side) + "\\n[… وسط الطلب الأول مختصر لحفظ مساحة السياق …]\\n" + initial.takeLast(side)
+            initial.take(side) + "\n[… وسط الطلب الأول مختصر لحفظ مساحة السياق …]\n" + initial.takeLast(side)
         }
-        val out = StringBuilder("[أول طلب للمستخدم في هذه المحادثة — احتفظ بقيوده الأصلية]\\n")
+        val out = StringBuilder("[أول طلب للمستخدم في هذه المحادثة — احتفظ بقيوده الأصلية]\n")
             .append(keptInitial)
-        for (item in recent) out.append("\\n[طلب سابق أحدث]\\n").append(item)
+        for (item in recent) out.append("\n[طلب سابق أحدث]\n").append(item)
         out.toString()
     }
 
