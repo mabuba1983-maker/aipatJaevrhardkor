@@ -44,14 +44,7 @@ class NuwaaStorage(private val dir: File) {
      *  Only the best few matches are retained as a bounded working set; older records remain searchable on disk. */
     fun searchRelevant(query: String, limit: Int = 4): List<MemoryMatch> = synchronized(lock) {
         if (limit <= 0 || !data.exists() || query.isBlank()) return@synchronized emptyList()
-        fun terms(value: String): Set<String> {
-            val normalized = value.lowercase(java.util.Locale.ROOT)
-                .replace(Regex("[\\u064B-\\u065F\\u0670]"), "")
-                .replace(Regex("[إأآا]"), "ا").replace("ى", "ي").replace("ة", "ه")
-            return Regex("[\\p{L}\\p{N}_+#.-]{2,}").findAll(normalized)
-                .map { it.value }.filter { it !in setOf("من", "في", "على", "عن", "الى", "هذا", "هذه", "ذلك", "انا", "انت", "هو", "هي", "the", "and", "for", "with", "that", "this") }
-                .toSet()
-        }
+        fun terms(value: String): Set<String> = try { Nlp.tokens(value) } catch (_: Throwable) { emptySet() }
         val wanted = terms(query)
         if (wanted.isEmpty()) return@synchronized emptyList()
         val best = ArrayList<MemoryMatch>(limit)
