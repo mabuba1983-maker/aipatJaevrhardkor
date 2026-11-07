@@ -27,6 +27,20 @@ class NMemTest {
     }
 
     @Test
+    fun generationLookupRechecksShrinkingRamBudget() {
+        var budget = Long.MAX_VALUE
+        val memory = NMem()
+        memory.setBudgetProvider { budget }
+        memory.add("memory available during generation")
+        assertNotNull(memory.dist("memory", 4))
+
+        budget = 0L
+        assertNull(memory.dist("memory", 4))
+        assertEquals(0, memory.activeRecordCount())
+        assertEquals(1L, memory.archivedFromRam)
+    }
+
+    @Test
     fun restoringNewestFirstKeepsNewestRecordWhenBudgetIsExceeded() {
         var budget = Long.MAX_VALUE
         val memory = NMem()
