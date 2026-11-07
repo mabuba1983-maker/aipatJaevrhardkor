@@ -44,8 +44,9 @@ class Brain private constructor(private val ctx: Context) {
     private val lock = Any()
     private val sessions = LinkedHashMap<String, NlmSession>()
     private val nlmUserFile = File(ctx.filesDir, "nlm2_user.bin")
-    private val memFile = File(ctx.filesDir, "memory.txt")
-    private val memory = ArrayList<String>()
+    // All learned material is stored on disk, separately from model parameters.
+    // RAM keeps only a bounded working set for current training/retrieval.
+    private val storage = NuwaaStorage(File(ctx.filesDir, "storage"))
     private var observed = 0
     private var lastReport = JSONObject()
     private var rehearsal = ""            // a sample of the original training text, replayed during self-development so nothing known is forgotten
@@ -67,9 +68,10 @@ class Brain private constructor(private val ctx: Context) {
             val heapMb = Runtime.getRuntime().maxMemory() / 1e6      // no budget of mine: the only limit is what this phone really gives the app
             if (base.size * 3.0 / 1e6 > heapMb * 0.85) { modelStatus = "النموذج: تخطيته لأن ذاكرة هذا الجهاز للتطبيق ${heapMb.toInt()} MB فقط"; return }
             val m = try { if (nlmUserFile.exists()) Nlm.load(nlmUserFile.readBytes()) else Nlm.load(base) } catch (e: Exception) { Nlm.load(base) }     // a damaged user file never blocks the start
-            if (memFile.exists()) for (line in memFile.readLines(Charsets.UTF_8)) if (line.isNotBlank()) { memory.add(line); m.long.add(line) }
+            // Load only a bounded recent window; the complete archive stays on disk.
+            for (line in storage.lastTexts(2000)) if (line.isNotBlank()) m.long.add(line)
             nlm = m
-            modelStatus = "نموذج نواة (GRU، سياق غير محدود): " + m.paramCount() + " معامل · سمعت منك " + memory.size + " رسالة"
+            modelStatus = "نموذج نواة (GRU): " + m.paramCount() + " معامل · محفوظ في التخزين " + storage.count() + " سجل"
         } catch (e: java.io.FileNotFoundException) {
             modelStatus = "النموذج غير موجود في التطبيق (nlm2.bin)"
         } catch (e: Throwable) {
@@ -161,8 +163,7 @@ class Brain private constructor(private val ctx: Context) {
         m.observe(q)
         val line = q.replace("\n", " ").trim()
         if (line.isEmpty()) return
-        memory.add(line)
-        try { memFile.appendText(line + "\n", Charsets.UTF_8) } catch (e: Throwable) { /* memory still works in this run */ }
+        try { storage.append("conversation", line) } catch (e: Throwable) { /* keep running; disk errors do not crash chat */ }
         observed++
         if (observed % 10 == 0) saveNlm()
     }
@@ -209,17 +210,17 @@ class Brain private constructor(private val ctx: Context) {
     /** The self-development button: re-read everything heard, train on it, keep the result only if it got better. */
     fun develop(): String {
         val m = nlm ?: return "النموذج غير محمّل."
-        val texts = memory.takeLast(400).toList()
-        if (texts.size < 3) return "ما سمعت منك كلاما كافيا بعد. تحدث معي أكثر، ثم اضغط التطوير."
+        val texts = storage.lastTexts(400)
+        if (texts.size < 3) return "ما فيه بيانات كافية في التخزين للتدريب بعد. أضف أمثلة أكثر ثم أعد المحاولة."
         val r = synchronized(lock) { m.develop(texts, 2, 3e-4f, rehearsal) }
         saveNlm()
-        lastReport = JSONObject().put("heard", memory.size).put("bits_before", r.first.toDouble()).put("bits_after", r.second.toDouble()).put("params", m.paramCount())
+        lastReport = JSONObject().put("heard", storage.count()).put("bits_before", r.first.toDouble()).put("bits_after", r.second.toDouble()).put("params", m.paramCount())
         val f = { x: Float -> String.format(java.util.Locale.US, "%.2f", x) }
         val sb = StringBuilder()
-        sb.append("راجعت كل ما سمعته منك: ").append(memory.size).append(" رسالة.\n")
+        sb.append("راجعت بيانات من التخزين. إجمالي السجلات: ").append(storage.count()).append(".\n")
         sb.append("• تدربت على آخر ").append(texts.size).append(" رسالة، وقست نفسي قبل وبعد: ").append(f(r.first)).append(" ← ").append(f(r.second)).append(" بت/حرف (الأقل أفضل).\n")
         if (r.second >= r.first) sb.append("• ما تحسّنت هذه المرة، فرجعت لأوزاني السابقة بدون تغيير.\n") else sb.append("• تحسّنت، وحفظت الأوزان الجديدة.\n")
-        sb.append("• حجمي: ").append(m.paramCount()).append(" معامل، وذاكرتي الطويلة: ").append(m.long.chars).append(" حرف من كلامك.\n")
+        sb.append("• حجم النموذج: ").append(m.paramCount()).append(" معامل. التخزين المنفصل يحتوي ").append(storage.count()).append(" سجلًا.\n")
         sb.append("\nاضغط «ملف المطور» لأخرج لك ملفا فيه أوزاني الجديدة وذاكرتي وتقرير التحسن، وترسله لمن يفحصه.")
         return sb.toString()
     }
@@ -231,10 +232,10 @@ class Brain private constructor(private val ctx: Context) {
     fun devFile(): ByteArray {
         val m = nlm ?: throw IllegalStateException("النموذج غير محمّل")
         val w = synchronized(lock) { m.toBytes() }
-        val mem = memory.joinToString("\n").toByteArray(Charsets.UTF_8)
+        val mem = storage.exportPlainText()
         val files = JSONObject().put("nlm2.bin", sha(w)).put("memory.txt", sha(mem))
-        val man = JSONObject().put("version", 1).put("created", System.currentTimeMillis() / 1000).put("params", m.paramCount()).put("vocab", m.v)
-            .put("emb", m.e).put("hid", m.h).put("memory_lines", memory.size).put("files", files).put("report", lastReport).put("origin", "android")
+        val man = JSONObject().put("version", 2).put("created", System.currentTimeMillis() / 1000).put("params", m.paramCount()).put("vocab", m.v)
+            .put("emb", m.e).put("hid", m.h).put("memory_lines", storage.count()).put("files", files).put("report", lastReport).put("origin", "android")
         val bos = java.io.ByteArrayOutputStream()
         java.util.zip.ZipOutputStream(bos).use { z ->
             z.putNextEntry(java.util.zip.ZipEntry("manifest.json")); z.write(man.toString(1).toByteArray(Charsets.UTF_8)); z.closeEntry()
