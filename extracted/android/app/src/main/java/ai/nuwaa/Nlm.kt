@@ -597,7 +597,7 @@ class NlmSession(private val m: Nlm, seed: Long) {
     /** Agreement is a stability signal, NOT proof that an answer is true. */
     private fun lexicalAgreement(a: String, b: String): Float {
         fun words(s: String): Set<String> = Nlp.norm(s)
-            .split(Regex("[^\\p{L}\\p{N}_]+"))
+            .split(Regex("[^\p{L}\p{N}_]+"))
             .filter { it.length >= 2 }
             .toSet()
         val x = words(a); val y = words(b)
@@ -606,8 +606,33 @@ class NlmSession(private val m: Nlm, seed: Long) {
         return x.intersect(y).size.toFloat() / x.union(y).size.toFloat()
     }
 
-    /** Thinking mode: sample independent drafts, then rank by model likelihood + agreement with the other drafts.
-     *  Agreement reduces unstable guesses but is never treated as factual verification. */
+    /** Scores visible writing quality only; it cannot determine whether claims are true. */
+    private fun draftQuality(text: String): Float {
+        val t = Nlp.norm(text).trim()
+        if (t.isEmpty()) return 0f
+        var score = 1f
+        val words = t.split(Regex("[^\p{L}\p{N}_]+")).filter { it.isNotBlank() }
+        if (words.size < 3) score -= 0.18f
+        if (words.size >= 6) {
+            val counts = words.groupingBy { it }.eachCount()
+            val repeated = counts.values.sumOf { maxOf(0, it - 2) }
+            score -= (repeated.toFloat() / words.size * 0.30f).coerceAtMost(0.30f)
+        }
+        val sentences = t.split(Regex("[.!؟?\n]+")).map { it.trim() }.filter { it.length >= 12 }
+        if (sentences.isNotEmpty()) {
+            val duplicateCount = sentences.size - sentences.toSet().size
+            score -= (duplicateCount.toFloat() / sentences.size * 0.35f).coerceAtMost(0.35f)
+        }
+        if (Regex("(.)\\1{4,}").containsMatchIn(t)) score -= 0.15f
+        if (t.endsWith(" و") || t.endsWith(" أو") || t.endsWith(" من") ||
+            t.endsWith(" لأن") || t.endsWith(":") || t.endsWith(",")) score -= 0.12f
+        val useful = t.count { it.isLetterOrDigit() }
+        if (t.isNotEmpty() && useful.toFloat() / t.length < 0.45f) score -= 0.20f
+        return score.coerceIn(0f, 1f)
+    }
+
+    /** Samples independent drafts and ranks them by likelihood, agreement and writing quality.
+     *  All three are heuristics, never factual verification. */
     fun replyThink(user: String, maxChars: Int, tries: Int, accept: ((String) -> Boolean)? = null): Pair<String, List<Float>> {
         val start = snap()
         val temps = floatArrayOf(0.55f, 0.7f, 0.85f, 0.65f, 0.75f)
@@ -632,8 +657,9 @@ class NlmSession(private val m: Nlm, seed: Long) {
                 compared++
             }
             if (compared > 0) agreement /= compared.toFloat()
-            // The model's own token likelihood is weak evidence; cross-draft agreement is a separate stability signal.
-            val score = 0.55f * attempts[i].third + 0.45f * agreement
+            val quality = draftQuality(attempts[i].first.first)
+            // Consensus is not dominant: identical low-quality drafts must not win on agreement alone.
+            val score = 0.30f * attempts[i].third + 0.25f * agreement + 0.45f * quality
             if (score > bestScore) { bestScore = score; bestIndex = i }
         }
         val fin = attempts[bestIndex].first
