@@ -273,7 +273,7 @@ class Brain private constructor(private val ctx: Context) {
             // Code generation must receive the user's earlier project constraints, not just the latest sentence.
             // Retrieve from the complete disk archive; only the best few relevant records enter this prompt.
             val projectMemories = try {
-                storage.searchRelevant(q, if (project) 6 else 3).filter { it.score >= 0.16 }
+                storage.searchRelevant(q, if (project) 5 else 3).filter { it.score >= 0.16 }
             } catch (_: Throwable) { emptyList() }
             val codeExamples = try {
                 kb.search(q, if (project) 3 else 2).filter { it.score >= Kb.LOW && it.item.v >= 1 }
@@ -283,7 +283,7 @@ class Brain private constructor(private val ctx: Context) {
                     append("متطلبات وسياق سابق استُرجع من أرشيف المستخدم. اعتبرها قيوداً للمشروع فقط إذا كانت تخص المشروع الحالي، ولا تستبدل بها طلبه الحالي:\n")
                     for ((index, memory) in projectMemories.withIndex()) {
                         append("[سياق سابق ").append(index + 1).append("] ")
-                            .append(memory.text.take(1000)).append("\n")
+                            .append(memory.text).append("\n")
                     }
                 }
                 if (codeExamples.isNotEmpty()) {
