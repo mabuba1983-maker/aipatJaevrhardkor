@@ -639,11 +639,12 @@ class NlmSession(private val m: Nlm, seed: Long) {
      *  All three are heuristics, never factual verification. */
     fun replyThink(user: String, maxChars: Int, tries: Int, accept: ((String) -> Boolean)? = null): Pair<String, List<Float>> {
         val start = snap()
+        val multiline = user.length >= 500 || Regex("طويل|بالتفصيل|كامل|جدول|مشروع|عدة ملفات|صفحات|اسطر|سطور").containsMatchIn(Nlp.norm(user))
         val temps = floatArrayOf(0.55f, 0.7f, 0.85f, 0.65f, 0.75f)
         val attempts = ArrayList<Triple<Pair<String, List<Float>>, Snap, Float>>()
         for (i in 0 until minOf(tries, temps.size)) {
             restore(start)
-            val r = reply(user, maxChars, temps[i], 8, 0.15f, false)
+            val r = reply(user, maxChars, temps[i], 8, 0.15f, false, allowMultiline = multiline)
             var likelihood = if (r.second.isEmpty()) 0f else r.second.sum() / r.second.size
             if (r.first.length < 8) likelihood -= 0.2f
             if (accept != null && !accept(r.first)) likelihood -= 1f
