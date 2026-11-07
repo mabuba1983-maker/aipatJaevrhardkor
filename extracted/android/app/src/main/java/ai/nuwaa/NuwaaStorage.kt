@@ -204,6 +204,60 @@ class NuwaaStorage(private val dir: File) {
         true
     }
 
+    /** Return the first user request plus the newest user messages, bounded by a caller-supplied live context budget. */
+    fun sessionUserContext(convId: String, maxChars: Int): String = synchronized(lock) {
+        if (maxChars <= 0) return@synchronized ""
+        val file = sessionFile(convId)
+        if (!file.exists()) return@synchronized ""
+        var firstUser: String? = null
+        val recent = java.util.ArrayDeque<String>()
+        var recentChars = 0
+        var role = ""
+        var message = StringBuilder()
+        fun retainUserMessage(value: String) {
+            if (value.isBlank()) return
+            if (firstUser == null) {
+                firstUser = value
+                return
+            }
+            recent.addLast(value)
+            recentChars += value.length
+            val firstCost = minOf(firstUser!!.length, maxChars / 2)
+            val allowance = (maxChars - firstCost).coerceAtLeast(0)
+            while (recent.isNotEmpty() && recentChars > allowance) {
+                recentChars -= recent.removeFirst().length
+            }
+        }
+        file.bufferedReader(Charsets.UTF_8).use { reader ->
+            while (true) {
+                val line = reader.readLine() ?: break
+                try {
+                    val row = JSONObject(line)
+                    if (row.optBoolean("start")) {
+                        role = row.optString("role")
+                        message = StringBuilder()
+                    }
+                    if (role == "u") message.append(row.optString("text"))
+                    if (row.optBoolean("end")) {
+                        if (role == "u") retainUserMessage(message.toString())
+                        role = ""
+                        message = StringBuilder()
+                    }
+                } catch (_: Throwable) { /* skip a damaged chunk */ }
+            }
+        }
+        val initial = firstUser ?: return@synchronized recent.joinToString("\\n")
+        val firstBudget = maxOf(1, maxChars / 2)
+        val keptInitial = if (initial.length <= firstBudget) initial else {
+            val side = maxOf(1, firstBudget / 2)
+            initial.take(side) + "\\n[… وسط الطلب الأول مختصر لحفظ مساحة السياق …]\\n" + initial.takeLast(side)
+        }
+        val out = StringBuilder("[أول طلب للمستخدم في هذه المحادثة — احتفظ بقيوده الأصلية]\\n")
+            .append(keptInitial)
+        for (item in recent) out.append("\\n[طلب سابق أحدث]\\n").append(item)
+        out.toString()
+    }
+
     private fun sessionFile(convId: String): File {
         val key = java.security.MessageDigest.getInstance("SHA-256")
             .digest(convId.toByteArray(Charsets.UTF_8))
