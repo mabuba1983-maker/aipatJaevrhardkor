@@ -200,8 +200,8 @@ class Brain private constructor(private val ctx: Context) {
             val normalizedApproval = Nlp.norm(q)
             val approvePrevious = listOf(
                 "اعتمد الرد السابق", "اعتمد الاجابه السابقه", "اعتمد الاجابة السابقة",
-                "احفظ الرد السابق", "احفظ الاجابه السابقه", "سجل الرد السابق",
-                "اعتبر الرد السابق صحيح", "الرد السابق صحيح"
+                "اعتبر الرد السابق صحيح", "الرد السابق صحيح", "هذا الرد صحيح",
+                "علم النموذج ان الرد السابق صحيح"
             ).any { normalizedApproval.contains(Nlp.norm(it)) }
             val result = if (approvePrevious) {
                 val previous = try { storage.lastSessionExchange(convId) } catch (_: Throwable) { null }
