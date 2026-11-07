@@ -1,0 +1,52 @@
+name: Download and extract Google Drive archive
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  download-and-extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Download shared Google Drive file
+        env:
+          DRIVE_FILE_ID: "1Qbm6a6_GIrGjj3NH_GAl74m-wfd98ISA"
+        run: |
+          python -m pip install --disable-pip-version-check gdown
+          gdown --fuzzy "https://drive.google.com/file/d/${DRIVE_FILE_ID}/view" --output source-archive
+
+      - name: Verify and safely extract ZIP
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile, BadZipFile
+
+          archive = Path("source-archive")
+          if not archive.is_file() or archive.stat().st_size == 0:
+              raise SystemExit("Download failed: the Google Drive file is empty or missing.")
+
+          output = Path("extracted")
+          output.mkdir(exist_ok=True)
+          try:
+              with ZipFile(archive) as zf:
+                  root = output.resolve()
+                  for item in zf.infolist():
+                      target = (output / item.filename).resolve()
+                      if target != root and root not in target.parents:
+                          raise SystemExit(f"Unsafe ZIP path rejected: {item.filename}")
+                  zf.extractall(output)
+          except BadZipFile:
+              raise SystemExit("The downloaded file is not a ZIP archive.")
+          print(f"Extracted archive to: {output.resolve()}")
+          PY
+
+      - name: Upload extracted project as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extracted-google-drive-project
+          path: extracted/
+          if-no-files-found: error
+          retention-days: 7
