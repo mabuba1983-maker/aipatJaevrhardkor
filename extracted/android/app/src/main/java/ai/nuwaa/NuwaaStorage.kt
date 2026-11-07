@@ -202,7 +202,22 @@ class NuwaaStorage(private val dir: File) {
                         val remainingChars = ((maxTextBytes - usedBytes - 64L).coerceAtLeast(0L) / 2L)
                             .coerceAtMost(perRecordChars.toLong()).toInt()
                         if (remainingChars > 0) {
-                            val selected = if (text.length <= remainingChars) text else if (remainingChars > 48) {
+                            val selected = if (text.length <= remainingChars) text else if (kind == "dialogue" && remainingChars > 80) {
+                                val separator = text.indexOf("\nج:")
+                                if (separator > 0) {
+                                    fun preserveEnds(value: String, budget: Int): String {
+                                        if (value.length <= budget) return value
+                                        val head = budget / 2
+                                        return value.take(head) + " […] " + value.takeLast(budget - head - 5)
+                                    }
+                                    val questionBudget = remainingChars / 2
+                                    preserveEnds(text.substring(0, separator), questionBudget) +
+                                        preserveEnds(text.substring(separator), remainingChars - questionBudget)
+                                } else {
+                                    val side = remainingChars / 2
+                                    text.take(side) + " […] " + text.takeLast(remainingChars - side - 5)
+                                }
+                            } else if (remainingChars > 48) {
                                 val side = remainingChars / 2
                                 text.take(side) + " […] " + text.takeLast(remainingChars - side - 5)
                             } else text.take(remainingChars)
