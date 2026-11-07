@@ -40,15 +40,39 @@ class NuwaaStorage(private val dir: File) {
         if (!metaTemp.renameTo(meta)) throw IllegalStateException("تعذر تثبيت فهرس الذاكرة")
     }
 
-    fun count(): Long = synchronized(lock) {
-        try {
-            if (meta.exists()) JSONObject(meta.readText(Charsets.UTF_8)).optLong("count", 0L)
-            else if (data.exists()) RandomAccessFile(data, "r").use { f ->
-                var n = 0L
-                while (f.readLine() != null) n++
-                n
-            } else 0L
+    private fun lastRecordId(): Long {
+        if (!data.exists() || data.length() == 0L) return 0L
+        return try {
+            RandomAccessFile(data, "r").use { file ->
+                var pointer = file.length() - 1L
+                val line = ByteArrayOutputStream()
+                while (pointer >= 0L) {
+                    file.seek(pointer)
+                    val value = file.read()
+                    if (value == 10 && line.size() > 0) break
+                    if (value >= 0 && value != 10) line.write(value)
+                    pointer--
+                }
+                val raw = String(line.toByteArray().reversedArray(), Charsets.UTF_8).trim()
+                if (raw.isEmpty()) 0L else JSONObject(raw).optLong("id", 0L)
+            }
         } catch (_: Throwable) { 0L }
+    }
+
+    fun count(): Long = synchronized(lock) {
+        val cached = try { if (meta.exists()) JSONObject(meta.readText(Charsets.UTF_8)).optLong("count", 0L) else 0L }
+            catch (_: Throwable) { 0L }
+        val tail = lastRecordId()
+        if (tail > 0L) maxOf(cached, tail)
+        else if (cached > 0L) cached
+        else if (data.exists()) try {
+            RandomAccessFile(data, "r").use { file ->
+                var rows = 0L
+                while (file.readLine() != null) rows++
+                rows
+            }
+        } catch (_: Throwable) { 0L }
+        else 0L
     }
 
     /** Search the append-only archive one record at a time. The archive is never loaded into RAM as a whole.
