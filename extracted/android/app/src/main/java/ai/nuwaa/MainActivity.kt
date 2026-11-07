@@ -982,6 +982,7 @@ class MainActivity : Activity() {
                 studioStatus.text = "تم تشغيل HTML. النص المقروء من الصفحة: " +
                     (if (lastPreviewText.isBlank()) "لا يوجد نص ظاهر" else lastPreviewText.take(180).replace("\n", " "))
                 captureStudioPreview(false)
+                reviewStudioPreview() // after each run: capture and inspect the rendered frame locally
             }
         }, 900)
     }
