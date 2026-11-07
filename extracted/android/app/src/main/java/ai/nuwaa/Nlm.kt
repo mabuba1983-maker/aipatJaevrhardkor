@@ -415,25 +415,65 @@ class Nlm private constructor(val e: Int, val h: Int, val chars: List<String>) {
         tAdam = s.step
     }
 
-    /** Self-development on what was heard. `rehearse` = lines of the original training data ("س:..\nج:..\n"), mixed in so nothing already known is forgotten.
-     *  Returns (bits/char before, after) on the heard text. The weights are rolled back if the heard text did not improve OR the rehearsal text got worse by more than 3%.
-     *  At most the last 6000 characters of heard text and 4000 of rehearsal are used, so the button finishes in reasonable time on a phone. */
-    fun develop(texts: List<String>, epochs: Int, lr: Float, rehearse: String = "", chunk: Int = 96): Pair<Float, Float> {
-        val sb = StringBuilder()
-        for (tx in texts) sb.append("س:").append(tx.take(600)).append("\n")
-        val heard = if (sb.length > 4000) sb.substring(sb.length - 4000) else sb.toString()
-        val ids = encode(heard)
-        if (ids.size < 8) return Pair(0f, 0f)
-        val reh = if (rehearse.length > 2500) rehearse.substring(0, 2500) else rehearse
-        val rids = if (reh.length > 8) encode(reh) else null
-        val before = bpc(ids)
-        val rBefore = if (rids != null) bpc(rids) else 0f
-        val snap = trainingSnapshot()
+    /**
+     * Prepare a later self-development pass from a bounded sample spanning the archive.
+     * The newest portion is held out for evaluation: training is accepted only when unseen
+     * held-out text improves and the original rehearsal text does not regress materially.
+     * This method trains only when explicitly called by the user-facing training action.
+     */
+    fun develop(
+        texts: List<String>,
+        epochs: Int,
+        lr: Float,
+        rehearse: String = "",
+        maxTrainingChars: Int = (Effort.trainingSampleBudgetBytes() / 2L).coerceAtMost(Int.MAX_VALUE.toLong()).toInt(),
+        chunk: Int = 96
+    ): Pair<Float, Float> {
+        val totalBudget = maxTrainingChars.coerceAtLeast(128)
+        val trainBudget = (totalBudget * 4L / 5L).toInt().coerceAtLeast(64)
+        val validationBudget = (totalBudget - trainBudget).coerceAtLeast(32)
+        val training = StringBuilder()
+        val validation = StringBuilder()
+
+        fun appendBounded(target: StringBuilder, value: String, budget: Int) {
+            val remaining = budget - target.length
+            if (remaining <= 0 || value.isEmpty()) return
+            val record = "س:" + value + "\n"
+            if (record.length <= remaining) target.append(record)
+            else if (remaining >= 48) {
+                val head = remaining / 2
+                target.append(record.take(head))
+                target.append(record.takeLast(remaining - head))
+            } else target.append(record.take(remaining))
+        }
+
+        val splitAt = ((texts.size.toLong() * 4L) / 5L).toInt().coerceIn(0, texts.size)
+        for (index in texts.indices) {
+            if (index < splitAt) appendBounded(training, texts[index], trainBudget)
+            else appendBounded(validation, texts[index], validationBudget)
+        }
+        if (training.length < 8 || validation.length < 8) return Pair(0f, 0f)
+
+        val heard = training.toString()
+        val validationIds = encode(validation.toString())
+        if (validationIds.size < 8) return Pair(0f, 0f)
+
+        val rehearsalBudget = minOf(rehearse.length, (trainBudget / 4).coerceAtLeast(0))
+        val reh = if (rehearse.length <= rehearsalBudget) rehearse else {
+            val side = rehearsalBudget / 2
+            rehearse.take(side) + rehearse.takeLast(rehearsalBudget - side)
+        }
+        val rehearsalIds = if (reh.length > 8) encode(reh) else null
+        val before = bpc(validationIds)
+        val rehearsalBefore = if (rehearsalIds != null) bpc(rehearsalIds) else 0f
+        val checkpoint = trainingSnapshot()
+
         trainOn(encode(heard + reh), epochs, lr, chunk)
-        val after = bpc(ids)
-        val rAfter = if (rids != null) bpc(rids) else 0f
-        if (after > before || (rids != null && rAfter > rBefore * 1.03f)) {
-            restoreTrainingSnapshot(snap)
+
+        val after = bpc(validationIds)
+        val rehearsalAfter = if (rehearsalIds != null) bpc(rehearsalIds) else 0f
+        if (after > before || (rehearsalIds != null && rehearsalAfter > rehearsalBefore * 1.03f)) {
+            restoreTrainingSnapshot(checkpoint)
             return Pair(before, before)
         }
         return Pair(before, after)
