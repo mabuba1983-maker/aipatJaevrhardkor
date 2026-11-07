@@ -348,15 +348,17 @@ class Brain private constructor(private val ctx: Context) {
     /** The self-development button: re-read everything heard, train on it, keep the result only if it got better. */
     fun develop(): String {
         val m = nlm ?: return "النموذج غير محمّل."
-        val texts = storage.lastTexts(400).map { if (it.length > 2048) it.takeLast(2048) else it }
-        if (texts.size < 3) return "ما فيه بيانات كافية في التخزين للتدريب بعد. أضف أمثلة أكثر ثم أعد المحاولة."
-        val r = synchronized(lock) { m.develop(texts, 2, 3e-4f, rehearsal) }
+        val sampleBudget = Effort.trainingSampleBudgetBytes()
+        val texts = storage.sampleTexts(sampleBudget)
+        if (texts.size < 3) return "ما فيه بيانات كافية ضمن مساحة الذاكرة المتاحة لتحضير عينة تدريب من الأرشيف. أضف أمثلة أكثر أو أعد المحاولة عندما تتوفر ذاكرة."
+        val trainingChars = (sampleBudget / 2L).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+        val r = synchronized(lock) { m.develop(texts, 2, 3e-4f, rehearsal, trainingChars) }
         saveNlm()
         lastReport = JSONObject().put("heard", storage.count()).put("bits_before", r.first.toDouble()).put("bits_after", r.second.toDouble()).put("params", m.paramCount())
         val f = { x: Float -> String.format(java.util.Locale.US, "%.2f", x) }
         val sb = StringBuilder()
         sb.append("راجعت بيانات من التخزين. إجمالي السجلات: ").append(storage.count()).append(".\n")
-        sb.append("• تدربت على آخر ").append(texts.size).append(" رسالة، وقست نفسي قبل وبعد: ").append(f(r.first)).append(" ← ").append(f(r.second)).append(" بت/حرف (الأقل أفضل).\n")
+        sb.append("• استخدمت عينة موزعة على الأرشيف ضمن ميزانية ذاكرة متغيرة (").append(texts.size).append(" سجلًا)، وحجزت الجزء الأحدث للتقييم قبل وبعد: ").append(f(r.first)).append(" ← ").append(f(r.second)).append(" بت/حرف (الأقل أفضل).\n")
         if (r.second >= r.first) sb.append("• ما تحسّنت هذه المرة، فرجعت لأوزاني السابقة بدون تغيير.\n") else sb.append("• تحسّنت، وحفظت الأوزان الجديدة.\n")
         sb.append("• حجم النموذج: ").append(m.paramCount()).append(" معامل. التخزين المنفصل يحتوي ").append(storage.count()).append(" سجلًا.\n")
         sb.append("\nاضغط «ملف المطور» لأخرج لك ملفا فيه أوزاني الجديدة وذاكرتي وتقرير التحسن، وترسله لمن يفحصه.")
