@@ -76,7 +76,10 @@ class NuwaaStorage(private val dir: File) {
             var offset = 0
             var first = true
             while (offset < text.length) {
-                val next = minOf(offset + 4096, text.length)
+                var next = minOf(offset + 4096, text.length)
+                if (next < text.length && next > offset &&
+                    java.lang.Character.isHighSurrogate(text[next - 1]) &&
+                    java.lang.Character.isLowSurrogate(text[next])) next--
                 val row = JSONObject()
                     .put("role", if (first) role else "")
                     .put("start", first)
