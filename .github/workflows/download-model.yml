@@ -29,7 +29,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          from zipfile import ZipFile
+          from zipfile import ZipFile, is_zipfile
           import tarfile, shutil, subprocess
 
           source = Path("downloaded-model")
@@ -43,7 +43,7 @@ jobs:
                   raise SystemExit(f"Unsafe archive path rejected: {name}")
               return target
 
-          if ZipFile.is_zipfile(source):
+          if is_zipfile(source):
               with ZipFile(source) as z:
                   for item in z.infolist():
                       safe_target(item.filename)
