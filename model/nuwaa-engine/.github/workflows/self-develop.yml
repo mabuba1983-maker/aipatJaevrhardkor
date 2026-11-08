@@ -1,0 +1,50 @@
+name: Self-develop the engine (automatic, unsupervised architecture search)
+# Real self-development: tries small variations of the engine's own config, trains each briefly,
+# keeps whichever actually scores best on the held-out benchmark. No human picks the winner.
+# Commits ONLY discovered_stages.json (a few KB of numbers + scores) — never weights.
+on:
+  workflow_dispatch:
+    inputs:
+      base: { default: "s220m_desktop" }
+      steps_per_candidate: { default: "500" }
+      generations: { default: "3" }
+  schedule:
+    - cron: "0 3 * * 0"  # every Sunday 03:00 UTC; remove this block if you only want manual runs
+
+permissions:
+  contents: write   # needed to commit discovered_stages.json back
+
+jobs:
+  develop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install torch numpy --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+
+      - name: Build a programming+arabic-only training set
+        run: |
+          mkdir -p data_code_only
+          for f in data/*python*.jsonl data/*code*.jsonl data/*code*.txt data/v16_code.jsonl data/v16_fix.jsonl; do
+            [ -f "$f" ] && cp "$f" data_code_only/ || true
+          done
+          mkdir -p data_code_only/eval
+          cp data/eval/*.jsonl data_code_only/eval/ 2>/dev/null || true
+
+      - name: Run the search
+        run: |
+          python -m nuwaa.core.auto_develop \
+            --base "${{ inputs.base || 's220m_desktop' }}" \
+            --steps "${{ inputs.steps_per_candidate || '500' }}" \
+            --generations "${{ inputs.generations || '3' }}" \
+            --data-dir data_code_only
+
+      - name: Commit the result (small JSON only, never weights)
+        run: |
+          git config user.name "nuwaa-self-develop"
+          git config user.email "actions@users.noreply.github.com"
+          git add discovered_stages.json
+          git diff --cached --quiet || git commit -m "self-develop: update discovered_stages.json"
+          git push

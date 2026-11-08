@@ -1,0 +1,71 @@
+name: Train accuracy engine (programming only, desktop, no weights committed)
+# Manual only. Trains the GPT engine (nuwaa/core) from scratch on GitHub's free CPU runners,
+# on a code-only subset of data/, then uploads model.pt/model.bin as a workflow ARTIFACT.
+# Nothing is committed back to the repo: the repo stays weight-free, exactly like the delivered package.
+# Honesty note (read before raising "steps"): doubling the stage size without roughly
+# doubling (steps x data) does not make it smarter - it mostly adds untrained noise.
+# s220m_desktop is a big jump from s80m; expect this to need tens of thousands of steps
+# and a CPU runner is ~50x slower than a GPU, so budget real wall-clock time (see timeout below).
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "Stage to train (see nuwaa/core/stages.py). Desktop/accuracy stages ignore phone limits on purpose."
+        default: "s220m_desktop"
+      steps:
+        description: "Training steps. Bigger stage needs more steps, not fewer."
+        default: "30000"
+      bs:
+        description: "Batch size"
+        default: "16"
+
+permissions:
+  contents: read
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340  # GitHub's hard ceiling for a single job; split into several runs for more steps than this allows
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Install PyTorch (CPU) and numpy
+        run: pip install torch numpy --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple
+
+      - name: Build a programming-only training set (no Arabic-chat / general data)
+        run: |
+          mkdir -p data_code_only
+          # keep only the files whose name signals programming content; adjust this list as the data/ folder grows.
+          for f in data/*python*.jsonl data/*code*.jsonl data/*code*.txt data/v16_code.jsonl data/v16_fix.jsonl; do
+            [ -f "$f" ] && cp "$f" data_code_only/ || true
+          done
+          echo "training on:"; ls -la data_code_only
+
+      - name: Train the stage from scratch (direct train.py, not the phone stage-gate)
+        run: |
+          python -m nuwaa.core.train --stage ${{ inputs.stage }} --steps ${{ inputs.steps }} --bs ${{ inputs.bs }} \
+            --out model.pt --data-dir data_code_only
+
+      - name: Export the phone/engine binary format too (if small enough; informational for desktop stages)
+        run: |
+          python - <<'PY'
+          import torch, json
+          from nuwaa.core.config import Config
+          from nuwaa.core.export_bin import export_state
+          ck = torch.load("model.pt", map_location="cpu")
+          try:
+              export_state(ck["state"], Config(**ck["cfg"]), "model.bin")
+              print("exported model.bin")
+          except Exception as e:
+              print("skipped .bin export:", e)
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nuwaa-accuracy-weights-${{ inputs.stage }}
+          path: |
+            model.pt
+            model.bin
+          if-no-files-found: ignore
+          retention-days: 14

@@ -1,0 +1,14 @@
+{"category":"code","user":"اكتب دالة باسم solve تستقبل رقما وتعيد ناتج ضربه في 7","test":"assert solve(3)==21"}
+{"category":"code","user":"اكتب دالة باسم solve تستقبل رقما وتعيد ناتج إضافة 11 إليه","test":"assert solve(1)==12"}
+{"category":"code","user":"اكتب دالة باسم solve تستقبل رقما وتعيد True إذا كان فرديا","test":"assert solve(3) is True and solve(4) is False"}
+{"category":"code","user":"اكتب دالة باسم solve تستقبل نصا وتعيده بحروف صغيرة","test":"assert solve('AB')=='ab'"}
+{"category":"code","user":"اكتب دالة باسم solve تستقبل ثلاثة أرقام وتعيد مجموعها","test":"assert solve(1,2,3)==6"}
+{"category":"arabic","user":"كم يساوي 25 + 17","expect":["42"]}
+{"category":"arabic","user":"ما هي عاصمة عمان","expect":["مسقط"]}
+{"category":"arabic","user":"ما هي عاصمة مصر","expect":["القاهرة"]}
+{"category":"arabic","user":"ما هو الشهر بعد ديسمبر","expect":["يناير"]}
+{"category":"arabic","user":"كم عدد أيام السنة","expect":["365"]}
+{"category":"chat","user":"هلا","expect":["هلا","مرحبا","أهلا"]}
+{"category":"chat","user":"شلونك","expect":["بخير","الحمد لله"]}
+{"category":"chat","user":"مين انت","expect":["نواة"]}
+{"category":"chat","user":"يعطيك العافية","expect":["العفو","الله يعافيك","في الخدمة"]}

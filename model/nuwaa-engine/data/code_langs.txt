@@ -1,0 +1,53 @@
+# JavaScript
+function sum(a) { return a.reduce((x, y) => x + y, 0); }
+console.log(sum([1, 2, 3]));
+
+// Kotlin
+fun sum(a: List<Int>): Int = a.sum()
+fun main() { println(sum(listOf(1, 2, 3))) }
+
+// Java
+public class Main {
+    static int sum(int[] a) { int s = 0; for (int x : a) s += x; return s; }
+    public static void main(String[] args) { System.out.println(sum(new int[]{1, 2, 3})); }
+}
+
+// C
+#include <stdio.h>
+int main() { int s = 0; for (int i = 1; i <= 3; i++) s += i; printf("%d\n", s); return 0; }
+
+// C++
+#include <iostream>
+int main() { int s = 0; for (int i = 1; i <= 3; i++) s += i; std::cout << s << std::endl; }
+
+// Go
+package main
+import "fmt"
+func main() { s := 0; for i := 1; i <= 3; i++ { s += i }; fmt.Println(s) }
+
+// Rust
+fn main() { let s: i32 = (1..=3).sum(); println!("{}", s); }
+
+// Swift
+let s = [1, 2, 3].reduce(0, +)
+print(s)
+
+// TypeScript
+function sum(a: number[]): number { return a.reduce((x, y) => x + y, 0); }
+
+// PHP
+<?php echo array_sum([1, 2, 3]); ?>
+
+// Bash
+for i in 1 2 3; do echo $i; done
+
+-- SQL
+CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);
+INSERT INTO users (name) VALUES ('Ali');
+SELECT COUNT(*) FROM users;
+
+<!-- HTML -->
+<button onclick="alert('hi')">Click</button>
+
+/* CSS */
+button { color: white; background: #1565c0; padding: 8px; }
