@@ -315,7 +315,7 @@ class MainActivity : Activity() {
             val lastBot = c.msgs.lastOrNull { it.role == "b" }?.text ?: ""
             val a = try {
                 val fr = if (q.isNotEmpty() && att == null && fileMode) brain.fileRequest(q, c.id, lastBot, true) else null      // a sent file is being reviewed: never create files then
-                if (fr != null) createFileAnswer(fr) else if (att != null) brain.answerAbout(att, q) else brain.answer(q, c.id)
+                if (fr != null) createFileAnswer(fr) else if (att != null) brain.answerAbout(att, q) else brain.answer(WebDecision.prepare(q), c.id)
             } catch (e: Throwable) { Answer("حصل خطأ داخلي: " + (e.message ?: e.javaClass.simpleName), "error") }
             // only the model's own words are shown as its reply; everything else is labelled as coming from the app (reports, notices, exact arithmetic)
             val shown = when (a.source) { "lm" -> a.text; "math" -> "🧮 حساب دقيق (من التطبيق، ليس من النموذج):\n" + a.text; else -> "⚙ رسالة من التطبيق (ليست من النموذج):\n" + a.text }
