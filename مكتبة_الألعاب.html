@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>مكتبة ألعاب ليالي الرياض</title>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%;background:#0d0f14;font-family:'Tajawal',Tahoma,sans-serif;color:#fff;overflow-x:hidden}
+#connBar{position:sticky;top:0;z-index:50;padding:12px 16px;text-align:center;font-weight:900;font-size:14px;cursor:pointer;transition:background .2s}
+#connBar.off{background:#c0392b}
+#connBar.on{background:#1f9e52}
+h1{font-size:20px;padding:16px 16px 4px;font-weight:900}
+p.hint{opacity:.7;font-size:12.5px;padding:0 16px;line-height:1.8}
+#gamesList{display:flex;flex-direction:column;gap:10px;padding:16px}
+.gRow{display:flex;align-items:center;gap:12px;background:#171a23;border:1px solid #ffffff14;border-radius:16px;padding:12px 14px}
+.gRow .ic{font-size:30px;width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:#ffffff0d;border-radius:12px;flex-shrink:0}
+.gRow .nm{flex:1;font-weight:800;font-size:15px}
+.gRow .pct{font-size:11px;opacity:.7}
+.addBtn{border:0;border-radius:12px;padding:10px 16px;background:linear-gradient(180deg,#7fe08a,#2f9e4a);color:#06230f;font-weight:900;font-size:13px;white-space:nowrap}
+.addBtn:disabled{opacity:.5}
+#emptyMsg{padding:40px 20px;text-align:center;opacity:.6;line-height:2}
+#connModal{display:none;position:fixed;inset:0;background:#000000cc;z-index:999;align-items:center;justify-content:center;padding:20px}
+#connModal .box{background:#171a23;border-radius:18px;padding:22px;max-width:360px;width:100%;text-align:center}
+#connModal input{width:100%;padding:14px;border-radius:12px;border:2px solid #ffffff22;background:#ffffff0d;color:#fff;font-size:22px;text-align:center;letter-spacing:.1em;font-family:inherit;margin-top:12px}
+#connModal button{width:100%;margin-top:10px;padding:13px;border:0;border-radius:12px;font-weight:900;font-size:14px}
+#connGo{background:linear-gradient(180deg,#7fe08a,#2f9e4a);color:#06230f}
+#connScan{background:#2a2f3d;color:#fff}
+#connClose{background:transparent;color:#ff8f8f}
+#qrScanOverlay{display:none;position:fixed;inset:0;background:#000;z-index:1000;flex-direction:column;align-items:center;justify-content:center}
+#qrScanVideo{width:100%;max-width:380px;border-radius:12px}
+</style>
+</head>
+<body>
+
+<div id="connBar" class="off" onclick="openConnModal()">🔴 غير متصل — اضغط هنا للاتصال بالتلفزيون</div>
+<h1>🎮 مكتبة ألعاب ليالي الرياض</h1>
+<p class="hint">اتصل بالتلفزيون أول شي، بعدين اختر أي لعبة واضغط «إضافة» — تنتقل مباشرة للتلفزيون وتصير جزء دائم من قائمة ألعابه.</p>
+
+<div id="gamesList"></div>
+
+<div id="connModal">
+<div class="box">
+<h2 style="font-size:18px;margin-bottom:6px">الاتصال بالتلفزيون</h2>
+<p class="hint" style="padding:0">اكتب الرمز المكوّن من 6 أرقام اللي طالع بشاشة التلفزيون (إضافة ألعاب)</p>
+<input id="connCodeInput" maxlength="6" inputmode="numeric" placeholder="------">
+<button id="connGo" onclick="connectToTv()">اتصال</button>
+<button id="connScan" onclick="openQrScan()">📷 مسح رمز QR من التلفزيون</button>
+<button id="connClose" onclick="closeConnModal()">إلغاء</button>
+<p id="connMsg" class="hint" style="margin-top:8px"></p>
+</div>
+</div>
+
+<div id="qrScanOverlay">
+<video id="qrScanVideo" autoplay playsinline muted></video>
+<canvas id="qrScanCanvas" style="display:none"></canvas>
+<p style="color:#fff;margin-top:14px">وجّه الكاميرا لرمز QR اللي بالتلفزيون 📺</p>
+<button onclick="closeQrScan()" style="margin-top:14px;padding:10px 26px;border-radius:10px;border:0;background:#ff5a5a;color:#fff;font-weight:bold">إلغاء</button>
+</div>
+
+<script>
+/* =====================================================================
+   هذا الملف تطبيق "مكتبة ألعاب ليالي الرياض" - مخصص يُبنى لاحقًا كتطبيق
+   أندرويد (APK) من قبل صاحب المشروع. وظيفته الوحيدة: الاتصال بتلفزيون
+   يشغّل تطبيق "ليالي الرياض" عن طريق رمز إقران من 6 أرقام، ثم إرسال ملف
+   لعبة جاهز (HTML واحد مكتمل) مباشرة للتلفزيون عشان يضيفه بشكل دائم
+   لقائمة ألعابه. هذا التطبيق لا يُستخدم للعب الفعلي - هو أداة "تثبيت"
+   تُستخدم مرة وحدة لكل لعبة جديدة.
+
+   ====================== مواصفة بناء الألعاب المتوافقة ======================
+   أي لعبة تُضاف لمصفوفة LIBRARY_GAMES تحت لازم تتبع المواصفة الكاملة هذي
+   حرفيًا (نفس الملف اللي يُعطى لأي Claude يُطلب منه يبني لعبة جديدة):
+
+# مواصفة دقيقة: بناء لعبة متوافقة مع نظام "ليالي الرياض"
+
+هذا الملف مواصفة تقنية كاملة لبناء لعبة جديدة (ملف HTML واحد) تقدر تُضاف لنظام "ليالي الرياض" وتشتغل بنفس طريقة الألعاب الموجودة (البادل، الألعاب المضحكة، إلخ) — بدون الحاجة لرؤية الملف الأصلي. إذا تبي تطلب من Claude ببنيلعبة جديدة بمحادثة ثانية، الصق هذا الملف كامل وقول له "ابني لي لعبة اسمها كذا بناءً على هذه المواصفة".
+
+## الفكرة العامة
+
+اللعبة = **ملف HTML واحد ذاتي الاكتفاء** (كل الـ CSS والـ JS بداخله، بدون ملفات خارجية إلا عبر CDN عام). نفس الملف يشتغل بوضعين مختلفين حسب مين فتحه:
+
+- **وضع التلفزيون (`tv`)**: يعرض حالة اللعبة الكاملة (الشاشة الكبيرة اللي يشوفها الكل).
+- **وضع الجوال (`ph`)**: يعرض واجهة التحكم الشخصية لكل لاعب (يكتب اسمه، يتحكم، يصوّت، إلخ).
+
+اللعبة **لا تدير اتصالها الخاص** — التطبيق الرئيسي (ليالي الرياض) هو اللي يفتحها داخل `<iframe>` (مرة على جهاز التلفزيون بوضع `tv`، ومرة على كل جوال بوضع `ph`)، ويتولى نقل الرسائل بين الطرفين عن طريق نظام جسر بسيط (bridge) بالـ `postMessage`. يعني اللعبة ما تحتاج PeerJS ولا أي اتصال شبكي خاص بها إطلاقًا — فقط تتكلم مع `parent` (الإطار اللي فتحها).
+
+## 1) الهيكل الأساسي للملف
+
+كل ملف لعبة يبدأ بهذا الهيكل بالضبط (ثابت، لا تغيّره):
+
+```html
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>اسم اللعبة</title>
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('emb-pending')}catch(e){}<\/script>
+<style>html.emb-pending body{visibility:hidden}</style>
+<style>
+/* كل الـ CSS هنا * /
+</style>
+</head>
+<body>
+<div id="root">
+<div id="role" class="card"><p>هذي اللعبة جزء من لوبي «ليالي الرياض» — افتحها من هناك حتى تتوصل تلقائيًا.</p></div>
+</div>
+<script>
+/* ===================== EMB BRIDGE (لا تغيّر هذا الجزء) ===================== * /
+let EMB=null; const embHostConns={};
+window.addEventListener('message', e=>{
+  const m=e&&e.data; if(!m||!m.__emb) return;
+  if(m.init){ EMB={role:m.role,code:m.code,name:m.name}; return embStart(); }
+  if(!EMB) return;
+  if(EMB.role==='tv'){
+    if(m.event==='data'){
+      let c=embHostConns[m.id];
+      if(!c)c=embHostConns[m.id]={id:m.id,send:obj=>{try{parent.postMessage({__emb:1,to:m.id,data:obj},'*')}catch(e){}}};
+      try{onHostMsg(c,m.data)}catch(e){}
+    } else if(m.event==='disconnect'){
+      try{onPlayerLeave(m.id)}catch(e){}
+      delete embHostConns[m.id];
+    }
+  } else if(EMB.role==='ph'){
+    if(m.data!==undefined){try{onCtlMsg(m.data)}catch(e){}}
+  }
+});
+function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
+function embStart(){
+  embReveal();
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
+}
+setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
+
+/* ===================== من هنا تبدأ لعبتك ===================== * /
+// لازم تعرّف هذي الدوال:
+function startTv(){ /* يبدأ تشغيل جهة التلفزيون * / }
+function startPhone(){ /* يبدأ تشغيل جهة الجوال * / }
+function onHostMsg(c, data){ /* يوصل بس لجهة التلفزيون: رسالة جاية من لاعب. c.id = هوية اللاعب، c.send(obj) ترسل له رد * / }
+function onPlayerLeave(id){ /* يوصل بس لجهة التلفزيون: لاعب قطع الاتصال * / }
+function onCtlMsg(data){ /* يوصل بس لجهة الجوال: رسالة جاية من التلفزيون (تحديث الحالة) * / }
+function ctlSend(obj){ try{parent.postMessage({__emb:1,data:obj},'*')}catch(e){} } // يرسل من الجوال للتلفزيون
+<\/script>
+</body>
+</html>
+```
+
+## 2) كيف تشتغل الأطراف
+
+### جهة التلفزيون (`EMB.role==='tv'`)
+- `EMB.code` = رمز الغرفة الحالي (نفس الرمز اللي كل اللاعبين كاتبينه بجوالاتهم للدخول).
+- أي لاعب يتصل أو يرسل أي شي، توصلك رسالته عن طريق `onHostMsg(c, data)` حيث:
+  - `c.id` = معرف فريد لهذا اللاعب (ثابت طول الجلسة).
+  - `c.send(obj)` = ترسل أي كائن JSON لهذا اللاعب بالذات (يوصله عبر `onCtlMsg` بجواله).
+  - `data` = الكائن اللي أرسله اللاعب (شكله يحدده بروتوكول لعبتك أنت).
+- أول رسالة المفروض توصل من كل جوال جديد هي شي يشبه `{t:'join', name:'...'}` (الاسم يوصلك جاهز، لأن التطبيق الرئيسي يمرره تلقائيًا بالـ `init`، لكن لو حاب تاخذ الاسم من رسالة اللاعب نفسها فهذا شائع بالألعاب الموجودة).
+- لو تبي ترسل لكل اللاعبين دفعة وحدة (broadcast)، لازم تحتفظ بقائمة `embHostConns` بنفسك (هي موجودة أصلاً بمتغير `embHostConns` العام) وتلف عليها.
+- لما لاعب يقطع الاتصال، توصلك `onPlayerLeave(id)`.
+
+### جهة الجوال (`EMB.role==='ph'`)
+- `EMB.code` = رمز الغرفة.
+- `EMB.name` = اسم هذا اللاعب (مكتوب مسبقًا من شاشة الدخول الرئيسية).
+- `ctlSend(obj)` ترسل أي كائن JSON للتلفزيون.
+- أي تحديث حالة يرسله التلفزيون يوصلك عن طريق `onCtlMsg(data)`.
+
+### نمط موصى فيه (نفس كل الألعاب الموجودة)
+التلفزيون يحتفظ بحالة اللعبة الكاملة بمتغير واحد (مثلاً `V` أو `G`)، وكل ما تتغيّر الحالة يبث نسخة مبسطة منها لكل اللاعبين (broadcast عن طريق `embHostConns`) بمعدل ثابت (مثلاً كل 150ms بـ `setInterval`) أو عند كل حدث. الجوال لا يحسب شي بنفسه — بس يعرض آخر حالة وصلته ويرسل أوامر (أزرار/تصويت/كتابة) للتلفزيون.
+
+## 3) قيود مهمة
+
+- **ملف واحد فقط**، كل شي بداخله (CSS + JS inline). ممنوع ملفات خارجية محلية.
+- مكتبات خارجية مسموحة فقط عبر CDN عام (نفس القائمة اللي التطبيق الرئيسي يستخدمها: `cdnjs.cloudflare.com`, `cdn.jsdelivr.net`, خطوط Google Fonts). لا تفترض وجود مكتبات غير محمّلة بنفس اللعبة.
+- **ممنوع** `localStorage`/`sessionStorage` (تفشل بصمت بأي بيئة iframe مقيدة) — استخدم متغيرات JS بالذاكرة بس.
+- حافظ على نفس الهوية البصرية إذا ممكن: خلفية غامقة (`#190d26` تقريبًا)، خط Tajawal، عناصر دائرية الحواف، نفس تدرج الألوان الذهبي لرمز الغرفة (`#ffd166` إلى `#ff9a3d`) — مو إلزامي لكن يخلي اللعبة تحس أنها جزء طبيعي من نفس التطبيق.
+- الشاشة تتفتح RTL عربي دايمًا.
+- حجم الملف النهائي يفضل يكون معقول (أقل من ٢-٣ ميجا) لأنه ينتقل كامل كنص base64 عبر اتصال مباشر بين الجهازين.
+
+## 4) التسليم النهائي
+
+اللعبة الجاهزة **تُحوَّل كاملة إلى base64** (الملف كامل بالنص، UTF-8 ثم base64)، وتُرسل/تُضاف هكذا للنظام — ما تحتاج تسوي شي إضافي غير إنك تسلّم ملف الـ HTML النهائي كامل وصحيح الصياغة (تأكد الكود يشتغل بدون أخطاء JS قبل التسليم).
+
+## 5) كيف تُضاف اللعبة لملف مكتبة الألعاب (تطبيق الجوال/الـ APK)
+
+ملف مكتبة الألعاب (الملف المنفصل اللي بيصير تطبيق أندرويد) فيه مصفوفة بالأعلى اسمها `LIBRARY_GAMES`. كل لعبة تُضاف كعنصر فيها بهذا الشكل بالضبط:
+
+```js
+LIBRARY_GAMES.push({
+  id: 'myGame1',          // معرف فريد بالإنجليزي بدون مسافات
+  name: 'اسم اللعبة',      // الاسم اللي يطلع بالقائمة وعلى التلفزيون
+  icon: '🎮',              // إيموجي واحد يمثل اللعبة
+  b64: '...'               // محتوى ملف HTML الكامل للعبة، محوّل لـ base64 (نص طويل جدًا، سطر واحد)
+});
+```
+
+للحصول على قيمة `b64`: خذ ملف HTML النهائي للعبة (بالضبط زي ما طلع من القسم الرابع فوق)، وحوّله بالكامل إلى base64 (ترميز UTF-8 ثم base64 قياسي). هذا النص الطويل هو قيمة `b64`.
+
+## 6) بروتوكول نقل اللعبة من الجوال للتلفزيون (مرجعي فقط - لا تحتاج تلمسه عادةً)
+
+لما المستخدم يضغط «إضافة» على لعبة بتطبيق المكتبة، يصير اتصال PeerJS مباشر بين الجوال والتلفزيون (برمز إقران مكوّن من 6 أرقام، منفصل تمامًا عن رمز الغرفة العادي المكوّن من 4 أرقام)، وتُرسل اللعبة مجزّأة بهذا الشكل:
+1. `{t:'meta', name, icon, totalChunks}` — رسالة وحدة أول شي.
+2. `{t:'chunk', i, data}` × عدد `totalChunks` — كل رسالة تحتوي جزء من نص الـ base64 (`data`) ورقمه (`i`، يبدأ من 0).
+3. التلفزيون يجمع كل الأجزاء بالترتيب، ويسجّل اللعبة تلقائيًا بنفس نظام الألعاب المدمجة (EMB_GAMES) — من هالنقطة اللعبة تصير جزء دائم من قائمة التلفزيون، وتُفتح وتُلعب بنفس رمز الغرفة العادي زي أي لعبة ثانية بالقائمة.
+
+---
+
+**ملخص بجملة وحدة لمن يبني لعبة جديدة بمحادثة ثانية:** ابني ملف HTML واحد ذاتي الاكتفاء، يحتوي حرفيًا على كتلة "EMB BRIDGE" أعلاه بدون تغيير، ويعرّف الدوال الخمسة (`startTv`, `startPhone`, `onHostMsg`, `onPlayerLeave`, `onCtlMsg`) حسب منطق لعبتك، ويستخدم `ctlSend(obj)` من جهة الجوال للتواصل مع التلفزيون.
+
+
+   ============================================================================
+   ===================================================================== */
+
+/* ---------- أضف ألعابك هنا (كل عنصر = لعبة واحدة جاهزة بصيغة base64) ---------- */
+const LIBRARY_GAMES = [
+  // مثال على الشكل المطلوب (احذف التعليق وحط لعبتك الحقيقية):
+  // { id:'myGame1', name:'اسم اللعبة', icon:'🎮', b64:'...نص base64 طويل جدًا...' }
+];
+
+/* ================================ منطق التطبيق ================================ */
+const $=id=>document.getElementById(id);
+let peer=null, conn=null, connected=false;
+
+function renderGames(){
+  const list=$('gamesList');
+  list.innerHTML='';
+  if(!LIBRARY_GAMES.length){
+    list.innerHTML='<div id="emptyMsg">لا توجد ألعاب بالمكتبة بعد.<br>أضف ألعابك لمصفوفة <b>LIBRARY_GAMES</b> بالكود.</div>';
+    return;
+  }
+  LIBRARY_GAMES.forEach(g=>{
+    const row=document.createElement('div'); row.className='gRow';
+    const ic=document.createElement('div'); ic.className='ic'; ic.textContent=g.icon||'🎮';
+    const nm=document.createElement('div'); nm.className='nm';
+    nm.innerHTML='';
+    const nmText=document.createElement('div'); nmText.textContent=g.name||g.id;
+    const pct=document.createElement('div'); pct.className='pct'; pct.id='pct_'+g.id; pct.textContent='';
+    nm.appendChild(nmText); nm.appendChild(pct);
+    const btn=document.createElement('button'); btn.className='addBtn'; btn.textContent='➕ إضافة';
+    btn.onclick=()=>sendGameToTv(g,btn,pct);
+    row.appendChild(ic); row.appendChild(nm); row.appendChild(btn);
+    list.appendChild(row);
+  });
+}
+renderGames();
+
+function setConnected(on){
+  connected=on;
+  const bar=$('connBar');
+  if(on){ bar.className='on'; bar.textContent='🟢 متصل بالتلفزيون — جاهز للإضافة'; }
+  else { bar.className='off'; bar.textContent='🔴 غير متصل — اضغط هنا للاتصال بالتلفزيون'; }
+}
+function openConnModal(){ $('connModal').style.display='flex'; $('connMsg').textContent=''; }
+function closeConnModal(){ $('connModal').style.display='none'; }
+
+function connectToTv(code){
+  code = code || $('connCodeInput').value.trim();
+  if(!/^[0-9]{6}$/.test(code)){ $('connMsg').textContent='⚠️ الرمز لازم يكون 6 أرقام'; return; }
+  $('connMsg').textContent='جاري الاتصال...';
+  try{ if(peer) peer.destroy(); }catch(e){}
+  peer=new Peer(undefined,{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]}});
+  peer.on('open',()=>{
+    conn=peer.connect('wrglib'+code,{reliable:true});
+    conn.on('open',()=>{ setConnected(true); closeConnModal(); });
+    conn.on('data',d=>{ try{ const m=(typeof d==='string')?JSON.parse(d):d; if(m.t==='ack'){ /* يمكن استخدامها لاحقًا لتتبع التقدم بدقة */ } }catch(e){} });
+    conn.on('close',()=>{ setConnected(false); });
+    conn.on('error',()=>{ $('connMsg').textContent='⚠️ تعذر الاتصال، تأكد من الرمز'; setConnected(false); });
+  });
+  peer.on('error',()=>{ $('connMsg').textContent='⚠️ تعذر الاتصال، تأكد من الرمز وجرب مرة ثانية'; });
+}
+
+const CHUNK_SIZE=16000;
+function sendGameToTv(game,btn,pctEl){
+  if(!connected||!conn||!conn.open){ openConnModal(); return; }
+  if(!game.b64){ alert('هذي اللعبة ما فيها محتوى (b64) بعد'); return; }
+  btn.disabled=true; btn.textContent='جاري الإرسال...';
+  const total=Math.ceil(game.b64.length/CHUNK_SIZE);
+  conn.send(JSON.stringify({t:'meta',name:game.name,icon:game.icon,totalChunks:total}));
+  let i=0;
+  function sendNext(){
+    if(i>=total){ btn.textContent='✅ أُضيفت'; pctEl.textContent=''; return; }
+    const piece=game.b64.slice(i*CHUNK_SIZE,(i+1)*CHUNK_SIZE);
+    try{ conn.send(JSON.stringify({t:'chunk',i,data:piece})); }catch(e){}
+    i++;
+    pctEl.textContent=Math.round(i/total*100)+'%';
+    setTimeout(sendNext,12); /* فاصل بسيط بين كل جزء وجزء عشان ما نطفّح قناة البيانات */
+  }
+  sendNext();
+}
+
+/* ---------- مسح رمز QR من كاميرا الجوال ---------- */
+let qrScanStream=null, qrScanRAF=null;
+async function openQrScan(){
+  if(typeof jsQR==='undefined'){ $('connMsg').textContent='⚠️ تعذر تحميل ماسح الباركود'; return; }
+  $('qrScanOverlay').style.display='flex';
+  try{
+    qrScanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const v=$('qrScanVideo'); v.srcObject=qrScanStream; await v.play();
+    qrScanTick();
+  }catch(e){ $('connMsg').textContent='⚠️ ما قدرنا نفتح الكاميرا'; closeQrScan(); }
+}
+function qrScanTick(){
+  const v=$('qrScanVideo'), c=$('qrScanCanvas');
+  if(v&&v.readyState===v.HAVE_ENOUGH_DATA){
+    c.width=v.videoWidth; c.height=v.videoHeight;
+    const ctx=c.getContext('2d'); ctx.drawImage(v,0,0,c.width,c.height);
+    try{
+      const img=ctx.getImageData(0,0,c.width,c.height);
+      const res=jsQR(img.data,img.width,img.height);
+      if(res&&res.data){
+        const digits=(res.data.match(/\d{6}/)||[null])[0];
+        if(digits){ closeQrScan(); connectToTv(digits); return; }
+      }
+    }catch(_){}
+  }
+  qrScanRAF=requestAnimationFrame(qrScanTick);
+}
+function closeQrScan(){
+  if(qrScanRAF) cancelAnimationFrame(qrScanRAF); qrScanRAF=null;
+  if(qrScanStream){ qrScanStream.getTracks().forEach(t=>t.stop()); qrScanStream=null; }
+  $('qrScanOverlay').style.display='none';
+}
+</script>
+</body>
+</html>
