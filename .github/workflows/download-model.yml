@@ -22,7 +22,7 @@ jobs:
       - name: Download the supplied Google Drive archive
         run: |
           python -m pip install --disable-pip-version-check gdown
-          gdown --fuzzy "https://drive.google.com/file/d/10Y0kaPxWa-Igvg6re3JJWuYyQenEBcTM/view?usp=drivesdk" --output /tmp/replacement-archive
+          gdown "https://drive.google.com/file/d/10Y0kaPxWa-Igvg6re3JJWuYyQenEBcTM/view?usp=drivesdk" -O /tmp/replacement-archive
           test -s /tmp/replacement-archive
 
       - name: Extract archive into repository root
