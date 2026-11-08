@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>نواة — شاشة العرض</title>
+<style>
+  :root{--bg:#121212;--panel:#1c1c1c;--line:#333;--text:#eee;--accent:#4ec9b0;--err:#f14c4c}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Tahoma,sans-serif;min-height:100vh}
+  #pin-screen{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+  #pin-screen h1{font-size:28px;margin:0;color:var(--accent)}
+  #pin{font-size:96px;font-weight:bold;letter-spacing:16px;background:var(--panel);padding:20px 40px;border-radius:16px}
+  #pin-hint{font-size:18px;opacity:.8}
+  #app{display:none;height:100vh;flex-direction:column;padding:20px;gap:16px}
+  #app header{font-size:20px;color:var(--accent);display:flex;justify-content:space-between}
+  .col{flex:1;display:flex;gap:16px;min-height:0}
+  .panel{flex:1;background:var(--panel);border-radius:12px;padding:14px;overflow:auto;display:flex;flex-direction:column}
+  .panel h3{margin:0 0 10px;font-size:16px;border-bottom:1px solid var(--line);padding-bottom:8px}
+  .msg{padding:8px 12px;border-radius:8px;margin-bottom:8px;white-space:pre-wrap;font-size:16px}
+  .u{background:#2b5278;align-self:flex-end}
+  .b{background:#2d2d2d}
+  #think-log{font-family:monospace;font-size:14px;flex:1;overflow:auto}
+  #think-log div{padding:3px 0;border-bottom:1px dashed #2a2a2a}
+  #file-panel iframe{width:100%;height:100%;border:0;background:#fff;border-radius:8px}
+  #file-text{white-space:pre-wrap;font-family:monospace;font-size:13px}
+  #status{position:fixed;top:10px;left:10px;font-size:12px;opacity:.6}
+</style>
+</head>
+<body>
+<div id="status">غير متصل</div>
+
+<div id="pin-screen">
+  <h1>📺 نواة — شاشة العرض</h1>
+  <div id="pin">----</div>
+  <div id="pin-hint">افتح تطبيق نواة في جوالك، اختر "اتصال بالتلفزيون"، واكتب هذا الرمز</div>
+</div>
+
+<div id="app">
+  <header><span>🧠 نواة متصلة</span><span id="tv-name-label"></span></header>
+  <div class="col">
+    <div class="panel" style="flex:1.2">
+      <h3>💬 المحادثة</h3>
+      <div id="chat" style="flex:1;display:flex;flex-direction:column;overflow:auto"></div>
+    </div>
+    <div class="panel">
+      <h3>🧠 التفكير</h3>
+      <div id="think-log"></div>
+    </div>
+  </div>
+  <div class="panel" id="file-panel" style="display:none;max-height:45vh">
+    <h3 id="file-title">📄 ملف</h3>
+    <div id="file-body" style="flex:1;overflow:auto"></div>
+  </div>
+  <div style="display:flex;gap:10px">
+    <input id="tv-input" type="text" placeholder="اكتب من هنا... (يعالجها الجوال، يرد عليك هنا)"
+      style="flex:1;font-size:18px;padding:14px;border-radius:8px;border:1px solid #444;background:#1c1c1c;color:#eee">
+    <button id="tv-send" style="font-size:18px;padding:14px 28px;background:#0e639c;color:#fff;border:none;border-radius:8px;cursor:pointer">إرسال</button>
+  </div>
+</div>
+
+<script>
+// Change this default, or load the page as tv_display.html?server=wss://your-server/api/tv-ws
+const SERVER_URL = new URLSearchParams(location.search).get('server') || 'wss://your-server/api/tv-ws';
+const ws = new WebSocket(SERVER_URL);
+const statusEl = document.getElementById('status');
+
+ws.onopen = () => {
+  statusEl.textContent = 'يسجّل كشاشة عرض...';
+  ws.send(JSON.stringify({type: 'register_tv_host', tvName: 'تلفاز نواة'}));
+};
+
+ws.onerror = () => { statusEl.textContent = 'تعذر الاتصال بالسيرفر: ' + SERVER_URL; };
+
+ws.onmessage = (ev) => {
+  const data = JSON.parse(ev.data);
+  if(data.type === 'tv_registered'){
+    document.getElementById('pin').textContent = data.code;
+    statusEl.textContent = 'بانتظار الجوال...';
+  } else if(data.type === 'controller_joined'){
+    statusEl.textContent = 'متصل: ' + data.controllerName;
+    document.getElementById('pin-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+  } else if(data.type === 'controller_command'){
+    handleCommand(data.command);
+  }
+};
+
+function addMsg(text, cls){
+  const chat = document.getElementById('chat');
+  const el = document.createElement('div');
+  el.className = 'msg ' + cls;
+  el.textContent = text;
+  el.style.alignSelf = cls === 'u' ? 'flex-end' : 'flex-start';
+  chat.appendChild(el);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function addThinkLine(line){
+  const log = document.getElementById('think-log');
+  const el = document.createElement('div');
+  el.textContent = line;
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+}
+
+// File preview is ALWAYS optional/manual (press-to-run), never automatic — exactly as asked.
+function showFile(name, content, runnable){
+  const panel = document.getElementById('file-panel');
+  const body = document.getElementById('file-body');
+  panel.style.display = 'flex';
+  body.innerHTML = '';
+  if(runnable){
+    document.getElementById('file-title').textContent = '📄 ' + name + ' — جاهز';
+    const btn = document.createElement('button');
+    btn.textContent = '▶ تشغيل ومعاينة';
+    btn.style.cssText = 'font-size:18px;padding:14px 28px;background:#0e639c;color:#fff;border:none;border-radius:8px;cursor:pointer;align-self:flex-start';
+    btn.onclick = () => renderFile(name, content);
+    body.appendChild(btn);
+  } else {
+    // not browser-runnable (e.g. .py) — show the real written content as text, no fake "run"
+    document.getElementById('file-title').textContent = '📄 ' + name + ' — (مو كود متصفح، معاينة نصية فقط)';
+    const pre = document.createElement('div');
+    pre.id = 'file-text'; pre.textContent = content;
+    body.appendChild(pre);
+  }
+}
+
+function renderFile(name, content){
+  const body = document.getElementById('file-body');
+  document.getElementById('file-title').textContent = '📄 ' + name + ' — يشتغل الآن (محرك المتصفح نفسه، بدون أي سيرفر)';
+  body.innerHTML = '';
+  const ext = name.split('.').pop().toLowerCase();
+  if(['html','htm'].includes(ext)){
+    const errCatcher = `<script>window.onerror=function(m,s,l){document.title='JS ERROR: '+m+' @'+l;}<\/script>`;
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc = errCatcher + content;
+    body.appendChild(iframe);
+  } else if(ext === 'js'){
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc = `<script>${content}<\/script>`;
+    body.appendChild(iframe);
+  } else if(ext === 'css'){
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc = `<style>${content}</style><body style="font-family:sans-serif;padding:20px">معاينة التنسيق</body>`;
+    body.appendChild(iframe);
+  } else {
+    const pre = document.createElement('div');
+    pre.id = 'file-text'; pre.textContent = content;
+    body.appendChild(pre);
+  }
+}
+
+// Typing directly on the TV: sent as 'tv_input' over this TV's own socket (role='tv').
+// NEEDS a small addition on the pairing server to relay it to the phone — see README's server.ts patch.
+// Without that addition, this button sends but nothing reaches the phone (fails silently -> no reply).
+document.getElementById('tv-send').onclick = () => {
+  const el = document.getElementById('tv-input');
+  const text = el.value.trim();
+  if (!text) return;
+  ws.send(JSON.stringify({type: 'tv_input', command: {action: 'chat_text', text}}));
+  addMsg(text, 'u');
+  el.value = '';
+};
+document.getElementById('tv-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('tv-send').click(); });
+
+function handleCommand(cmd){
+  if(!cmd || !cmd.action) return;
+  if(cmd.action === 'chat'){
+    addMsg(cmd.user, 'u');
+    addMsg(cmd.bot, 'b');
+  } else if(cmd.action === 'thinking'){
+    addThinkLine(cmd.line);
+  } else if(cmd.action === 'file_done'){
+    showFile(cmd.name, cmd.content, cmd.runnable === 'true');
+  }
+}
+</script>
+</body>
+</html>
