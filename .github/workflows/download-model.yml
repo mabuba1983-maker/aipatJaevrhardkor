@@ -22,7 +22,7 @@ jobs:
           DRIVE_FILE_ID: "1Vess6t3gN2nryInZzgFJxMDuXbc4o9Cq"
         run: |
           python -m pip install --disable-pip-version-check gdown
-          gdown "${DRIVE_FILE_ID}" --output downloaded-model --fuzzy --retries 3 --timeout 120
+          gdown "${DRIVE_FILE_ID}" --output downloaded-model --retries 3 --timeout 120
           test -s downloaded-model
 
       - name: Extract archive safely or keep single model file
