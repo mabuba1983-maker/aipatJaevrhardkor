@@ -1,6 +1,9 @@
 name: Download and extract model archive
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -26,7 +29,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          from zipfile import ZipFile, BadZipFile
+          from zipfile import ZipFile
           import tarfile, shutil, subprocess
 
           source = Path("downloaded-model")
@@ -61,7 +64,7 @@ jobs:
           if not files:
               raise SystemExit("The Drive file contained no extractable model files.")
           if any(p.stat().st_size >= 100 * 1024 * 1024 for p in files):
-              raise SystemExit("At least one extracted file is 100 MB or larger; GitHub may reject it. Use Git LFS or external storage.")
+              raise SystemExit("At least one extracted file is 100 MB or larger; GitHub may reject it.")
           print(f"Prepared {len(files)} editable files under model/.")
           PY
 
@@ -70,5 +73,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f model/
+          if git diff --cached --quiet; then
+            echo "No model changes to commit."
+            exit 0
+          fi
           git commit -m "Import model from Google Drive"
           git push origin HEAD:main
