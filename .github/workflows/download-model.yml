@@ -24,7 +24,7 @@ jobs:
           import subprocess
           keep = ".github/workflows/download-model.yml"
           raw = subprocess.check_output(["git", "ls-files", "-z"])
-          paths = [p.decode() for p in raw.split(b"\\0") if p]
+          paths = [p.decode() for p in raw.split(bytes([0])) if p]
           remove = [p for p in paths if p != keep]
           if remove:
               subprocess.run(["git", "rm", "-f", "--", *remove], check=True)
