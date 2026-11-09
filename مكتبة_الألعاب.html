@@ -323,12 +323,12 @@ function connectToTv(code){
   code = code || $('connCodeInput').value.trim();
   if(!/^[0-9]{6}$/.test(code)){ $('connMsg').textContent='⚠️ الرمز لازم يكون 6 أرقام'; return; }
   $('connMsg').textContent='جاري الاتصال...';
-  try{ if(peer) peer.destroy(); }catch(e){}
+  try{ if(peer) peer.destroy(); }catch(e){ showLibraryError(e,'closing previous PeerJS connection'); }
   peer=new Peer(undefined,{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]}});
   peer.on('open',()=>{
     conn=peer.connect('wrglib'+code,{reliable:true});
     conn.on('open',()=>{ setConnected(true); closeConnModal(); });
-    conn.on('data',d=>{ try{ const m=(typeof d==='string')?JSON.parse(d):d; if(m.t==='ack'){ /* يمكن استخدامها لاحقًا لتتبع التقدم بدقة */ } }catch(e){} });
+    conn.on('data',d=>{ try{ const m=(typeof d==='string')?JSON.parse(d):d; if(m.t==='ack'){ /* يمكن استخدامها لاحقًا لتتبع التقدم بدقة */ } }catch(e){ showLibraryError(e,'PeerJS data parsing'); } });
     conn.on('close',()=>{ setConnected(false); });
     conn.on('error',e=>{ showLibraryError(e,'PeerJS connection'); $('connMsg').textContent='⚠️ تعذر الاتصال، راجع تفاصيل الخطأ'; setConnected(false); });
   });
@@ -346,7 +346,7 @@ function sendGameToTv(game,btn,pctEl){
   function sendNext(){
     if(i>=total){ btn.textContent='✅ أُضيفت'; pctEl.textContent=''; return; }
     const piece=game.b64.slice(i*CHUNK_SIZE,(i+1)*CHUNK_SIZE);
-    try{ conn.send(JSON.stringify({t:'chunk',i,data:piece})); }catch(e){}
+    try{ conn.send(JSON.stringify({t:'chunk',i,data:piece})); }catch(e){ showLibraryError(e,'sending game chunk '+i); btn.disabled=false; btn.textContent='إعادة المحاولة'; return; }
     i++;
     pctEl.textContent=Math.round(i/total*100)+'%';
     setTimeout(sendNext,12); /* فاصل بسيط بين كل جزء وجزء عشان ما نطفّح قناة البيانات */
@@ -377,7 +377,7 @@ function qrScanTick(){
         const digits=(res.data.match(/\d{6}/)||[null])[0];
         if(digits){ closeQrScan(); connectToTv(digits); return; }
       }
-    }catch(_){}
+    }catch(e){ showLibraryError(e,'QR frame decoding'); }
   }
   qrScanRAF=requestAnimationFrame(qrScanTick);
 }
