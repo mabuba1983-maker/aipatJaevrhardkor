@@ -11,4 +11,11 @@ android {
         versionCode 1
         versionName '1.0'
     }
+    buildTypes {
+        release {
+            // Sign the release APK so Android can install it.
+            // This uses the standard debug key for this test distribution.
+            signingConfig signingConfigs.debug
+        }
+    }
 }
