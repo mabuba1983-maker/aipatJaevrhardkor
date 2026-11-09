@@ -304,7 +304,7 @@ function renderGames(){
     if(g.description){ const desc=document.createElement('div'); desc.className='gDesc'; desc.textContent=g.description; nm.appendChild(desc); }
     if(g.sizeLabel){ const size=document.createElement('div'); size.className='gSize'; size.textContent='الحجم: '+g.sizeLabel; nm.appendChild(size); }
     nm.appendChild(pct);
-    const btn=document.createElement('button'); btn.className='addBtn'; btn.textContent='➕ إضافة';
+    const btn=document.createElement('button'); btn.className='addBtn'; btn.textContent='▶ عرض';
     btn.onclick=()=>sendGameToTv(g,btn,pct);
     row.appendChild(ic); row.appendChild(nm); row.appendChild(btn);
     list.appendChild(row);
