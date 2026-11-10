@@ -294,7 +294,13 @@ function onPlayerLeave(id){
 }
 
 function tvAddPlayer(c,name){
-  if(TVG.players[c.id]) return;
+  if(TVG.players[c.id]){
+    if(TVG.phase==='lobby'){
+      const list=TVG.order.map(id=>{const p=TVG.players[id]; return {id,name:p.name,color:p.color,isAdmin:id===TVG.adminId};});
+      c.send({t:'lobby',youAreAdmin:c.id===TVG.adminId,settings:TVG.settings,players:list,code:TVG.code});
+    }
+    return;
+  }
   if(TVG.phase!=='lobby'){ c.send({t:'error',msg:'اللعبة بدأت بالفعل'}); return; }
   const colorIdx=TVG.order.length%PALETTE.length;
   TVG.players[c.id]={id:c.id,conn:c,name:name.slice(0,16)||'لاعب',color:PALETTE[colorIdx],
