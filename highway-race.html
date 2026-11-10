@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>سباق الطريق السريع</title>
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('emb-pending')}catch(e){}</script>
+<style>html.emb-pending body{visibility:hidden}</style>
+<style>
+/* سباق الطريق السريع — لعبة لنظام «ليالي الرياض» — © ليالي الرياض، جميع الحقوق محفوظة */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#190d26;color:#fff;font-family:'Tajawal',system-ui,sans-serif;overflow:hidden;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#root{position:fixed;inset:0}
+.card{margin:20vh auto 0;max-width:520px;padding:22px;text-align:center;background:rgba(255,255,255,.06);border-radius:18px;line-height:1.8}
+.gold{background:linear-gradient(90deg,#ffd166,#ff9a3d);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+
+/* ---------- التلفزيون ---------- */
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hud{position:absolute;pointer-events:none}
+#tvTitle{top:2.2vh;right:2vw;text-align:right}
+#tvTitle h1{margin:0;font-size:4.2vh;font-weight:900}
+#tvTitle .code{font-size:2.4vh;opacity:.9;margin-top:.4vh}
+#tvTitle .code b{font-size:3.2vh;letter-spacing:.25vh}
+#board{top:2.2vh;left:2vw;min-width:24vw;max-width:34vw;background:rgba(25,13,38,.74);border:1px solid rgba(255,209,102,.28);border-radius:16px;padding:1.2vh 1.2vw}
+#board h2{margin:0 0 .8vh;font-size:2.3vh;font-weight:700;opacity:.85}
+.row{display:flex;align-items:center;gap:.9vw;font-size:2.4vh;padding:.45vh 0}
+.row .rk{width:2.4vh;text-align:center;font-weight:900}
+.row .dot{width:1.6vh;height:1.6vh;border-radius:50%;flex:none}
+.row .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .sp{font-weight:700;min-width:7ch;text-align:left;direction:ltr}
+.row .ds{opacity:.75;min-width:6ch;text-align:left;direction:ltr;font-size:2vh}
+#lobby{top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;background:rgba(25,13,38,.78);border:1px solid rgba(255,209,102,.3);border-radius:22px;padding:3vh 4vw;max-width:70vw}
+#lobby h2{margin:0 0 1vh;font-size:5vh;font-weight:900}
+#lobby p{margin:.6vh 0;font-size:2.8vh;line-height:1.7;opacity:.92}
+#tvCredit{bottom:1.2vh;left:0;right:0;text-align:center;font-size:1.9vh;opacity:.8}
+#gfxErr{bottom:5vh;left:0;right:0;text-align:center;font-size:2.2vh;color:#ffb3b3;display:none}
+
+/* ---------- الجوال ---------- */
+#ph{position:absolute;inset:0;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));gap:10px;
+  background:radial-gradient(120% 90% at 50% 0%,#2b1646 0%,#190d26 60%)}
+#phTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+#phName{font-size:20px;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%}
+#phStatus{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700}
+.dotS{width:12px;height:12px;border-radius:50%;background:#ff9a3d;box-shadow:0 0 8px #ff9a3d}
+.ok .dotS{background:#2ee6a0;box-shadow:0 0 10px #2ee6a0}
+#phStats{display:flex;gap:10px}
+#phStats>div{flex:1;background:rgba(255,255,255,.07);border-radius:14px;padding:6px 4px;text-align:center}
+#phStats b{display:block;font-size:26px;font-weight:900;line-height:1.1}
+#phStats small{opacity:.7;font-size:12px}
+#pad{flex:1;display:flex;gap:14px;direction:ltr;min-height:0}
+#pad .grp{flex:1;display:flex;gap:12px;min-width:0}
+.pb{flex:1;display:flex;align-items:center;justify-content:center;border-radius:22px;font-size:30px;font-weight:900;touch-action:none;
+  background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.18);color:#fff;text-align:center;line-height:1.2;padding:4px}
+.pb.on{transform:scale(.96);filter:brightness(1.35)}
+.pb.gas{background:linear-gradient(180deg,#2ee6a0,#12a874);border-color:#2ee6a0;color:#06251a}
+.pb.brake{background:linear-gradient(180deg,#ff6b6b,#c93030);border-color:#ff6b6b}
+#phFoot{text-align:center;font-size:12px;opacity:.75}
+</style>
+</head>
+<body>
+<script>
+/* الخط يتحمّل بعد اكتمال تحميل الصفحة، حتى ما يؤخّر حدث load اللي ينتظره التطبيق قبل ما يرسل init */
+window.addEventListener('load',function(){ setTimeout(function(){ try{
+  var l=document.createElement('link'); l.rel='stylesheet';
+  l.href='https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap'; document.head.appendChild(l);
+}catch(e){} },0); });
+</script>
+<script>
+/* ===== نافذة الأخطاء المنبثقة — تلتقط أي خطأ وتعرضه على الشاشة (تلفزيون وجوال) ===== */
+(function(){
+  var count=0, seen={};
+  function box(){
+    var b=document.getElementById('errBox'); if(b) return b;
+    b=document.createElement('div'); b.id='errBox';
+    b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:2147483647;max-height:75%;overflow:auto;background:#3a0d12;color:#fff;border:2px solid #ff5a5a;border-radius:14px;padding:10px 12px;font:14px/1.6 Tajawal,system-ui,sans-serif;direction:rtl;text-align:right;box-shadow:0 10px 40px rgba(0,0,0,.65);user-select:text;-webkit-user-select:text';
+    var x=document.createElement('button'); x.id='errClose'; x.textContent='إغلاق ✕';
+    x.style.cssText='position:sticky;top:0;float:left;background:#ff5a5a;color:#fff;border:0;border-radius:10px;padding:6px 14px;font:700 14px Tajawal,system-ui,sans-serif';
+    x.onclick=function(){ if(b.parentNode) b.parentNode.removeChild(b); seen={}; count=0; };
+    b.appendChild(x);
+    (document.body||document.documentElement).appendChild(b); return b;
+  }
+  window.__showErr=function(title,detail){
+    try{
+      var key=title+'|'+detail; if(seen[key]) return null; seen[key]=1; if(++count>8) return null;
+      document.documentElement.classList.remove('emb-pending');
+      var b=box(), item=document.createElement('div');
+      item.style.cssText='border-bottom:1px solid rgba(255,255,255,.2);padding:6px 0;clear:both';
+      var h=document.createElement('b'); h.textContent='⚠ '+title;
+      var pr=document.createElement('pre');
+      pr.style.cssText='white-space:pre-wrap;word-break:break-word;margin:4px 0 0;font:12px/1.5 monospace;direction:ltr;text-align:left';
+      pr.textContent=String(detail||'');
+      item.appendChild(h); item.appendChild(pr); b.appendChild(item);
+      try{ if(window.__onErrSent) window.__onErrSent(title,detail); }catch(_){}
+      return item;
+    }catch(e){ return null; }
+  };
+  window.__clearErr=function(item){
+    try{ if(item&&item.parentNode){ var b=item.parentNode; b.removeChild(item); if(!b.querySelector('div')&&b.parentNode) b.parentNode.removeChild(b); } }catch(e){}
+  };
+  window.addEventListener('error',function(e){
+    if(e.target&&e.target!==window){ return; } // فشل تحميل مورد (خط/سكربت) يعالجه المحمّل نفسه، مو خطأ كود
+    __showErr('خطأ في الكود',(e.message||'')+'\n'+String(e.filename||'').split('/').pop()+':'+(e.lineno||'')+':'+(e.colno||'')+(e.error&&e.error.stack?'\n'+e.error.stack:''));
+  },true);
+  window.addEventListener('unhandledrejection',function(e){ __showErr('وعد مرفوض (Promise)',String((e.reason&&e.reason.stack)||e.reason)); });
+})();
+</script>
+<div id="root">
+<div id="role" class="card"><p>هذي اللعبة جزء من لوبي «ليالي الرياض» — افتحها من هناك حتى تتوصل تلقائيًا.</p></div>
+</div>
+<script>
+/* ===================== EMB BRIDGE (لا تغيّر هذا الجزء) ===================== */
+let EMB=null; const embHostConns={};
+window.addEventListener('message', e=>{
+  const m=e&&e.data; if(!m||!m.__emb) return;
+  if(m.init){ EMB={role:m.role,code:m.code,name:m.name}; return embStart(); }
+  if(!EMB) return;
+  if(EMB.role==='tv'){
+    if(m.event==='data'){
+      let c=embHostConns[m.id];
+      if(!c)c=embHostConns[m.id]={id:m.id,send:obj=>{try{parent.postMessage({__emb:1,to:m.id,data:obj},'*')}catch(e){}}};
+      try{onHostMsg(c,m.data)}catch(e){}
+    } else if(m.event==='disconnect'){
+      try{onPlayerLeave(m.id)}catch(e){}
+      delete embHostConns[m.id];
+    }
+  } else if(EMB.role==='ph'){
+    if(m.data!==undefined){try{onCtlMsg(m.data)}catch(e){}}
+  }
+});
+function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
+function embStart(){
+  embReveal();
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
+}
+setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
+
+/* ===================== من هنا تبدأ لعبتك ===================== */
+function ctlSend(obj){ try{parent.postMessage({__emb:1,data:obj},'*')}catch(e){} } // يرسل من الجوال للتلفزيون
+
+/* ===== المداخل اللي يستدعيها الجسر — مغلّفة حتى لا يضيع أي خطأ بصمت ===== */
+function _guard(where,fn){ try{ return fn(); }catch(e){ __showErr('خطأ: '+where,(e&&e.stack)||String(e)); } }
+function startTv(){ _guard('تشغيل شاشة التلفزيون',function(){ _startTv(); }); }
+function startPhone(){ _guard('تشغيل واجهة الجوال',function(){ _startPhone(); }); }
+function onHostMsg(c,data){ _guard('استقبال رسالة لاعب',function(){ _onHostMsg(c,data); }); }
+function onPlayerLeave(id){ _guard('خروج لاعب',function(){ _onPlayerLeave(id); }); }
+function onCtlMsg(data){ _guard('استقبال رسالة من التلفزيون',function(){ _onCtlMsg(data); }); }
+window.__onErrSent=function(title,detail){   // الجوال يبلّغ التلفزيون بأخطائه
+  if(EMB&&EMB.role==='ph') ctlSend({t:'err',title:String(title).slice(0,80),detail:String(detail).slice(0,400)});
+};
+
+/* ===================== ثوابت اللعبة ===================== */
+var LANES=4, LANE_W=4.2, ROAD_HALF=LANE_W*2;          // أربع مسارات، عرض الطريق 16.8م
+var LAT_MAX=9.0;                                       // أقصى انحراف جانبي للسيارة (قبل الحاجز)
+var VMAX=80;                                           // م/ث  (~288 كم/س)
+var SEG=80, NSEG=11;                                   // قطع الطريق المعاد تدويرها
+var COLORS=[0xe63946,0x2a9df4,0xffd166,0x06d6a0,0xc77dff,0xff9a3d,0xf1f1f1,0x48cae4];
+var HEX=['#e63946','#2a9df4','#ffd166','#06d6a0','#c77dff','#ff9a3d','#f1f1f1','#48cae4'];
+var MAX_PLAYERS=8;
+function clamp(v,a,b){return v<a?a:(v>b?b:v)}
+function laneLat(i){return (i-(LANES-1)/2)*LANE_W}
+function hash(n){var x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+
+/* =====================================================================
+   جهة التلفزيون
+   ===================================================================== */
+var T=null;            // حالة اللعبة كاملة
+var GX={ok:false};     // الرسوميات (three.js) — لو فشل التحميل اللعبة تكمل بدونها
+
+function _startTv(){
+  var root=document.getElementById('root');
+  root.innerHTML=
+    '<canvas id="gl"></canvas>'+
+    '<div id="tvTitle" class="hud"><h1 class="gold">سباق الطريق السريع</h1><div class="code">رمز الغرفة: <b class="gold" id="roomCode">----</b></div></div>'+
+    '<div id="board" class="hud"><h2>الترتيب</h2><div id="rows"></div></div>'+
+    '<div id="lobby" class="hud"><h2 class="gold">جاهزين؟</h2>'+
+      '<p>افتح اللعبة من جوالك وادخل برمز الغرفة</p>'+
+      '<p>الجوال يصير ريموت: ◀ ▶ للتوجيه، «بنزين» للسرعة، «فرامل» للتوقف</p>'+
+      '<p>طريق سريع ما له نهاية — تجاوز السيارات وسبق الكل!</p></div>'+
+    '<div id="gfxErr" class="hud"></div>'+
+    '<div id="tvCredit" class="hud">جميع الحقوق محفوظة © ليالي الرياض</div>';
+  document.getElementById('roomCode').textContent=(EMB&&EMB.code)||'----';
+  T={players:{},traffic:[],attractD:0,leaderD:0,leaderV:30,camD:0,camLat:0,camBack:10,nCol:0,lastHud:0,lastT:0,rx:0};
+  for(var i=0;i<16;i++){T.traffic.push({d:0,lat:0,lane:0,v:30,car:null,col:COLORS[(i*3+1)%COLORS.length]})}
+  T.traffic.forEach(function(t){placeTraffic(t,0,60,700)});
+  loadThree(initGfx);
+  setInterval(broadcast,100);
+  requestAnimationFrame(frame);
+}
+
+/* ---------- الشبكة ---------- */
+function _onHostMsg(c,data){
+  if(!T||!data||typeof data!=='object') return;
+  if(data.t==='err'){ var q=T.players[c.id]; __showErr('خطأ من جوال '+(q?q.name:c.id)+': '+data.title,data.detail); return; }
+  var p=T.players[c.id];
+  if(data.t==='join'||(!p&&data.t==='in')){
+    if(!p) p=addPlayer(c,data.name);
+    if(!p){ c.send({t:'full'}); return; }
+    p.conn=c;
+    c.send({t:'welcome',name:p.name,color:HEX[p.ci],n:Object.keys(T.players).length});
+  }
+  if(!p) return;
+  p.conn=c; p.lastSeen=Date.now(); T.rx++;
+  if(data.t==='in'){
+    p.steer=clamp(+data.s||0,-1,1);
+    p.gas=!!data.g; p.brake=!!data.b;
+  }
+}
+function _onPlayerLeave(id){
+  if(!T) return;
+  var p=T.players[id]; if(!p) return;
+  if(p.car&&GX.ok) GX.scene.remove(p.car.g);
+  delete T.players[id];
+}
+function addPlayer(c,name){
+  var n=Object.keys(T.players).length;
+  if(n>=MAX_PLAYERS) return null;
+  var used={}, k, ci=0;
+  for(k in T.players) used[T.players[k].ci]=1;
+  while(used[ci]) ci++;
+  var nm=String(name||'').replace(/\s+/g,' ').trim().slice(0,14)||('لاعب '+(ci+1));
+  // أبعد مسار عن باقي اللاعبين
+  var lane=0,best=-1,l,j,minDist;
+  for(l=0;l<LANES;l++){
+    minDist=99;
+    for(k in T.players){ minDist=Math.min(minDist,Math.abs(T.players[k].lat-laneLat(l))); }
+    if(minDist>best){best=minDist;lane=l;}
+  }
+  var lead=n?T.leaderD:0, lv=n?T.leaderV:0;
+  var p={id:c.id,conn:c,name:nm,ci:ci,lat:laneLat(lane),d:n?Math.max(0,lead-8):0,v:n?lv*0.7:0,yaw:0,
+    steer:0,gas:false,brake:false,lastSeen:Date.now(),hitCd:1.0,hitFlag:0,hits:0,car:null};
+  T.players[c.id]=p;
+  if(GX.ok){
+    p.car=makeCar(COLORS[ci]);
+    p.car.g.add(makeLabel(nm,HEX[ci]));
+    GX.scene.add(p.car.g);
+  }
+  return p;
+}
+function broadcast(){
+  if(!T) return;
+  var list=ranked(), i, p;
+  for(i=0;i<list.length;i++){
+    p=list[i];
+    try{ p.conn.send({t:'st',spd:Math.round(p.v*3.6),dist:Math.round(p.d),rank:i+1,n:list.length,hit:p.hitFlag}); }catch(e){}
+    p.hitFlag=0;
+  }
+}
+function ranked(){
+  var a=[],k; for(k in T.players) a.push(T.players[k]);
+  a.sort(function(x,y){return y.d-x.d});
+  return a;
+}
+
+/* ---------- المرور ---------- */
+function placeTraffic(t,ref,minAhead,maxAhead){
+  var tries,lane,d,ok,i,u;
+  for(tries=0;tries<14;tries++){
+    lane=Math.floor(Math.random()*LANES);
+    d=ref+minAhead+Math.random()*(maxAhead-minAhead);
+    ok=true;
+    for(i=0;i<T.traffic.length;i++){u=T.traffic[i]; if(u!==t&&u.lane===lane&&Math.abs(u.d-d)<35){ok=false;break;}}
+    if(ok) break;
+  }
+  t.lane=lane; t.lat=laneLat(lane); t.d=d; t.v=22+Math.random()*18;
+}
+
+/* ---------- المحاكاة ---------- */
+function step(dt){
+  var now=Date.now(), k, p, i, t, list=[];
+  for(k in T.players){
+    p=T.players[k];
+    if(now-p.lastSeen>20000){ onPlayerLeave(k); continue; }
+    var stale=(now-p.lastSeen)>1500;
+    var steer=stale?0:p.steer, gas=stale?false:p.gas, brake=stale?false:p.brake;
+    var v=p.v;
+    if(brake) v-=48*dt;
+    else if(gas) v+=24*(1-v/VMAX)*dt;
+    else v-=(2.5+v*0.025)*dt;
+    var lv=steer*(4+Math.min(v,50)*0.16)*clamp(v/6,0,1);
+    p.lat+=lv*dt;
+    if(p.lat>LAT_MAX){p.lat=LAT_MAX; v-=30*dt;}
+    if(p.lat<-LAT_MAX){p.lat=-LAT_MAX; v-=30*dt;}
+    p.yaw+=(steer*0.2*clamp(v/10,0,1)-p.yaw)*Math.min(1,dt*8);
+    p.v=clamp(v,0,VMAX);
+    p.d+=p.v*dt;
+    p.hitCd=Math.max(0,p.hitCd-dt);
+    if(p.hitCd<=0){
+      for(i=0;i<T.traffic.length;i++){
+        t=T.traffic[i];
+        if(Math.abs(t.d-p.d)<4.1&&Math.abs(t.lat-p.lat)<1.7){
+          if(p.d>=t.d) p.v=Math.max(p.v,t.v+4); else p.v=Math.min(p.v,t.v*0.6);
+          p.lat=clamp(p.lat+(p.lat>=t.lat?1:-1)*2.2,-LAT_MAX,LAT_MAX);
+          p.hitCd=1.2; p.hitFlag=1; p.hits++;
+          break;
+        }
+      }
+    }
+    list.push(p);
+  }
+  for(i=0;i<T.traffic.length;i++){ t=T.traffic[i]; t.d+=t.v*dt; }
+
+  // القائد والمرجع
+  var leadD,leadV,leadLat,lastD;
+  if(list.length){
+    list.sort(function(a,b){return b.d-a.d});
+    leadD=list[0].d; leadV=list[0].v; leadLat=list[0].lat; lastD=list[list.length-1].d;
+    // اللي يتأخر كثير يرجع للسباق
+    for(i=1;i<list.length;i++){
+      if(leadD-list[i].d>120){ list[i].d=leadD-35; list[i].v=Math.max(list[i].v,leadV*0.6); list[i].hitCd=2; }
+    }
+  } else {
+    T.attractD+=30*dt; leadD=T.attractD; leadV=30; leadLat=0; lastD=leadD;
+  }
+  T.leaderD=leadD; T.leaderV=leadV;
+  for(i=0;i<T.traffic.length;i++){
+    t=T.traffic[i];
+    if(t.d<lastD-90) placeTraffic(t,leadD,260,720);
+  }
+  // الكاميرا
+  var spread=Math.min(leadD-lastD,110);
+  var back=10+spread;
+  T.camBack+=(back-T.camBack)*Math.min(1,dt*3);
+  T.camD+=(leadD-T.camD)*Math.min(1,dt*7);
+  if(T.camD===0&&leadD>50) T.camD=leadD;
+  T.camLat+=(leadLat-T.camLat)*Math.min(1,dt*4);
+  document.getElementById('lobby').style.display=list.length?'none':'block';
+}
+
+/* ---------- الواجهة ---------- */
+function updateHud(){
+  var rows=document.getElementById('rows'); if(!rows) return;
+  var list=ranked();
+  while(rows.firstChild) rows.removeChild(rows.firstChild);
+  if(!list.length){
+    var e=document.createElement('div'); e.className='row'; e.style.opacity='.6'; e.textContent='ما فيه لاعبين بعد…'; rows.appendChild(e); return;
+  }
+  list.forEach(function(p,i){
+    var r=document.createElement('div'); r.className='row';
+    var rk=document.createElement('span'); rk.className='rk'; rk.textContent=String(i+1);
+    var dot=document.createElement('span'); dot.className='dot'; dot.style.background=HEX[p.ci];
+    var nm=document.createElement('span'); nm.className='nm'; nm.textContent=p.name;
+    var sp=document.createElement('span'); sp.className='sp'; sp.textContent=Math.round(p.v*3.6)+' كم/س';
+    var ds=document.createElement('span'); ds.className='ds'; ds.textContent=(p.d/1000).toFixed(2)+' كم';
+    r.appendChild(rk); r.appendChild(dot); r.appendChild(nm); r.appendChild(sp); r.appendChild(ds);
+    rows.appendChild(r);
+  });
+}
+
+function frame(ts){
+  requestAnimationFrame(frame);
+  var dt=Math.min(0.05,(ts-T.lastT)/1000||0.016); T.lastT=ts;
+  step(dt);
+  if(ts-T.lastHud>250){ T.lastHud=ts; updateHud(); }
+  if(GX.ok){ try{ renderGfx(dt); }catch(e){ GX.ok=false; showGfxErr('خطأ في العرض: '+e.message); } }
+}
+function showGfxErr(msg){
+  var el=document.getElementById('gfxErr'); if(!el) return;
+  el.textContent=msg; el.style.display='block';
+}
+
+/* =====================================================================
+   الرسوميات (three.js) — كل شيء هنا معزول عن منطق اللعبة والشبكة
+   ===================================================================== */
+function loadThree(cb){
+  if(typeof THREE!=='undefined'){ cb(); return; }
+  var urls=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js'];
+  (function next(i){
+    if(i>=urls.length){ cb(); return; }
+    var sc=document.createElement('script'); sc.src=urls[i];
+    sc.onload=function(){ cb(); };
+    sc.onerror=function(){ next(i+1); };
+    document.head.appendChild(sc);
+  })(0);
+}
+function initGfx(){
+  if(typeof THREE==='undefined'){ __showErr('تعذّر تحميل three.js','الجوالات تتحكم والتلفزيون يستقبل، لكن بدون عرض ثلاثي الأبعاد.'); showGfxErr('تعذّر تحميل محرك الرسوميات (three.js) — اللعبة شغّالة والجوالات تتحكم، لكن بدون عرض ثلاثي الأبعاد'); return; }
+  try{
+    var cv=document.getElementById('gl');
+    var r=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+    r.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
+    r.setSize(window.innerWidth,window.innerHeight,false);
+    var scene=new THREE.Scene();
+    scene.background=new THREE.Color(0x140b26);
+    scene.fog=new THREE.Fog(0x140b26,70,600);
+    var cam=new THREE.PerspectiveCamera(64,window.innerWidth/window.innerHeight,0.3,1500);
+    scene.add(new THREE.HemisphereLight(0x9a90e0,0x2a1d3a,0.95));
+    var sun=new THREE.DirectionalLight(0xc4ccff,0.75); sun.position.set(-30,60,40); scene.add(sun);
+
+    GX={ok:true,r:r,scene:scene,cam:cam,segs:[],shared:{}};
+    buildShared();
+    // الرمل
+    var sand=new THREE.Mesh(new THREE.PlaneGeometry(3000,3000),new THREE.MeshBasicMaterial({color:0x2a1f33}));
+    sand.rotation.x=-Math.PI/2; sand.position.y=-0.06; scene.add(sand); GX.sand=sand;
+    // السماء: نجوم + قمر يتبعون الكاميرا
+    var sky=new THREE.Group(); scene.add(sky); GX.sky=sky;
+    var pts=[],i,a,b;
+    for(i=0;i<350;i++){
+      a=Math.random()*Math.PI*2; b=Math.random()*1.25+0.12;
+      pts.push(Math.cos(a)*Math.cos(b)*900, Math.sin(b)*900, Math.sin(a)*Math.cos(b)*900);
+    }
+    var sg=new THREE.BufferGeometry(); sg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pts),3));
+    sky.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:2,sizeAttenuation:false,fog:false})));
+    var moon=new THREE.Mesh(new THREE.SphereGeometry(28,16,12),new THREE.MeshBasicMaterial({color:0xfff2c9,fog:false}));
+    moon.position.set(-260,330,-800); sky.add(moon);
+    // قطع الطريق
+    for(i=0;i<NSEG;i++) GX.segs.push(makeSeg());
+    // سيارات المرور
+    T.traffic.forEach(function(t){ t.car=makeCar(t.col); scene.add(t.car.g); });
+    // لاعبين انضموا قبل ما تجهز الرسوميات
+    var k,p;
+    for(k in T.players){ p=T.players[k]; p.car=makeCar(COLORS[p.ci]); p.car.g.add(makeLabel(p.name,HEX[p.ci])); scene.add(p.car.g); }
+    window.addEventListener('resize',function(){
+      GX.r.setSize(window.innerWidth,window.innerHeight,false);
+      GX.cam.aspect=window.innerWidth/window.innerHeight; GX.cam.updateProjectionMatrix();
+    });
+  }catch(e){
+    GX.ok=false; showGfxErr('تعذّر تشغيل الرسوميات: '+e.message);
+  }
+}
+
+function buildShared(){
+  var S=GX.shared;
+  // خامة الأسفلت مع الخطوط (تتكرر كل 40م)
+  var c=document.createElement('canvas'); c.width=256; c.height=256; var x=c.getContext('2d');
+  x.fillStyle='#24222f'; x.fillRect(0,0,256,256);
+  var i; for(i=0;i<700;i++){ x.fillStyle='rgba(255,255,255,'+(Math.random()*0.04)+')'; x.fillRect(Math.random()*256,Math.random()*256,2,2); }
+  function px(m){return (m+10)/20*256}
+  x.fillStyle='#ffd166'; x.fillRect(px(-ROAD_HALF)-1.5,0,3,256);           // خط الحافة
+  x.fillStyle='#f4f4f4'; x.fillRect(px(ROAD_HALF)-1.5,0,3,256);
+  [-LANE_W,0,LANE_W].forEach(function(m){ x.fillRect(px(m)-1.5,0,3,77); }); // خطوط المسارات المتقطعة (12م من كل 40م)
+  var tex=new THREE.CanvasTexture(c);
+  tex.wrapS=tex.wrapT=THREE.RepeatWrapping; tex.repeat.set(1,SEG/40);
+  try{ tex.anisotropy=GX.r.capabilities.getMaxAnisotropy(); }catch(e){}
+  S.roadMat=new THREE.MeshBasicMaterial({map:tex});
+  S.roadGeo=new THREE.PlaneGeometry(20,SEG);
+  // حاجز جانبي
+  S.barGeo=new THREE.BoxGeometry(0.6,0.9,SEG);
+  S.barMat=new THREE.MeshLambertMaterial({color:0x6b6580});
+  // أعمدة إنارة
+  S.poleGeo=new THREE.CylinderGeometry(0.12,0.16,9,8);
+  S.poleMat=new THREE.MeshLambertMaterial({color:0x8a84a0});
+  S.armGeo=new THREE.BoxGeometry(2.6,0.14,0.14);
+  S.lampGeo=new THREE.BoxGeometry(0.9,0.18,0.5);
+  S.lampMat=new THREE.MeshBasicMaterial({color:0xffe3a3});
+  // بقعة ضوء على الأسفلت تحت كل عمود
+  var g=document.createElement('canvas'); g.width=g.height=128; var gx=g.getContext('2d');
+  var gr=gx.createRadialGradient(64,64,4,64,64,64);
+  gr.addColorStop(0,'rgba(255,205,130,0.55)'); gr.addColorStop(1,'rgba(255,205,130,0)');
+  gx.fillStyle=gr; gx.fillRect(0,0,128,128);
+  S.poolGeo=new THREE.PlaneGeometry(14,18);
+  S.poolMat=new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(g),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
+  // جبال بعيدة
+  S.mtnGeo=new THREE.ConeGeometry(1,1,5);
+  S.mtnMat=new THREE.MeshLambertMaterial({color:0x2a1c45,flatShading:true});
+  // مواد السيارة المشتركة
+  S.glass=new THREE.MeshStandardMaterial({color:0x141c22,flatShading:true,roughness:0.15,metalness:0.35,transparent:true,opacity:0.85});
+  S.trim=new THREE.MeshStandardMaterial({color:0x1b1b1d,flatShading:true,roughness:0.6});
+  S.light=new THREE.MeshStandardMaterial({color:0xfff6d8,emissive:0xffdd88,emissiveIntensity:0.9,roughness:0.3});
+  S.tail=new THREE.MeshStandardMaterial({color:0xb81f1f,emissive:0xff2a2a,emissiveIntensity:0.9,roughness:0.3});
+  S.chrome=new THREE.MeshStandardMaterial({color:0xcfd3d6,metalness:0.85,roughness:0.25});
+  S.tire=new THREE.MeshStandardMaterial({color:0x16171a,roughness:0.85});
+  S.hub=new THREE.MeshStandardMaterial({color:0x2c2d30,metalness:0.4,roughness:0.4});
+  S.plate=new THREE.MeshStandardMaterial({color:0xeceadb,roughness:0.5});
+  S.seat=new THREE.MeshStandardMaterial({color:0x202225,flatShading:true,roughness:0.78});
+}
+
+function makeSeg(){
+  var S=GX.shared, g=new THREE.Group(), m, side, k;
+  m=new THREE.Mesh(S.roadGeo,S.roadMat); m.rotation.x=-Math.PI/2; m.position.set(0,0,-SEG/2); g.add(m);
+  [-1,1].forEach(function(sd){
+    m=new THREE.Mesh(S.barGeo,S.barMat); m.position.set(sd*10.2,0.45,-SEG/2); g.add(m);
+    for(k=0;k<2;k++){
+      var z=-k*40-4;
+      m=new THREE.Mesh(S.poleGeo,S.poleMat); m.position.set(sd*11.4,4.5,z); g.add(m);
+      m=new THREE.Mesh(S.armGeo,S.poleMat); m.position.set(sd*(11.4-1.3),9,z); g.add(m);
+      m=new THREE.Mesh(S.lampGeo,S.lampMat); m.position.set(sd*(11.4-2.4),8.88,z); g.add(m);
+      m=new THREE.Mesh(S.poolGeo,S.poolMat); m.rotation.x=-Math.PI/2; m.position.set(sd*5.5,0.04,z); g.add(m);
+    }
+  });
+  var mt=[];
+  for(k=0;k<3;k++){ m=new THREE.Mesh(S.mtnGeo,S.mtnMat); g.add(m); mt.push(m); }
+  GX.scene.add(g);
+  return {idx:null,g:g,mt:mt};
+}
+function redecor(s){
+  s.mt.forEach(function(m,k){
+    var h1=hash(s.idx*3+k), h2=hash(s.idx*7+k+11), h3=hash(s.idx*5+k+23);
+    var side=h1<0.5?-1:1, w=30+h2*70, h=18+h3*55;
+    m.scale.set(w,h,w);
+    m.position.set(side*(70+h2*190),h/2-1,-SEG*(0.15+0.3*k)-hash(s.idx+k)*10);
+  });
+}
+function updateRoad(d){
+  var base=Math.floor((d-150)/SEG), need={}, used={}, free=[], i;
+  for(i=0;i<NSEG;i++) need[base+i]=1;
+  GX.segs.forEach(function(s){ if(s.idx!==null&&need[s.idx]) used[s.idx]=s; else free.push(s); });
+  for(i=0;i<NSEG;i++){
+    var idx=base+i;
+    if(!used[idx]){ var s=free.pop(); s.idx=idx; s.g.position.z=-idx*SEG; redecor(s); }
+  }
+}
+
+/* ---------- السيارة (نفس تصميم الجسم المنحني، بدون الداخلية) ---------- */
+function makeCar(bodyColor){
+  var S=GX.shared, CAR_W=1.66, CAR_L=4.35;
+  var body=new THREE.MeshStandardMaterial({color:bodyColor,flatShading:true,roughness:0.32,metalness:0.55});
+  var g=new THREE.Group(), wheels=[];
+  function box(w,h,d,mat,x,y,z){var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);g.add(m);return m;}
+  function slope(z1,y1,z2,y2,width,thick,mat){
+    var dz=z2-z1,dy=y2-y1,len=Math.sqrt(dz*dz+dy*dy);
+    var m=new THREE.Mesh(new THREE.BoxGeometry(width,thick,len),mat);
+    m.position.set(0,(y1+y2)/2,(z1+z2)/2); m.rotation.x=Math.atan2(-dy,dz); g.add(m); return m;
+  }
+  // الجسم: ملف جانبي (z,y) مسحوب على العرض + حفر لأقواس الإطارات
+  (function(){
+    var BS=0.03,BT=0.06, wallF=CAR_L*0.16+BS, wallR=-CAR_L*0.21-BS;
+    var s=new THREE.Shape();
+    s.moveTo(-1.98,0.33); s.lineTo(-1.395-0.41,0.33);
+    s.absarc(-1.395,0.34,0.41,Math.PI,0,true);
+    s.lineTo(1.395-0.41,0.33);
+    s.absarc(1.395,0.34,0.41,Math.PI,0,true);
+    s.lineTo(1.98,0.33);
+    s.quadraticCurveTo(2.03,0.33,2.03,0.42);
+    s.lineTo(2.03,0.62);
+    s.quadraticCurveTo(2.03,0.73,1.92,0.75);
+    s.lineTo(wallF,0.87); s.lineTo(wallF,0.36); s.lineTo(wallR,0.36); s.lineTo(wallR,0.87);
+    s.lineTo(-1.93,0.87);
+    s.quadraticCurveTo(-2.03,0.87,-2.03,0.77);
+    s.lineTo(-2.03,0.42);
+    s.quadraticCurveTo(-2.03,0.33,-1.98,0.33);
+    var depth=CAR_W*0.97-2*BT;
+    var geo=new THREE.ExtrudeGeometry(s,{depth:depth,bevelEnabled:true,bevelThickness:BT,bevelSize:BS,bevelSegments:3,curveSegments:8});
+    geo.translate(0,0,-depth/2);
+    geo.rotateY(-Math.PI/2);
+    g.add(new THREE.Mesh(geo,body));
+    [-1,1].forEach(function(sd){
+      box(0.06,0.57,CAR_L*0.37,body,sd*(CAR_W*0.97/2-0.03),0.615,(CAR_L*0.16-CAR_L*0.21)/2);
+    });
+  })();
+  // الكابينة
+  var cabinL=CAR_L*0.40,cabinW=CAR_W*0.84,cabinH=0.5,cabinZ=-CAR_L*0.02;
+  var BLY=0.9,roofY=BLY+cabinH, hoodRearZ=CAR_L*0.16, trunkFrontZ=-CAR_L*0.21;
+  var roofFrontZ=cabinZ+cabinL*0.22,roofRearZ=cabinZ-cabinL*0.22;
+  slope(hoodRearZ,BLY,roofFrontZ,roofY,cabinW,0.06,S.glass);
+  slope(roofRearZ,roofY,trunkFrontZ,BLY,cabinW,0.06,S.glass);
+  box(cabinW*0.9,0.06,roofFrontZ-roofRearZ,S.glass,0,roofY-0.03,(roofFrontZ+roofRearZ)/2);
+  box(cabinW*0.9,0.06,roofFrontZ-roofRearZ+0.08,body,0,roofY+0.035,(roofFrontZ+roofRearZ)/2);
+  [-1,1].forEach(function(sd){
+    box(0.045,roofY-BLY,hoodRearZ-trunkFrontZ,S.glass,sd*cabinW/2,(BLY+roofY)/2,(hoodRearZ+trunkFrontZ)/2);
+    box(0.1,0.1,0.18,body,sd*(CAR_W*0.52),1.0,cabinZ+cabinL*0.46);   // مرايا جانبية
+  });
+  box(cabinW*0.8,0.5,1.3,S.seat,0,0.65,-0.1);                          // كتلة المقاعد (تمنع الفراغ خلف الزجاج)
+  // المقدمة والمؤخرة
+  box(CAR_W*0.98,0.26,0.12,S.trim,0,0.42,CAR_L*0.49);
+  box(CAR_W*0.98,0.22,0.12,S.trim,0,0.40,-CAR_L*0.49);
+  box(CAR_W*0.4,0.14,0.05,S.trim,0,0.57,CAR_L*0.47);
+  box(CAR_W*0.42,0.08,0.04,S.plate,0,0.35,-CAR_L*0.495);
+  [-1,1].forEach(function(sd){
+    box(0.22,0.13,0.07,S.light,sd*CAR_W*0.36,0.57,CAR_L*0.485);
+    box(0.24,0.13,0.06,S.tail,sd*CAR_W*0.37,0.59,-CAR_L*0.485);
+  });
+  box(CAR_W*0.78,0.05,0.22,body,0,0.925,-CAR_L*0.46);                  // جناح خلفي صغير
+  [-0.18,0.18].forEach(function(ex){
+    var pipe=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.05,0.22,10),S.chrome);
+    pipe.rotation.x=Math.PI/2; pipe.position.set(ex,0.15,-CAR_L*0.5-0.02); g.add(pipe);
+  });
+  // الإطارات (مجموعة لكل إطار حتى تدور حول المحور)
+  var R=0.34,W=0.26;
+  [[1,1],[1,-1],[-1,1],[-1,-1]].forEach(function(c){
+    var wg=new THREE.Group(); wg.position.set(c[0]*0.635,R,c[1]*1.395);
+    var tire=new THREE.Mesh(new THREE.CylinderGeometry(R,R,W,16),S.tire); tire.rotation.z=Math.PI/2; wg.add(tire);
+    var hub=new THREE.Mesh(new THREE.CylinderGeometry(R*0.45,R*0.45,W*1.04,10),S.hub); hub.rotation.z=Math.PI/2; wg.add(hub);
+    var sp1=new THREE.Mesh(new THREE.BoxGeometry(W*1.06,0.05,R*1.5),S.chrome); wg.add(sp1);
+    var sp2=new THREE.Mesh(new THREE.BoxGeometry(W*1.06,R*1.5,0.05),S.chrome); wg.add(sp2);
+    g.add(wg); wheels.push(wg);
+  });
+  g.rotation.y=Math.PI;   // المقدمة باتجاه -Z (اتجاه السباق)
+  return {g:g,wheels:wheels};
+}
+function makeLabel(text,color){
+  var c=document.createElement('canvas'); c.width=256; c.height=64; var x=c.getContext('2d');
+  x.fillStyle='rgba(25,13,38,0.75)';
+  x.beginPath(); if(x.roundRect){x.roundRect(4,6,248,52,16);}else{x.rect(4,6,248,52);} x.fill();
+  x.strokeStyle=color; x.lineWidth=3; x.stroke();
+  x.fillStyle='#fff'; x.font='bold 30px Tajawal, sans-serif'; x.textAlign='center'; x.textBaseline='middle';
+  x.fillText(text,128,34);
+  var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,fog:false}));
+  sp.scale.set(4.2,1.05,1); sp.position.set(0,2.5,0);
+  return sp;
+}
+
+function placeCar(car,lat,d,yaw,v,dt){
+  car.g.position.set(lat,0,-d);
+  car.g.rotation.y=Math.PI-yaw;
+  var i; for(i=0;i<car.wheels.length;i++) car.wheels[i].rotation.x+=v*dt/0.34;
+}
+function renderGfx(dt){
+  var k,p,t,i,now=Date.now();
+  for(k in T.players){
+    p=T.players[k]; if(!p.car) continue;
+    placeCar(p.car,p.lat,p.d,p.yaw,p.v,dt);
+    p.car.g.visible=p.hitCd>0?(Math.floor(now/90)%2===0):true;
+  }
+  for(i=0;i<T.traffic.length;i++){ t=T.traffic[i]; if(t.car) placeCar(t.car,t.lat,t.d,0,t.v,dt); }
+  var cam=GX.cam, cd=T.camD, back=T.camBack;
+  updateRoad(cd);
+  var h=4.4+back*0.1;
+  cam.position.set(T.camLat*0.6,h,-cd+back);
+  cam.lookAt(T.camLat*0.8,1.2,-(cd+20));
+  var fov=62+clamp(T.leaderV/VMAX,0,1)*14;
+  if(Math.abs(cam.fov-fov)>0.05){ cam.fov=fov; cam.updateProjectionMatrix(); }
+  GX.sand.position.set(cam.position.x,-0.06,cam.position.z);
+  GX.sky.position.copy(cam.position);
+  GX.r.render(GX.scene,cam);
+}
+
+/* =====================================================================
+   جهة الجوال — ريموت: كل تغيير + نبضة كل 100ms تروح للتلفزيون
+   ===================================================================== */
+var PH=null;
+function _startPhone(){
+  var root=document.getElementById('root');
+  root.innerHTML=
+    '<div id="ph">'+
+      '<div id="phTop"><div id="phName" class="gold"></div>'+
+        '<div id="phStatus"><span class="dotS"></span><span id="phStatusTxt">بانتظار التلفزيون…</span></div></div>'+
+      '<div id="phStats">'+
+        '<div><b id="sSpd">0</b><small>كم/س</small></div>'+
+        '<div><b id="sRank">-</b><small>الترتيب</small></div>'+
+        '<div><b id="sDist">0</b><small>متر</small></div></div>'+
+      '<div id="pad">'+
+        '<div class="grp"><div class="pb" id="bL">◀</div><div class="pb" id="bR">▶</div></div>'+
+        '<div class="grp"><div class="pb brake" id="bB">فرامل</div><div class="pb gas" id="bG">بنزين</div></div>'+
+      '</div>'+
+      '<div id="phFoot">جميع الحقوق محفوظة © ليالي الرياض · <span id="sent">0</span> رسالة مرسلة</div>'+
+    '</div>';
+  PH={connected:false,L:false,R:false,g:false,b:false,seq:0,sent:0,lastRx:0,lastSend:0};
+  document.getElementById('phName').textContent=(EMB&&EMB.name)||'لاعب';
+  function push(){ phSend({t:'in',s:(PH.R?1:0)-(PH.L?1:0),g:PH.g,b:PH.b,n:++PH.seq}); }
+  function hold(id,set){
+    var el=document.getElementById(id), ids={};
+    function down(e){ e.preventDefault(); try{el.setPointerCapture(e.pointerId)}catch(_){}
+      ids[e.pointerId]=1; set(true); el.classList.add('on'); push(); }
+    function up(e){ delete ids[e.pointerId];
+      if(!Object.keys(ids).length){ set(false); el.classList.remove('on'); push(); } }
+    el.addEventListener('pointerdown',down);
+    ['pointerup','pointercancel','lostpointercapture'].forEach(function(n){el.addEventListener(n,up)});
+    el.addEventListener('contextmenu',function(e){e.preventDefault()});
+  }
+  hold('bL',function(v){PH.L=v}); hold('bR',function(v){PH.R=v});
+  hold('bG',function(v){PH.g=v}); hold('bB',function(v){PH.b=v});
+  function releaseAll(){ PH.L=PH.R=PH.g=PH.b=false; ['bL','bR','bG','bB'].forEach(function(i){document.getElementById(i).classList.remove('on')}); push(); }
+  window.addEventListener('blur',releaseAll);
+  document.addEventListener('visibilitychange',function(){ if(document.hidden) releaseAll(); });
+  // الانضمام: يرسل فورًا ويكرر (كل 250ms أول 20 ثانية ثم كل 700ms) لين التلفزيون يرد
+  PH.t0=Date.now(); PH.wd=null; PH.rx=0;
+  (function tick(){
+    if(!PH.connected) phSend({t:'join',name:(EMB&&EMB.name)||''});
+    // لو التلفزيون سكت أكثر من 2.5 ثانية نعتبر الاتصال مقطوع ونرجع نعيد الانضمام
+    if(PH.connected&&Date.now()-PH.lastRx>2500){ PH.connected=false; setStatus(false); }
+    // ما رد خلال 8 ثواني: ننبّه بنافذة فيها التفاصيل
+    if(!PH.connected&&!PH.wd&&Date.now()-PH.t0>8000){
+      PH.wd=__showErr('ما وصل رد من التلفزيون','أرسل الجوال '+PH.sent+' رسالة والتلفزيون ما رد.\nتأكد أن اللعبة شغّالة على التلفزيون بنفس الرمز: '+((EMB&&EMB.code)||'؟')+'\n(الجوال يكمل المحاولة تلقائيًا)');
+    }
+    setTimeout(tick,(Date.now()-PH.t0<20000)?250:700);
+  })();
+  // نبضة التحكم: دايمًا تروح حتى لو ما لمست شي (تثبت إن الجوال حي)
+  setInterval(push,100);
+  setStatus(false);
+}
+function phSend(obj){
+  ctlSend(obj);
+  if(PH){ PH.sent++; var el=document.getElementById('sent'); if(el) el.textContent=String(PH.sent); }
+}
+function setStatus(ok){
+  var st=document.getElementById('phStatus'), tx=document.getElementById('phStatusTxt');
+  if(!st) return;
+  st.className=ok?'ok':''; tx.textContent=ok?'متصل بالتلفزيون ✓':'بانتظار التلفزيون…';
+}
+function _onCtlMsg(data){
+  if(!PH||!data||typeof data!=='object') return;
+  PH.lastRx=Date.now(); PH.rx++;
+  if(data.t==='welcome'){
+    PH.connected=true; setStatus(true);
+    if(PH.wd){ __clearErr(PH.wd); PH.wd=null; }
+    if(data.name) document.getElementById('phName').textContent=data.name;
+    if(data.color) document.getElementById('phName').style.cssText='color:'+data.color+';-webkit-text-fill-color:'+data.color;
+  } else if(data.t==='full'){
+    document.getElementById('phStatusTxt').textContent='الغرفة ممتلئة';
+  } else if(data.t==='st'){
+    if(!PH.connected){ PH.connected=true; setStatus(true); }
+    document.getElementById('sSpd').textContent=String(data.spd|0);
+    document.getElementById('sRank').textContent=(data.rank|0)+'/'+(data.n|0);
+    document.getElementById('sDist').textContent=String(data.dist|0);
+    if(data.hit){ try{navigator.vibrate&&navigator.vibrate(120)}catch(e){} }
+  }
+}
+</script>
+</body>
+</html>
