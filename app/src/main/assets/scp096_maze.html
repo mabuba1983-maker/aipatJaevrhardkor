@@ -294,7 +294,17 @@ function onPlayerLeave(id){
 }
 
 function tvAddPlayer(c,name){
-  if(TVG.players[c.id]) return;
+  if(TVG.players[c.id]){
+    TVG.players[c.id].conn=c;
+    if(TVG.phase==='lobby'){
+      const list=TVG.order.map(id=>{const p=TVG.players[id]; return {id,name:p.name,color:p.color,isAdmin:id===TVG.adminId};});
+      c.send({t:'lobby',youAreAdmin:c.id===TVG.adminId,settings:TVG.settings,players:list,code:TVG.code});
+    } else if(TVG.phase==='playing' || TVG.phase==='win' || TVG.phase==='lose'){
+      tvSendStarted(c.id);
+      tvBroadcastState(c.id);
+    }
+    return;
+  }
   if(TVG.phase!=='lobby'){ c.send({t:'error',msg:'اللعبة بدأت بالفعل'}); return; }
   const colorIdx=TVG.order.length%PALETTE.length;
   TVG.players[c.id]={id:c.id,conn:c,name:name.slice(0,16)||'لاعب',color:PALETTE[colorIdx],
@@ -312,7 +322,7 @@ function tvBroadcastLobby(){
 }
 
 function tvResetToLobby(){
-  TVG.phase='lobby'; TVG.maze=null; TVG.keys=[]; TVG.exit=null; TVG.monster=null;
+  TVG.phase='lobby'; TVG.maze=null; TVG.mazePayload=null; TVG.keys=[]; TVG.exit=null; TVG.monster=null;
   TVG.escapedIds=[]; TVG.caughtName=null; TVG.graceActive=false; TVG.endReason=null;
   for(const id of TVG.order){ const p=TVG.players[id]; p.escaped=false; p.caught=false; p.input={dx:0,dy:0}; }
   renderTvLobby(); tvBroadcastLobby();
@@ -359,11 +369,8 @@ function tvStartGame(){
   TVG.escapedIds=[]; TVG.caughtName=null; TVG.graceActive=false; TVG.graceEndsAt=0; TVG.endReason=null;
   TVG.phase='playing';
 
-  const mazePayload={cw:maze.cw,ch:maze.ch,gw:maze.gw,gh:maze.gh,grid:Array.from(maze.grid)};
-  const playersMeta=TVG.order.map(id=>({id,name:TVG.players[id].name,color:TVG.players[id].color}));
-  for(const id of TVG.order){
-    TVG.players[id].conn.send({t:'started',maze:mazePayload,spawn:TVG.spawn,keysNeeded:needed,you:{id,color:TVG.players[id].color,name:TVG.players[id].name},players:playersMeta});
-  }
+  TVG.mazePayload={cw:maze.cw,ch:maze.ch,gw:maze.gw,gh:maze.gh,grid:Array.from(maze.grid)};
+  for(const id of TVG.order) tvSendStarted(id);
   renderTvGame(true);
 }
 
@@ -489,10 +496,19 @@ function tvSimulate(dt,now){
   }
 }
 
-function tvBroadcastState(){
+function tvSendStarted(id){
+  const p=TVG&&TVG.players[id];
+  if(!p||!TVG.mazePayload||!TVG.spawn) return;
+  const playersMeta=TVG.order.map(pid=>({id:pid,name:TVG.players[pid].name,color:TVG.players[pid].color}));
+  p.conn.send({t:'started',maze:TVG.mazePayload,spawn:TVG.spawn,keysNeeded:TVG.settings.keysNeeded,you:{id,color:p.color,name:p.name},players:playersMeta});
+}
+
+function tvBroadcastState(onlyId){
+
   if(!TVG || TVG.phase==='lobby') return;
   const maze=TVG.maze;
   for(const id of TVG.order){
+    if(onlyId && id!==onlyId) continue;
     const p=TVG.players[id];
     const conn=p.conn;
     let visCells=[], monsterOut=null, exitVisible=false, othersOut=[], keysOut=[];
@@ -664,26 +680,39 @@ function tvRenderDashboard(now){
 /* ==============================  جهة الجوال  =========================== */
 /* ===================================================================== */
 let PH={phase:'lobby',youAreAdmin:false,settings:{keysNeeded:6,monsterSpeed:'normal',minPlayers:3},players:[],
-  maze:null,spawn:null,you:null,pos:{x:0,y:0},angle:0,
+  maze:null,spawn:null,you:null,pos:{x:0,y:0},angle:0,pendingState:null,joinRetryTimer:null,
   keysFound:0,keysNeeded:6,escaped:false,caught:false,graceActive:false,graceRemaining:null,
   visCells:new Set(),monster:null,exit:null,others:[],keys:[],endReason:null,caughtName:null};
 let joy={active:false,dx:0,dy:0,sendTimer:null};
 
 function startPhone(){
-  ctlSend({t:'join',name:EMB.name});
   renderPhLobbyWaiting();
+  const sendJoin=()=>ctlSend({t:'join',name:EMB.name});
+  sendJoin();
+  if(PH.joinRetryTimer) clearInterval(PH.joinRetryTimer);
+  PH.joinRetryTimer=setInterval(()=>{
+    if(PH.phase!=='lobby'){
+      clearInterval(PH.joinRetryTimer);
+      PH.joinRetryTimer=null;
+      return;
+    }
+    sendJoin();
+  },1200);
 }
 function onCtlMsg(data){
   if(data.t==='lobby'){
     PH.youAreAdmin=data.youAreAdmin; PH.settings=data.settings; PH.players=data.players; PH.code=data.code;
     if(PH.phase==='lobby'){ PH.youAreAdmin? renderPhAdmin() : renderPhLobbyWaiting(); }
   } else if(data.t==='started'){
+    if(PH.joinRetryTimer){clearInterval(PH.joinRetryTimer);PH.joinRetryTimer=null;}
     PH.phase='playing';
     PH.maze={cw:data.maze.cw,ch:data.maze.ch,gw:data.maze.gw,gh:data.maze.gh,grid:Uint8Array.from(data.maze.grid)};
     PH.spawn=data.spawn; PH.you=data.you; PH.players=data.players; PH.keysNeeded=data.keysNeeded;
     PH.pos={x:data.spawn.x,y:data.spawn.y}; PH.angle=0; PH.escaped=false; PH.caught=false; PH.graceActive=false;
     renderPhGame();
+    if(PH.pendingState){const latest=PH.pendingState;PH.pendingState=null;onCtlMsg(latest);}
   } else if(data.t==='state'){
+    if(!PH.maze){PH.pendingState=data;return;}
     PH.pos=data.pos; PH.angle=data.angle; PH.visCells=new Set(data.visCells);
     PH.monster=data.monster; PH.exit=data.exit; PH.others=data.others; PH.keys=data.keys;
     PH.keysFound=data.keysFound; PH.keysNeeded=data.keysNeeded; PH.escaped=data.escaped; PH.caught=data.caught;
@@ -695,7 +724,12 @@ function onCtlMsg(data){
       phUpdateHud();
     }
   } else if(data.t==='error'){
-    const r=document.getElementById('role'); if(r) r.innerHTML='<p>'+data.msg+'</p>';
+    const root=document.getElementById('root');
+    if(root){
+      let box=document.getElementById('phConnectionError');
+      if(!box){box=document.createElement('div');box.id='phConnectionError';box.style.cssText='position:fixed;z-index:9999;top:12px;left:12px;right:12px;padding:12px;border-radius:12px;background:#5b2020;color:#fff;text-align:center';root.appendChild(box);}
+      box.textContent='تعذر استعادة اللعبة: '+String(data.msg||'خطأ اتصال');
+    }
   }
 }
 
