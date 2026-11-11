@@ -192,6 +192,8 @@ function startPhone(){
   document.getElementById('root').style.display='none';
   const ph=document.getElementById('phRoot'); ph.style.display='block';
   buildPhoneUI(ph);
+  // Initial handshake: lets the TV assign P1 and return the controller role.
+  ctlSend({t:'join'});
 }
 function onCtlMsg(data){
   if(data.t==='role'){ PhRole=data.role; renderPhoneUI(); }
