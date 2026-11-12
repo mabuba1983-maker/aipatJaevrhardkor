@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#090d1c">
+<title>سباق الصواريخ — ليالي الرياض</title>
+<style>
+:root{--bg:#090d1c;--panel:#121a30;--panel2:#192440;--text:#f4f7ff;--muted:#9aa8c5;--gold:#ffd36e;--cyan:#63e5ed;--line:#293654}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif}body{overflow:hidden;background:radial-gradient(ellipse at 50% -15%,#253b68 0,#111a31 35%,#090d1c 75%)}
+.emb-pending #app{display:none}.pending{display:none;min-height:100vh;align-items:center;justify-content:center;padding:24px;text-align:center}.emb-pending .pending{display:flex}
+.pending-card{max-width:520px;padding:36px 28px;border:1px solid #334365;border-radius:26px;background:#111a2deF;box-shadow:0 24px 80px #0008}.pending-mark{font-size:42px;margin-bottom:16px}.pending h1{font-size:clamp(22px,4vw,32px);margin:0 0 12px}.pending p{color:var(--muted);line-height:1.9;margin:0}
+#app{min-height:100vh}.screen{min-height:100vh;padding:clamp(14px,3vw,32px);display:flex;flex-direction:column;gap:18px;max-width:1500px;margin:auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:12px}.brand-icon{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#ffe39b,#e79b42);display:grid;place-items:center;color:#25162b;font-size:22px;box-shadow:0 8px 24px #f0ae4a33}.brand strong{font-size:18px;letter-spacing:.2px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.pill{border:1px solid #344362;background:#101a30;border-radius:999px;padding:9px 14px;color:#d8e3fa;font-size:13px}.pill b{color:var(--gold);letter-spacing:2px}
+.panel{background:linear-gradient(145deg,#17223b,#10182b);border:1px solid #2b3a5a;border-radius:24px;box-shadow:0 18px 50px #0003}
+.tv-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.heading h1{font-size:clamp(25px,4vw,42px);margin:0;line-height:1.2}.heading p{margin:8px 0 0;color:var(--muted)}.room{padding:13px 20px;border-radius:18px;background:#0b1325;border:1px solid #354566;text-align:center;min-width:132px}.room span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.room strong{font-size:27px;letter-spacing:5px;color:var(--gold)}
+.admin{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px}.admin label{color:#bdc9df;font-size:14px}.admin input{width:88px;background:#0b1325;border:1px solid #405173;color:white;border-radius:12px;padding:11px;text-align:center;font:inherit;font-weight:700}.btn{border:0;border-radius:14px;padding:13px 20px;font:700 15px inherit;cursor:pointer;color:#1b1b27;background:linear-gradient(135deg,#ffe39b,#f0ad4c);box-shadow:0 8px 24px #e6a74830}.btn:disabled{opacity:.45;cursor:not-allowed}.btn.secondary{background:#253453;color:#e9f1ff;box-shadow:none;border:1px solid #405276}.status{margin-inline-start:auto;color:var(--muted);font-size:13px}
+.race-panel{padding:16px;overflow:hidden;flex:1;min-height:320px;display:flex;flex-direction:column;gap:12px}.race-title{display:flex;justify-content:space-between;align-items:center;color:#c4d0e7;font-size:13px}.race-title b{color:var(--cyan)}.race-window{position:relative;flex:1;min-height:270px;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#0c1730,#101c32 55%,#0a1427);border:1px solid #263958}
+.stars{position:absolute;inset:0;background-image:radial-gradient(#d9e8ff 1px,transparent 1.6px),radial-gradient(#90b5ff 1px,transparent 1.6px);background-size:83px 71px,137px 119px;background-position:10px 7px,45px 30px;opacity:.45}
+.track-list{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-evenly;padding:12px 0;transition:transform .5s ease}.track{height:48px;position:relative;border-bottom:1px dashed #42506b77;min-width:100%}.track:last-child{border:0}.track::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid #ffffff0d}.rocket-wrap{position:absolute;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:8px;transition:opacity .45s,transform .45s}.rocket-wrap.gone{opacity:0;transform:translateY(-50%) scale(.3)}.rocket{width:54px;height:38px;filter:drop-shadow(0 0 9px var(--rocket))}.rocket-name{font-size:12px;font-weight:700;white-space:nowrap;background:#0a1222b8;border:1px solid #ffffff22;padding:4px 8px;border-radius:8px}.trail{position:absolute;right:100%;width:var(--trail,45px);height:3px;background:linear-gradient(90deg,transparent,var(--rocket));filter:blur(1px)}
+.overlay-count{position:absolute;inset:0;display:grid;place-items:center;background:#07102088;backdrop-filter:blur(3px);font-size:clamp(56px,12vw,110px);font-weight:900;color:var(--gold);text-shadow:0 0 40px #ffbd54aa;z-index:5;pointer-events:none}.overlay-count:empty{display:none}
+.player-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.player-card{padding:12px 14px;border-radius:15px;background:#0d1629;border:1px solid #293956;display:flex;align-items:center;justify-content:space-between;gap:8px}.player-card .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-left:7px;box-shadow:0 0 12px currentColor}.player-card small{color:var(--muted)}.empty{color:var(--muted);text-align:center;padding:22px}
+.phone-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}.phone-card{width:min(100%,480px);padding:25px 22px 28px;text-align:center}.phone-brand{justify-content:center;margin-bottom:20px}.player-name{font-size:clamp(22px,6vw,30px);font-weight:900;margin:8px 0 4px}.phone-hint{color:var(--muted);margin:0 0 20px}.tap-button{width:min(68vw,270px);height:min(68vw,270px);max-width:270px;max-height:270px;border-radius:50%;border:8px solid #ffffff1c;background:radial-gradient(circle at 35% 28%,#ffffff55,transparent 30%),linear-gradient(145deg,var(--player),color-mix(in srgb,var(--player),#111 45%));box-shadow:0 0 0 10px #ffffff08,0 18px 50px color-mix(in srgb,var(--player),transparent 60%),inset 0 -14px 24px #0004;color:white;font-size:clamp(24px,7vw,34px);font-weight:1000;cursor:pointer;touch-action:manipulation;user-select:none;transition:transform .08s,filter .2s}.tap-button:active:not(:disabled){transform:scale(.96)}.tap-button:disabled{filter:grayscale(.7);opacity:.55;cursor:not-allowed}.tap-count{font-size:38px;font-weight:900;margin:16px 0 2px}.tap-label{color:var(--muted);font-size:13px}.phone-timer{font-size:24px;font-weight:800;color:var(--gold);margin:12px 0}.phone-state{color:#cbd7ee;min-height:24px;margin-top:14px}
+.result-panel{padding:18px}.result-panel h2{margin:0 0 14px}.result-row{display:grid;grid-template-columns:42px 1fr auto auto;gap:10px;align-items:center;padding:11px;border-bottom:1px solid #293956}.result-row:last-child{border:0}.rank{font-size:18px;color:var(--gold);font-weight:900}.result-row small{color:var(--muted)}.hidden{display:none!important}
+@media(max-width:620px){.screen{padding:14px}.topbar{align-items:flex-start}.status{width:100%;margin:0}.race-panel{min-height:300px}.rocket-name{font-size:10px}.track{height:42px}.room{min-width:100px}.admin{gap:8px}.admin .btn{flex:1}.result-row{grid-template-columns:30px 1fr auto}.result-row .distance{display:none}}
+</style>
+</head>
+<body class="emb-pending">
+<div class="pending"><div class="pending-card"><div class="pending-mark">🚀</div><h1>ليالي الرياض</h1><p>هذي اللعبة جزء من لوبي «ليالي الرياض» — افتحها من هناك حتى تتوصل تلقائيًا.</p></div></div>
+<div id="app"></div>
+<script>
+let EMB=null; const embHostConns={};
+window.addEventListener('message', e=>{
+  const m=e&&e.data; if(!m||!m.__emb) return;
+  if(m.init){ EMB={role:m.role,code:m.code,name:m.name}; return embStart(); }
+  if(!EMB) return;
+  if(EMB.role==='tv'){
+    if(m.event==='data'){
+      let c=embHostConns[m.id];
+      if(!c)c=embHostConns[m.id]={id:m.id,send:obj=>{try{parent.postMessage({__emb:1,to:m.id,data:obj},'*')}catch(e){}}};
+      try{onHostMsg(c,m.data)}catch(e){}
+    } else if(m.event==='disconnect'){
+      try{onPlayerLeave(m.id)}catch(e){}
+      delete embHostConns[m.id];
+    }
+  } else if(EMB.role==='ph'){
+    if(m.data!==undefined){try{onCtlMsg(m.data)}catch(e){}}
+  }
+});
+function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
+function embStart(){
+  embReveal();
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
+}
+setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
+function ctlSend(obj){ try{parent.postMessage({__emb:1,data:obj},'*')}catch(e){} }
+
+const palette=['#ff5c70','#55c9ff','#ffd15c','#a78bfa','#54dfaa','#ff9d52','#f472d0','#b6e36a','#7c9cff','#ff7f50'];
+const svgRocket=(color)=>`<svg class="rocket" viewBox="0 0 120 70" aria-hidden="true"><path d="M18 35 Q43 8 91 13 Q111 35 91 57 Q43 62 18 35Z" fill="${color}" stroke="#fff" stroke-opacity=".8" stroke-width="2"/><path d="M18 35 L4 17 L8 35 L4 53Z" fill="#e9f1ff"/><path d="M43 18 L31 5 L29 25Z M43 52 L31 65 L29 45Z" fill="#dbe7ff"/><circle cx="79" cy="35" r="9" fill="#17223b" stroke="#fff" stroke-width="3"/><path d="M4 27 Q-8 35 4 43 Q-2 35 4 27Z" fill="#ffd36e"/></svg>`;
+const $=s=>document.querySelector(s);
+let players={},phase='lobby',duration=35,pressEnd=0,counts={},launchData={},timerHandle=null,camX=0;
+function broadcast(obj){Object.values(embHostConns).forEach(c=>{try{c.send(obj)}catch(e){}})}
+function sendPlayer(id,obj){const c=embHostConns[id];if(c)try{c.send(obj)}catch(e){}}
+function onHostMsg(c,data){
+ if(!data||typeof data!=='object')return;
+ if(data.type==='join'){
+   if(phase!=='lobby'){sendPlayer(c.id,{type:'locked',phase});return}
+   const old=players[c.id];players[c.id]={id:c.id,name:String(data.name||'لاعب').slice(0,20),color:old?.color||palette[Object.keys(players).length%palette.length],taps:0};
+   sendPlayer(c.id,{type:'assigned',name:players[c.id].name,color:players[c.id].color});
+   renderTv();
+ }else if(data.type==='tap'&&phase==='pressing'&&players[c.id]){
+   players[c.id].taps++;sendPlayer(c.id,{type:'count',taps:players[c.id].taps});
+ }
+}
+function onPlayerLeave(id){delete players[id];renderTv()}
+function startTv(){
+ $('#app').innerHTML=`<main class="screen"><header class="topbar"><div class="brand"><div class="brand-icon">🚀</div><div><strong>سباق الصواريخ</strong><small>تحدّي الضغطات — ليالي الرياض</small></div></div><div class="pill">لوبي ليالي الرياض</div></header><section class="tv-head"><div class="heading"><h1 id="headline">جهّزوا أصابعكم!</h1><p id="subline">ينضم اللاعبون من جوالاتهم، ثم يبدأ الأدمن الجولة.</p></div><div class="room"><span>رمز الغرفة</span><strong id="roomcode">----</strong></div></section><section class="panel admin" id="admin"><label for="duration">مدة الضغط (ثانية)</label><input id="duration" type="number" min="10" max="180" value="35"><button class="btn" id="start">ابدأ الجولة</button><button class="btn secondary" id="reset">جولة جديدة</button><span class="status" id="status">بانتظار اللاعبين…</span></section><section class="panel race-panel"><div class="race-title"><span>مسارات الصواريخ <b>• عرض ثنائي الأبعاد</b></span><span id="phase-label">الاستعداد</span></div><div class="race-window"><div class="stars"></div><div class="track-list" id="tracks"></div><div class="overlay-count" id="countdown"></div></div></section><section class="panel result-panel hidden" id="results"><h2>🏆 النتائج النهائية</h2><div id="resultrows"></div></section><section class="player-grid" id="playergrid"></section></main>`;
+ $('#roomcode').textContent=EMB.code||'----';$('#start').onclick=beginRound;$('#reset').onclick=resetRound;renderTv();
+}
+function renderTv(){
+ if(!$('#playergrid'))return;
+ const list=Object.values(players);
+ $('#status').textContent=`${list.length} لاعب${list.length===1?'':'ين'} متصل`;
+ $('#playergrid').innerHTML=list.length?list.map(p=>`<div class="player-card"><span><i class="dot" style="background:${p.color};color:${p.color}"></i>${esc(p.name)}</span><small>${p.taps} ضغطة</small></div>`).join(''):'<div class="empty">بانتظار انضمام اللاعبين من الجوالات…</div>';
+ if(phase==='lobby')drawTracks(list.map(p=>({...p,progress:0})));
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function drawTracks(items){
+ const el=$('#tracks');if(!el)return;
+ el.innerHTML=items.map((p,i)=>`<div class="track"><div class="rocket-wrap ${p.gone?'gone':''}" style="left:${Math.max(2,Math.min(94,p.progress||0))}%;--rocket:${p.color}"><span class="rocket-name">${esc(p.name)}</span>${svgRocket(p.color)}<i class="trail"></i></div></div>`).join('');
+}
+function setCountdown(n,done){const el=$('#countdown');let v=n;el.textContent=v;const t=setInterval(()=>{v--;if(v<=0){clearInterval(t);el.textContent='انطلقوا!';setTimeout(()=>{el.textContent='';done()},650)}else el.textContent=v},1000)}
+function beginRound(){
+ if(phase!=='lobby'||!Object.keys(players).length)return;
+ duration=Math.max(10,Math.min(180,Number($('#duration').value)||35));
+ Object.values(players).forEach(p=>p.taps=0);phase='precount';$('#start').disabled=true;$('#duration').disabled=true;
+ broadcast({type:'phase',phase:'precount',duration});$('#headline').textContent='استعدوا للضغط!';$('#subline').textContent='يبدأ العد التنازلي الآن.';$('#phase-label').textContent='استعداد';
+ setCountdown(3,()=>{phase='pressing';pressEnd=Date.now()+duration*1000;broadcast({type:'phase',phase:'pressing',duration});$('#headline').textContent='اضغطوا بأقصى ما تستطيعون!';$('#phase-label').textContent='وقت الضغط';tickPress()});
+}
+function tickPress(){
+ if(phase!=='pressing')return;const left=Math.max(0,pressEnd-Date.now());
+ $('#subline').textContent=`باقي ${(left/1000).toFixed(1)} ثانية`;$('#status').textContent=`${Math.ceil(left/1000)} ثانية`;
+ broadcast({type:'timer',left});
+ if(left<=0){phase='frozen';broadcast({type:'phase',phase:'frozen'});Object.values(players).forEach(p=>{counts[p.id]=p.taps});$('#headline').textContent='انتهى وقت الضغط';$('#subline').textContent='ثبتنا عدد الضغطات. استعدوا للانطلاق.';$('#phase-label').textContent='العد للانطلاق';setTimeout(()=>setCountdown(3,launchRockets),350);return}
+ timerHandle=setTimeout(tickPress,100);
+}
+function launchRockets(){
+ phase='racing';$('#headline').textContent='السباق بدأ!';$('#subline').textContent='الكاميرا تتابع الصواريخ التي لا تزال تتحرك.';$('#phase-label').textContent='السباق';
+ Object.values(players).forEach(p=>{const taps=p.taps;launchData[p.id]={...p,distance:Math.max(8,taps)*2.5,progress:0,elapsed:0,gone:false};});
+ broadcast({type:'phase',phase:'racing'});
+ let last=performance.now();
+ function frame(now){
+  if(phase!=='racing')return;const dt=Math.min(.05,(now-last)/1000);last=now;
+  let active=0;
+  Object.values(launchData).forEach(p=>{
+   if(p.gone)return;active++;
+   const subtleBoost=1+Math.min(.12,p.taps/1200);
+   p.elapsed+=dt*subtleBoost;
+   p.progress=Math.min(94,(p.elapsed/(p.distance/19))*94);
+   if(p.progress>=94){p.gone=true;active--}
+  });
+  const arr=Object.values(launchData);drawTracks(arr);
+  const remaining=arr.filter(p=>!p.gone);
+  $('#phase-label').textContent=`باقي ${remaining.length} صاروخ`;
+  if(remaining.length<=1&&arr.length>1){
+    // The final remaining rocket is allowed to complete its own earned distance.
+  }
+  if(!remaining.length){finishRace();return}
+  requestAnimationFrame(frame);
+ }
+ requestAnimationFrame(frame);
+}
+function finishRace(){
+ phase='results';const rows=Object.values(launchData).sort((a,b)=>b.taps-a.taps);
+ $('#headline').textContent='انتهى السباق!';$('#subline').textContent='هذه حصيلة الجولة.';$('#phase-label').textContent='النتائج';
+ $('#results').classList.remove('hidden');
+ $('#resultrows').innerHTML=rows.map((p,i)=>`<div class="result-row"><span class="rank">${i+1}</span><span><i class="dot" style="background:${p.color};color:${p.color}"></i><b>${esc(p.name)}</b><br><small>${p.taps} ضغطة</small></span><strong>${p.taps} ضغطة</strong><small class="distance">${Math.round(p.distance)} م</small></div>`).join('');
+ broadcast({type:'results',rows:rows.map(p=>({name:p.name,taps:p.taps,color:p.color,distance:p.distance}))});
+ $('#status').textContent='اكتملت الجولة';$('#reset').classList.remove('hidden');
+}
+function resetRound(){
+ clearTimeout(timerHandle);phase='lobby';launchData={};counts={};Object.values(players).forEach(p=>p.taps=0);
+ $('#results').classList.add('hidden');$('#start').disabled=false;$('#duration').disabled=false;
+ $('#headline').textContent='جهّزوا أصابعكم!';$('#subline').textContent='ينضم اللاعبون من جوالاتهم، ثم يبدأ الأدمن.';$('#phase-label').textContent='الاستعداد';$('#countdown').textContent='';
+ broadcast({type:'reset'});renderTv();
+}
+function startPhone(){
+ $('#app').innerHTML=`<main class="phone-screen"><section class="panel phone-card"><div class="brand phone-brand"><div class="brand-icon">🚀</div><div><strong>سباق الصواريخ</strong><small>ليالي الرياض</small></div></div><div id="p-wait"><h1 class="player-name">${esc(EMB.name||'لاعب')}</h1><p class="phone-hint">جاري الانضمام إلى السباق…</p></div><div id="p-game" class="hidden"><div class="player-name" id="p-name"></div><p class="phone-hint">اضغط الزر بأسرع ما تستطيع!</p><button class="tap-button" id="tap" disabled>اضغط!</button><div class="tap-count" id="p-count">0</div><div class="tap-label">عدد الضغطات</div><div class="phone-timer" id="p-timer"></div><div class="phone-state" id="p-state">بانتظار بدء الجولة</div></div></section></main>`;
+ ctlSend({type:'join',name:EMB.name||'لاعب'});
+ $('#tap').addEventListener('pointerdown',e=>{e.preventDefault();if(phase==='pressing'){ctlSend({type:'tap'});localPhoneCount++}});
+}
+let localPhoneCount=0,phoneColor='#55c9ff';
+function onCtlMsg(data){
+ if(!data||typeof data!=='object')return;
+ if(data.type==='assigned'){
+  phoneColor=data.color||phoneColor;$('#p-wait')?.classList.add('hidden');$('#p-game')?.classList.remove('hidden');
+  $('#p-name').textContent=data.name||EMB.name||'لاعب';$('#tap').style.setProperty('--player',phoneColor);
+ }else if(data.type==='count'){localPhoneCount=data.taps;$('#p-count').textContent=localPhoneCount}
+ else if(data.type==='phase'){
+  phase=data.phase;
+  if(data.phase==='precount'){$('#p-state').textContent='استعد… العد التنازلي بدأ';$('#tap').disabled=true;localPhoneCount=0;$('#p-count').textContent='0'}
+  if(data.phase==='pressing'){$('#p-state').textContent='اضغط الآن!';$('#tap').disabled=false;$('#p-timer').textContent=`${data.duration} ثانية`}
+  if(data.phase==='frozen'){$('#tap').disabled=true;$('#p-state').textContent='انتهى الوقت — تم تثبيت النتيجة'}
+  if(data.phase==='racing'){$('#tap').disabled=true;$('#p-state').textContent='صاروخك في السباق!'}
+  if(data.phase==='reset'){$('#tap').disabled=true;$('#p-state').textContent='بانتظار الجولة التالية'}
+ }else if(data.type==='timer'){$('#p-timer').textContent=`${(data.left/1000).toFixed(1)} ثانية`}
+ else if(data.type==='locked'){$('#p-state').textContent='بدأت الجولة بالفعل؛ انتظر الجولة التالية.';$('#tap').disabled=true}
+ else if(data.type==='results'){$('#p-state').textContent='انتهى السباق!';$('#tap').disabled=true}
+ else if(data.type==='reset'){$('#tap').disabled=true;$('#p-timer').textContent='';$('#p-state').textContent='بانتظار بدء الجولة'}
+}
+</script>
+</body>
+</html>
