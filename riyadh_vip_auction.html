@@ -1,0 +1,1966 @@
+<!doctype html><html lang="ar" dir="rtl" class=""><head>
+  <script type="module" src="/@vite/client"></script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>المزاد الملعوب - Riyadh VIP Auction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet">
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('emb-pending')}catch(e){}</script>
+<style>html.emb-pending body{visibility:hidden}</style>
+<style>
+/* ===================== النمط والتصميم الفاخر (ليالي الرياض) ===================== */
+:root {
+  --bg-dark: #0d0614;
+  --bg-card: rgba(26, 14, 43, 0.88);
+  --bg-surface: rgba(38, 20, 62, 0.95);
+  --gold-1: #ffe082;
+  --gold-2: #ffd166;
+  --gold-3: #ff9a3d;
+  --gold-glow: rgba(255, 209, 102, 0.35);
+  --emerald: #10b981;
+  --crimson: #ef4444;
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Tajawal', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(255, 209, 102, 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 10% 90%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 90% 90%, rgba(255, 154, 61, 0.1) 0%, transparent 50%);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  direction: rtl;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* بطاقة اللوبي الافتراضية لمنع الدمج */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 209, 102, 0.25);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+}
+
+#role {
+  max-width: 650px;
+  margin: auto;
+  text-align: center;
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, var(--gold-1), var(--gold-2), var(--gold-3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #ffd166, #ff9a3d);
+  color: #170b28;
+  font-weight: 800;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 28px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255, 154, 61, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-gold:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 209, 102, 0.3);
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--gold-2);
+}
+
+/* ===================== واجهة التلفزيون (TV) ===================== */
+.tv-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 36px;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tv-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 209, 102, 0.15);
+}
+
+.tv-logo-lockup {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tv-logo-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, rgba(255, 209, 102, 0.2), rgba(255, 154, 61, 0.3));
+  border: 1px solid var(--gold-2);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.tv-title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.tv-subtitle {
+  font-size: 0.85rem;
+  color: var(--gold-2);
+  letter-spacing: 1px;
+}
+
+.tv-room-code-tag {
+  background: rgba(255, 209, 102, 0.1);
+  border: 1px solid rgba(255, 209, 102, 0.4);
+  padding: 8px 18px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+}
+
+.tv-room-code-val {
+  font-size: 1.6rem;
+  letter-spacing: 3px;
+  color: var(--gold-2);
+}
+
+/* شبكة التلفزيون الرئيسية 2.5D */
+.tv-main-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 28px;
+  margin-top: 24px;
+}
+
+/* منصة العرض 2.5D */
+.stage-card {
+  position: relative;
+  background: radial-gradient(circle at 50% 20%, rgba(68, 30, 104, 0.5) 0%, rgba(20, 9, 34, 0.95) 75%);
+  border: 1px solid rgba(255, 209, 102, 0.25);
+  border-radius: 24px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* مخروط الإضاءة السينمائي للقطعة */
+.spotlight-cone {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 450px;
+  height: 380px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 218, 128, 0.25) 0%, rgba(255, 209, 102, 0.05) 50%, transparent 80%);
+  pointer-events: none;
+  filter: blur(10px);
+}
+
+.pedestal-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 10px 0;
+  perspective: 900px;
+}
+
+.item-visual-box {
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: floatBob 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 20px 25px rgba(0,0,0,0.6));
+  z-index: 2;
+}
+
+@keyframes floatBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(1.5deg); }
+}
+
+.pedestal-base {
+  width: 320px;
+  height: 40px;
+  background: linear-gradient(180deg, #381958 0%, #1a0b2d 100%);
+  border: 2px solid var(--gold-2);
+  border-radius: 50%;
+  margin-top: -20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), inset 0 3px 6px rgba(255, 209, 102, 0.5);
+  position: relative;
+}
+
+.pedestal-base::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 209, 102, 0.4) 0%, transparent 70%);
+}
+
+.item-details-bar {
+  text-align: center;
+  z-index: 3;
+}
+
+.item-tag {
+  display: inline-block;
+  background: rgba(255, 209, 102, 0.15);
+  border: 1px solid rgba(255, 209, 102, 0.35);
+  color: var(--gold-2);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+
+.item-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 6px;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.7);
+}
+
+.item-desc {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* لوحة السوم المباشرة والعداد */
+.bidding-status-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+  z-index: 3;
+}
+
+.bid-metric-box {
+  background: rgba(18, 8, 30, 0.85);
+  border: 1px solid rgba(255, 209, 102, 0.2);
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bid-metric-label {
+  font-size: 0.85rem;
+  color: var(--gold-2);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.bid-metric-value {
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+.bid-metric-sub {
+  font-size: 0.95rem;
+  color: #e2e8f0;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* مؤقت المزاد الدائري */
+.timer-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(18, 8, 30, 0.85);
+  border: 1px solid rgba(255, 209, 102, 0.2);
+  border-radius: 16px;
+  padding: 14px 20px;
+}
+
+.timer-circle-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.timer-svg {
+  transform: rotate(-90deg);
+  width: 64px;
+  height: 64px;
+}
+
+.timer-circle-bg {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 6;
+  fill: none;
+}
+
+.timer-circle-bar {
+  stroke: var(--gold-2);
+  stroke-width: 6;
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s linear, stroke 0.3s ease;
+}
+
+.timer-num {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--gold-1);
+}
+
+.stage-phase-text {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--gold-2);
+}
+
+/* جدول ترتيب اللاعبين في التلفزيون */
+.sidebar-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.leaderboard-card {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 209, 102, 0.2);
+  border-radius: 24px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 209, 102, 0.15);
+  margin-bottom: 14px;
+}
+
+.leaderboard-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--gold-2);
+}
+
+.player-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(36, 18, 58, 0.7);
+  border: 1px solid rgba(255, 209, 102, 0.12);
+  border-radius: 14px;
+  padding: 12px 16px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.player-row.is-highest-bidder {
+  background: rgba(255, 209, 102, 0.15);
+  border-color: var(--gold-2);
+  box-shadow: 0 0 15px rgba(255, 209, 102, 0.25);
+  transform: translateX(-4px);
+}
+
+.player-info-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-rank-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.player-row:nth-child(1) .player-rank-badge {
+  background: linear-gradient(135deg, #ffd166, #ff9a3d);
+  color: #170b28;
+}
+
+.player-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.player-money {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--gold-2);
+}
+
+/* إشعار رفع اليد الفوري على التلفزيون (CRITICAL) */
+.hand-raise-alert {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  background: linear-gradient(135deg, rgba(255, 209, 102, 0.98), rgba(255, 154, 61, 0.98));
+  color: #1a082b;
+  padding: 16px 26px;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(255, 154, 61, 0.5), 0 0 25px rgba(255, 209, 102, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 50;
+  animation: handPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes handPopIn {
+  from { transform: translateY(40px) scale(0.8); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.hand-raise-icon {
+  font-size: 40px;
+  animation: handWave 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes handWave {
+  from { transform: rotate(-8deg); }
+  to { transform: rotate(8deg); }
+}
+
+.hand-raise-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.hand-raise-amount {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+/* شاشة الكشف عن المستور (The Deception Reveal) */
+.reveal-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 3, 15, 0.92);
+  backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.3s ease;
+}
+
+.reveal-box {
+  background: var(--bg-surface);
+  border: 2px solid var(--gold-2);
+  border-radius: 28px;
+  max-width: 720px;
+  width: 90%;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px var(--gold-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.reveal-type-badge {
+  display: inline-block;
+  padding: 6px 20px;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin-bottom: 16px;
+}
+
+.reveal-treasure {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid var(--emerald);
+  color: #34d399;
+}
+
+.reveal-trap {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid var(--crimson);
+  color: #f87171;
+}
+
+.reveal-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.reveal-text {
+  font-size: 1.25rem;
+  color: #e2e8f0;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.reveal-numbers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.reveal-num-card {
+  background: rgba(15, 7, 24, 0.8);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+/* شاشة تتويج ملك المزاد النهائي */
+.finale-podium-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 20px;
+  margin: 40px 0;
+  height: 280px;
+}
+
+.podium-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 170px;
+}
+
+.podium-pillar {
+  width: 100%;
+  background: linear-gradient(180deg, #371a5c 0%, #1a0a2f 100%);
+  border: 2px solid var(--gold-2);
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+}
+
+.podium-1 { height: 200px; border-color: var(--gold-1); box-shadow: 0 0 30px rgba(255, 209, 102, 0.4); }
+.podium-2 { height: 150px; border-color: #cbd5e1; }
+.podium-3 { height: 110px; border-color: #cd7f32; }
+
+/* ===================== واجهة الجوال (Phone Controller) ===================== */
+.ph-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: #0e0616;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.ph-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 209, 102, 0.2);
+  border-radius: 18px;
+  padding: 12px 18px;
+  margin-bottom: 14px;
+}
+
+.ph-user-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.ph-balance-box {
+  text-align: left;
+}
+
+.ph-balance-label {
+  font-size: 0.75rem;
+  color: var(--gold-2);
+  font-weight: 700;
+}
+
+.ph-balance-amount {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+/* بطاقة القطعة في الجوال */
+.ph-item-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 209, 102, 0.25);
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 14px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.ph-item-icon {
+  width: 72px;
+  height: 72px;
+  background: rgba(255, 209, 102, 0.1);
+  border: 1px solid var(--gold-2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  flex-shrink: 0;
+}
+
+.ph-item-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.ph-current-bid-box {
+  background: rgba(255, 209, 102, 0.1);
+  border: 1px solid rgba(255, 209, 102, 0.3);
+  border-radius: 10px;
+  padding: 4px 10px;
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--gold-2);
+}
+
+/* شريط التنبيه التفاعلي في الجوال */
+.ph-status-banner {
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-weight: 800;
+  font-size: 1rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.ph-status-winning {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid var(--emerald);
+  color: #34d399;
+}
+
+.ph-status-outbid {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid var(--crimson);
+  color: #fca5a5;
+  animation: pulseWarning 1s infinite alternate;
+}
+
+@keyframes pulseWarning {
+  from { transform: scale(1); }
+  to { transform: scale(1.02); }
+}
+
+.ph-status-passed {
+  background: rgba(100, 116, 139, 0.2);
+  border: 1px solid #64748b;
+  color: #94a3b8;
+}
+
+/* أزرار السوم السريعة في الجوال */
+.ph-bid-controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.ph-quick-bids-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-bid-step {
+  background: linear-gradient(135deg, rgba(255, 209, 102, 0.15), rgba(255, 154, 61, 0.25));
+  border: 1.5px solid var(--gold-2);
+  color: #fff;
+  border-radius: 16px;
+  padding: 18px 12px;
+  font-size: 1.3rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.btn-bid-step:active {
+  transform: scale(0.95);
+  background: linear-gradient(135deg, #ffd166, #ff9a3d);
+  color: #1a082b;
+}
+
+.btn-bid-step:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-bid-step-sub {
+  font-size: 0.75rem;
+  color: var(--gold-2);
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.btn-pass {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1.5px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  border-radius: 16px;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-pass:active {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.btn-pass:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+</style>
+<script src="/_aistudio-iframe.js?v=1f94f900"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@2.0.4"></script><style>.aistudio-hover-highlight { box-shadow: inset 0 0 0 0.5px white, inset 0 0 0 1.5px rgba(128,128,128,0.6) !important; }.aistudio-active-highlight { outline: 2px solid #87a9ff !important; outline-offset: -2px !important; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(0,0,0,0.3) !important; }.aistudio-generating-blur { filter: blur(5px) grayscale(100%) brightness(28%) !important; transition: filter 0.3s ease; }#aistudio-focus-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: #87a9ff; border-radius: 12px; z-index: 10000; padding: 8px; color: #32302c; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }#aistudio-hover-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: rgba(128,128,128,0.6); border-radius: 12px; z-index: 10000; padding: 8px; color: white; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }.aistudio-img-icon { display: none; vertical-align: middle; pointer-events: auto; cursor: pointer; }.aistudio-img-icon.visible { display: inline-flex; }#aistudio-focus-mode-tag .aistudio-img-icon { position: relative; width: 26px; height: 26px; background: #32302c; border-radius: 6px; margin: -4px -4px -4px 0; }#aistudio-focus-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-hover-mode-tag .aistudio-img-icon { position: relative; width: 18px; height: 18px; margin-left: 4px; }#aistudio-hover-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 0; left: 0; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-focus-mode-tag .aistudio-img-icon:hover, #aistudio-hover-mode-tag .aistudio-img-icon:hover { background: #424242 !important; }#aistudio-focus-mode-tag .aistudio-img-icon:active, #aistudio-hover-mode-tag .aistudio-img-icon:active { background: #393f51 !important; }</style></head>
+<body>
+<div id="root">
+  <!-- الشاشة الافتراضية للوبي ليالي الرياض (قبل استقبال رسالة postMessage) -->
+  <div id="role" class="card" style="margin-top: 40px;">
+    <div style="font-size: 48px; margin-bottom: 12px;">🏛️</div>
+    <h1 class="gold-gradient-text" style="font-size: 2rem; font-weight: 900; margin-bottom: 8px;">المزاد الملعوب</h1>
+    <p style="color: var(--gold-2); font-size: 0.95rem; margin-bottom: 20px;">RIYADH VIP AUCTION</p>
+    <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6; margin-bottom: 28px;">
+      هذي اللعبة جزء من لوبي «ليالي الرياض» — افتحها من هناك حتى تتوصل تلقائيًا عبر التلفزيون وهواتف المزايدين.
+    </p>
+
+    <div style="background: rgba(0,0,0,0.3); border-radius: 14px; padding: 18px; margin-bottom: 24px; text-align: right;">
+      <div style="color: var(--gold-2); font-weight: 800; margin-bottom: 6px;">💡 كيف تضاف اللعبة إلى تطبيق ليالي الرياض؟</div>
+      <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.5;">
+        قم بنسخ كود الـ base64 أو تنزيل هذا الملف، وأضفه في مصفوفة <code>LIBRARY_GAMES</code> في تطبيقك لتظهر كأيقونة مزاد VIP تعمل فوراً على التلفزيون والجوالات.
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 420px; margin: 0 auto;">
+      <button onclick="downloadGameHtml()" class="btn-gold" style="width: 100%;">
+        📥 تنزيل ملف اللعبة (HTML مستقل)
+      </button>
+      <button onclick="copyBase64Snippet()" id="btnCopySnippet" class="btn-secondary" style="justify-content: center;">
+        📋 نسخ كود base64 لـ LIBRARY_GAMES
+      </button>
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <a href="?role=tv" target="_blank" class="btn-secondary" style="flex: 1; justify-content: center;">
+          📺 شاشة التلفزيون (TV)
+        </a>
+        <a href="?role=ph" target="_blank" class="btn-secondary" style="flex: 1; justify-content: center;">
+          📱 شاشة الجوال (Phone)
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== EMB BRIDGE (لا تغيّر هذا الجزء) ===================== */
+let EMB=null; const embHostConns={};
+window.addEventListener('message', e=>{
+  const m=e&&e.data; if(!m||!m.__emb) return;
+  if(m.init){ EMB={role:m.role,code:m.code,name:m.name}; return embStart(); }
+  if(!EMB) return;
+  if(EMB.role==='tv'){
+    if(m.event==='data'){
+      let c=embHostConns[m.id];
+      if(!c)c=embHostConns[m.id]={id:m.id,send:obj=>{try{parent.postMessage({__emb:1,to:m.id,data:obj},'*')}catch(e){}}};
+      try{onHostMsg(c,m.data)}catch(e){}
+    } else if(m.event==='disconnect'){
+      try{onPlayerLeave(m.id)}catch(e){}
+      delete embHostConns[m.id];
+    }
+  } else if(EMB.role==='ph'){
+    if(m.data!==undefined){try{onCtlMsg(m.data)}catch(e){}}
+  }
+});
+function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
+function embStart(){
+  embReveal();
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
+}
+setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
+
+
+/* ===================== مولد الأصوات التفاعلي (Web Audio Synth) ===================== */
+class AuctionAudioSynth {
+  constructor() {
+    this.ctx = null;
+    this.muted = false;
+  }
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+  playGavel() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(160, t);
+    osc.frequency.exponentialRampToValueAtTime(40, t + 0.12);
+    gain.gain.setValueAtTime(0.8, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.15);
+  }
+  playBidChime() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t + i * 0.04);
+      gain.gain.setValueAtTime(0.2, t + i * 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.04 + 0.25);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + i * 0.04);
+      osc.stop(t + i * 0.04 + 0.3);
+    });
+  }
+  playTick() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(800, t);
+    gain.gain.setValueAtTime(0.08, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.04);
+  }
+  playSold() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    this.playGavel();
+    setTimeout(() => this.playGavel(), 180);
+    setTimeout(() => {
+      this.playGavel();
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, t);
+      osc.frequency.exponentialRampToValueAtTime(880, t + 0.4);
+      gain.gain.setValueAtTime(0.3, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.5);
+    }, 360);
+  }
+  playJackpot() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, t + idx * 0.09);
+      gain.gain.setValueAtTime(0.35, t + idx * 0.09);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.09 + 0.4);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + idx * 0.09);
+      osc.stop(t + idx * 0.09 + 0.45);
+    });
+  }
+  playTrap() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(260, t);
+    osc.frequency.linearRampToValueAtTime(110, t + 0.6);
+    gain.gain.setValueAtTime(0.35, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.65);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.7);
+  }
+}
+const audio = new AuctionAudioSynth();
+
+/* ===================== قاعدة بيانات القطع والمقالب في الرياض ===================== */
+const AUCTION_ITEMS = [
+  {
+    id: 'dallah_gold',
+    name: 'دلة الرسلان الملكية المذهبة',
+    category: 'تحف ومقتنيات ملكية',
+    desc: 'دلة نادرة مصبوبة يدوياً بماء الذهب، قيل إنها صنعت لأحد أعيان نجد، وتلمع ببريق فخم يأسر الألباب.',
+    startPrice: 6000,
+    type: 'treasure',
+    trueValue: 28000,
+    revealText: '🎉 كنز أصلي نادر! فحص الصاغة أثبت أنها من الذهب الخالص عيار 24 ومرصعة بالزمرد! مبروك!',
+    svg: `<svg viewBox="0 0 100 100" width="100%" height="100%"><ellipse cx="50" cy="85" rx="28" ry="8" fill="#d97706"/><path d="M35 85 L38 55 Q50 60 62 55 L65 85 Z" fill="url(#goldGrad)"/><ellipse cx="50" cy="55" rx="14" ry="4" fill="#fbbf24"/><path d="M42 55 L46 28 L54 28 L58 55 Z" fill="url(#goldGrad)"/><path d="M50 14 L50 28" stroke="#f59e0b" stroke-width="4"/><circle cx="50" cy="14" r="5" fill="#fef08a"/><path d="M60 48 Q75 48 72 70 Q70 78 60 76" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/><path d="M40 45 Q22 35 18 20 Q16 15 22 18 Q30 25 38 40" fill="url(#goldGrad)"/><defs><linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fef08a"/><stop offset="50%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs></svg>`
+  },
+  {
+    id: 'meteorite_desert',
+    name: 'صخرة نيزكية سقطت بالدهناء',
+    category: 'نوادر وغرائب فلكية',
+    desc: 'حجر أسود ثقيل ذو بريق معدني فريد عثر عليه وسط عروق الدهناء، يشاع أنه من الفضاء الخارجي.',
+    startPrice: 5000,
+    type: 'trap',
+    trueValue: 0,
+    revealText: '😱 مقلب أليم وملعوب! طلعت صخرة جبس صيني وبلاستيك مقوى مرشوشة بوية بخاخ بـ 15 ريال! طارت فلوسك!',
+    svg: `<svg viewBox="0 0 100 100" width="100%" height="100%"><polygon points="30,20 65,15 85,40 78,75 45,88 18,65 15,35" fill="url(#stoneGrad)" stroke="#64748b" stroke-width="2"/><circle cx="45" cy="40" r="6" fill="#1e293b"/><circle cx="65" cy="55" r="4" fill="#1e293b"/><circle cx="35" cy="65" r="5" fill="#0f172a"/><defs><linearGradient id="stoneGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#475569"/><stop offset="60%" stop-color="#1e293b"/><stop offset="100%" stop-color="#090d16"/></linearGradient></defs></svg>`
+  },
+  {
+    id: 'caprice_1989',
+    name: 'كابريس كلاسيك صابونة 1989',
+    category: 'سيارات كلاسيكية',
+    desc: 'كابريس مخزن في بايكة بحي الملز منذ 30 سنة، العداد 14 ألف كم فقط وبحالة لمعة الوكالة.',
+    startPrice: 8000,
+    type: 'penalty',
+    trueValue: 0,
+    penalty: 4000,
+    revealText: '💥 كارثة ميكانيكية! الشكمان مسدود والمكينة مخبطة مصدية، والسطحة تطالب بغرامة 4,000 ريال لسحبها!',
+    svg: `<svg viewBox="0 0 100 100" width="100%" height="100%"><rect x="10" y="45" width="80" height="25" rx="5" fill="#713f12"/><polygon points="25,45 35,28 65,28 75,45" fill="#ca8a04"/><circle cx="28" cy="70" r="10" fill="#1e293b" stroke="#cbd5e1" stroke-width="3"/><circle cx="72" cy="70" r="10" fill="#1e293b" stroke="#cbd5e1" stroke-width="3"/><rect x="85" y="52" width="5" height="8" rx="2" fill="#fbbf24"/></svg>`
+  },
+  {
+    id: 'plate_tarab_1',
+    name: 'لوحة سيارة VIP [ ط ر ب 1 ]',
+    category: 'مزادات رسمية مميزة',
+    desc: 'لوحة خصوصي أحادية نادرة محط أنظار هواة التميز في بوليفارد الرياض، تنافس عليها كبار الهواة.',
+    startPrice: 10000,
+    type: 'treasure',
+    trueValue: 55000,
+    revealText: '👑 ثروة ذهبية خيالية! لوحة رسمية نادرة بيعت في مزاد المرور بمبلغ قياسي! حققت ربحاً أسطورياً!',
+    svg: `<svg viewBox="0 0 100 100" width="100%" height="100%"><rect x="10" y="28" width="80" height="44" rx="6" fill="#f8fafc" stroke="#1e293b" stroke-width="3"/><line x1="50" y1="28" x2="50" y2="72" stroke="#1e293b" stroke-width="2"/><text x="30" y="48" font-size="14" font-weight="900" fill="#1e293b" text-anchor="middle">١</text><text x="30" y="64" font-size="10" font-weight="700" fill="#475569" text-anchor="middle">1</text><text x="70" y="48" font-size="13" font-weight="900" fill="#1e293b" text-anchor="middle">ط ر ب</text><text x="70" y="64" font-size="9" font-weight="700" fill="#475569" text-anchor="middle">B R T</text></svg>`
+  },
+  {
+    id: 'oud_vintage',
+    name: 'دهن عود سيوفي معتق 100 عام',
+    category: 'عطور وبخور النخبة',
+    desc: 'تولة عود صافي في قارورة كريستال محكمة، قطرة واحدة منها تعطر صالة المزاد كاملة.',
+    startPrice: 5000,
+    type: 'trap',
+    trueValue: 20,
+    revealText: '🤦‍♂️ غش عِطري فاضح! ماء ورد تجاري مخلوط بزيت سمسم وحناء من بسطة عشوائية! قيمته 20 ريال بس!',
+    svg: `<svg viewBox="0 0 100 100" width="100%" height="100%"><path d="M40 30 L60 30 L65 50 Q75 60 70 80 Q65 90 50 90 Q35 90 30 80 Q25 60 35 50 Z" fill="#b45309" stroke="#fbbf24" stroke-width="2"/><rect x="44" y="16" width="12" height="14" rx="2" fill="#fbbf24"/><circle cx="50" cy="14" r="6" fill="#fef08a"/></svg>`
+  },
+  {
+    id: 'falcon_royal',
+    name: 'صقر شاهين حر أصيل (صنديد)',
+    category: 'صقور ومقانيص الأصالة',
+    desc: 'شاهين قرناس وافي الريش، نظرة ثاقبة وشهادة سلالة نقية من كبار صقاري المملكة.',
+    startPrice: 7000,
+    type: 'treasure',
+    trueValue: 45000,
+    revealText: '🦅 صقر بطولات أصيل! بطل مسابقة الملواح وقيمته السوقية 45,000 ريال! صفقة تاريخية مباركة!',
+    svg: `<svg viewBox="0 0 100 100" width="100%" height="100%"><path d="M50 18 Q65 18 70 35 Q75 60 65 85 L50 82 L35 85 Q25 60 30 35 Q35 18 50 18 Z" fill="#78350f"/><path d="M45 28 L55 28 L58 38 L42 38 Z" fill="#1e293b"/><polygon points="48,38 52,38 50,46" fill="#fbbf24"/><circle cx="43" cy="32" r="3" fill="#fbbf24"/><circle cx="57" cy="32" r="3" fill="#fbbf24"/></svg>`
+  },
+  {
+    id: 'mandi_bowl',
+    name: 'طاسة مندي أثرية مطلية بالذهب',
+    category: 'أواني الولائم القديمة',
+    desc: 'طاسة عريقة استخدمت في كبرى ولائم الرياض القديمة، تزن 6 كجم وتلمع بوهج أصفر براق.',
+    startPrice: 4000,
+    type: 'trap',
+    trueValue: 50,
+    revealText: '🤣 مقلب المندي! بوية ذهبية مغشوشة تقشرت عند أول غسلة ماء دافئ، وطلعت قصدير رخيص قيمته 50 ريال!',
+    svg: `<svg viewBox="0 0 100 100" width="100%" height="100%"><ellipse cx="50" cy="40" rx="36" ry="12" fill="#fbbf24" stroke="#d97706" stroke-width="2"/><path d="M14 40 Q14 78 50 78 Q86 78 86 40" fill="url(#goldGrad)" stroke="#b45309" stroke-width="2"/><ellipse cx="50" cy="78" rx="20" ry="6" fill="#92400e"/></svg>`
+  },
+  {
+    id: 'chest_mystery',
+    name: 'صندوق كنز عثماني مقفل بالأصفاد',
+    category: 'صناديق أثرية مغلقة',
+    desc: 'صندوق فولاذي عتيق مقفل بإحكام لم يفتح منذ 70 عاماً، عند تحريكه يُسمع رنين ذهبي ساحر!',
+    startPrice: 6000,
+    type: 'treasure',
+    trueValue: 25000,
+    revealText: '✨ مفاجأة الصندوق! داخله سبيكة ذهب سويسري نقية زنة 60 غرام بقيمة 25,000 ريال!',
+    svg: `<svg viewBox="0 0 100 100" width="100%" height="100%"><rect x="15" y="35" width="70" height="45" rx="5" fill="#451a03" stroke="#fbbf24" stroke-width="3"/><path d="M15 35 Q50 15 85 35" fill="#78350f" stroke="#fbbf24" stroke-width="3"/><line x1="32" y1="35" x2="32" y2="80" stroke="#fbbf24" stroke-width="3"/><line x1="68" y1="35" x2="68" y2="80" stroke="#fbbf24" stroke-width="3"/><circle cx="50" cy="55" r="7" fill="#fbbf24" stroke="#78350f" stroke-width="2"/></svg>`
+  }
+];
+
+/* ===================== حالة اللعبة المشتركة (Game Engine State) ===================== */
+const G = {
+  status: 'LOBBY', // LOBBY, ACTIVE, SOLD, REVEAL, FINALE
+  itemIndex: 0,
+  currentBid: 0,
+  highestBidderId: null,
+  highestBidderName: null,
+  timerSec: 12,
+  timerInterval: null,
+  players: {}, // id: { id, name, balance, itemsWon: [], passed: false }
+  lastHandRaise: null, // { name, amount, time }
+};
+
+/* ===================== جهة التلفزيون (TV IMPLEMENTATION) ===================== */
+function startTv() {
+  renderTvDom();
+  // بث الحالة كل 250ms لجميع الجوالات المتصلة
+  setInterval(broadcastTvState, 250);
+}
+
+function onHostMsg(c, data) {
+  if (!data || !data.t) return;
+
+  // انضمام لاعب جديد من الجوال
+  if (data.t === 'join') {
+    const pName = (data.name || 'مزايد VIP').trim();
+    if (!G.players[c.id]) {
+      G.players[c.id] = {
+        id: c.id,
+        name: pName,
+        balance: 25000, // رصيد البداية 25 ألف ريال
+        itemsWon: [],
+        passed: false
+      };
+      audio.playBidChime();
+      updateTvLeaderboard();
+    }
+    // إرسال رد ترحيبي وتحديث للجوال
+    c.send(getPhoneStateFor(c.id));
+    return;
+  }
+
+  // رفع السوم من الجوال
+  if (data.t === 'bid') {
+    if (G.status !== 'ACTIVE') return;
+    const p = G.players[c.id];
+    if (!p || p.passed) return;
+
+    const inc = Number(data.inc) || 100;
+    const newPrice = G.currentBid + inc;
+
+    if (p.balance >= newPrice) {
+      G.currentBid = newPrice;
+      G.highestBidderId = c.id;
+      G.highestBidderName = p.name;
+
+      // تمديد الوقت إذا كان أقل من 7 ثوانٍ
+      if (G.timerSec < 7) {
+        G.timerSec = 7;
+      }
+
+      // إظهار رفع اليد على التلفزيون
+      G.lastHandRaise = {
+        name: p.name,
+        amount: newPrice,
+        inc: inc,
+        time: Date.now()
+      };
+      showTvHandRaise(p.name, newPrice, inc);
+
+      audio.playGavel();
+      audio.playBidChime();
+      updateTvBiddingDisplay();
+      updateTvLeaderboard();
+      broadcastTvState();
+    }
+    return;
+  }
+
+  // انسحاب لاعب من القطعة الحالية
+  if (data.t === 'pass') {
+    const p = G.players[c.id];
+    if (p) {
+      p.passed = true;
+      c.send(getPhoneStateFor(c.id));
+    }
+    return;
+  }
+}
+
+function onPlayerLeave(id) {
+  delete G.players[id];
+  updateTvLeaderboard();
+}
+
+function broadcastTvState() {
+  for (const pid in embHostConns) {
+    try {
+      embHostConns[pid].send(getPhoneStateFor(pid));
+    } catch(e){}
+  }
+}
+
+function getPhoneStateFor(playerId) {
+  const p = G.players[playerId] || { balance: 25000, passed: false };
+  const currItem = AUCTION_ITEMS[G.itemIndex] || {};
+  return {
+    t: 'sync',
+    status: G.status,
+    balance: p.balance,
+    passed: p.passed,
+    itemIndex: G.itemIndex,
+    totalItems: AUCTION_ITEMS.length,
+    itemName: currItem.name || '',
+    itemDesc: currItem.desc || '',
+    currentBid: G.currentBid,
+    highestBidderName: G.highestBidderName,
+    isHighestBidder: (G.highestBidderId === playerId),
+    timerSec: G.timerSec
+  };
+}
+
+/* ===================== وظائف شاشة التلفزيون (TV UI) ===================== */
+function renderTvDom() {
+  const code = (EMB && EMB.code) ? EMB.code : '7890';
+  document.getElementById('root').innerHTML = `
+    <div class="tv-screen">
+      <!-- الشريط العلوي الفاخر -->
+      <header class="tv-topbar">
+        <div class="tv-logo-lockup">
+          <div class="tv-logo-icon">🏛️</div>
+          <div>
+            <div class="tv-title gold-gradient-text">المزاد الملعوب</div>
+            <div class="tv-subtitle">RIYADH VIP AUCTION</div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div class="tv-room-code-tag">
+            <span style="color: #cbd5e1; font-size: 0.95rem;">رمز الغرفة:</span>
+            <span class="tv-room-code-val tabular">${code}</span>
+          </div>
+          <button onclick="audio.muted = !audio.muted; this.innerText = audio.muted ? '🔇 كتم' : '🔊 صوت';" class="btn-secondary" style="padding: 8px 14px; font-size: 0.85rem;">
+            🔊 صوت
+          </button>
+        </div>
+      </header>
+
+      <!-- محتوى الشاشة (لوبي / مزاد / تتويج) -->
+      <div id="tvContent" style="flex: 1; display: flex; flex-direction: column;">
+        ${renderTvLobbyHtml()}
+      </div>
+    </div>
+
+    <!-- حاوية إشعار رفع اليد المنبثق -->
+    <div id="tvHandRaiseContainer"></div>
+
+    <!-- نافذة كشف المستور (المفاجأة) -->
+    <div id="tvRevealModalContainer"></div>
+  `;
+}
+
+function renderTvLobbyHtml() {
+  const code = (EMB && EMB.code) ? EMB.code : '7890';
+  return `
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px;">
+      <div style="font-size: 64px; margin-bottom: 12px; filter: drop-shadow(0 0 20px rgba(255,209,102,0.4));">🏛️</div>
+      <h2 class="gold-gradient-text" style="font-size: 2.8rem; font-weight: 900; margin-bottom: 8px;">قاعة مزادات ليالي الرياض VIP</h2>
+      <p style="color: #cbd5e1; font-size: 1.25rem; max-width: 650px; line-height: 1.6; margin-bottom: 30px;">
+        ادخل من جوالك برمز الغرفة <strong style="color: var(--gold-2); font-size: 1.4rem;">${code}</strong> للمشاركة في أسخن مزاد! كل لاعب يبدأ بـ 25,000 ريال، واحذر من السلع الملعوبة!
+      </p>
+
+      <div class="card" style="width: 100%; max-width: 800px; margin-bottom: 30px; text-align: right;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="color: var(--gold-2); font-size: 1.25rem; font-weight: 800;">المزايدون المنضمون حالياً:</h3>
+          <span id="lobbyPlayerCount" style="background: rgba(255,209,102,0.15); color: var(--gold-2); padding: 4px 12px; border-radius: 20px; font-weight: 800;">
+            ${Object.keys(G.players).length} لاعبين
+          </span>
+        </div>
+        <div id="lobbyPlayerGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
+          ${renderLobbyPlayerPills()}
+        </div>
+      </div>
+
+      <button onclick="startAuctionFromTv()" class="btn-gold" style="font-size: 1.35rem; padding: 18px 48px;">
+        🔨 بدء المزاد الآن
+      </button>
+    </div>
+  `;
+}
+
+function renderLobbyPlayerPills() {
+  const pList = Object.values(G.players);
+  if (pList.length === 0) {
+    return `<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 20px;">بانتظار دخول اللاعبين من جوالاتهم...</div>`;
+  }
+  return pList.map(p => `
+    <div style="background: rgba(38, 20, 62, 0.8); border: 1px solid var(--gold-2); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 20px;">👤</span>
+      <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+        <div style="font-weight: 800; font-size: 1.05rem;">${escapeHtml(p.name)}</div>
+        <div style="color: var(--gold-2); font-size: 0.85rem;" class="tabular">25,000 ر.س</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function startAuctionFromTv() {
+  audio.playGavel();
+  G.status = 'ACTIVE';
+  G.itemIndex = 0;
+  loadCurrentItem();
+}
+
+function loadCurrentItem() {
+  if (G.itemIndex >= AUCTION_ITEMS.length) {
+    showTvFinale();
+    return;
+  }
+
+  const item = AUCTION_ITEMS[G.itemIndex];
+  G.currentBid = item.startPrice;
+  G.highestBidderId = null;
+  G.highestBidderName = null;
+  G.timerSec = 12;
+  G.status = 'ACTIVE';
+
+  // إعادة تعيين حالة الانسحاب لجميع اللاعبين
+  for (const pid in G.players) {
+    G.players[pid].passed = false;
+  }
+
+  renderTvActiveAuctionDom();
+  startTvTimer();
+  broadcastTvState();
+}
+
+function renderTvActiveAuctionDom() {
+  const item = AUCTION_ITEMS[G.itemIndex];
+  const container = document.getElementById('tvContent');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="tv-main-grid">
+      <!-- منصة العرض 2.5D للسلعة -->
+      <div class="stage-card">
+        <div class="spotlight-cone"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; z-index: 3;">
+          <span class="item-tag">${escapeHtml(item.category)}</span>
+          <span style="color: var(--gold-2); font-weight: 800; font-size: 1rem;">
+            القطعة ${G.itemIndex + 1} من ${AUCTION_ITEMS.length}
+          </span>
+        </div>
+
+        <div class="pedestal-wrap">
+          <div class="item-visual-box">
+            ${item.svg}
+          </div>
+          <div class="pedestal-base"></div>
+        </div>
+
+        <div class="item-details-bar">
+          <h2 class="item-title">${escapeHtml(item.name)}</h2>
+          <p class="item-desc">${escapeHtml(item.desc)}</p>
+        </div>
+
+        <!-- أرقام السوم والعداد -->
+        <div class="bidding-status-panel">
+          <div class="bid-metric-box">
+            <div class="bid-metric-label">السعر الحالي للسوم</div>
+            <div id="tvBidVal" class="bid-metric-value tabular gold-gradient-text">
+              ${G.currentBid.toLocaleString('ar-SA')} ر.س
+            </div>
+            <div id="tvBidderVal" class="bid-metric-sub">
+              ${G.highestBidderName ? `👑 صاحب السومة: <strong style="color: var(--gold-1);">${escapeHtml(G.highestBidderName)}</strong>` : `السعر الابتدائي يبدأ من ${item.startPrice.toLocaleString('ar-SA')} ر.س`}
+            </div>
+          </div>
+
+          <div class="timer-container">
+            <div class="timer-circle-wrap">
+              <svg class="timer-svg" viewBox="0 0 64 64">
+                <circle class="timer-circle-bg" cx="32" cy="32" r="26"></circle>
+                <circle id="tvTimerBar" class="timer-circle-bar" cx="32" cy="32" r="26" stroke-dasharray="163.36" stroke-dashoffset="0"></circle>
+              </svg>
+              <div id="tvTimerNum" class="timer-num tabular">${G.timerSec}</div>
+            </div>
+            <div>
+              <div class="stage-phase-text" id="tvStagePhase">المزاد جاري...</div>
+              <div style="color: #94a3b8; font-size: 0.85rem;">ارفع سومك من جوالك قبل دق المطرقة!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- العمود الجانبي: جدول الترتيب المباشر -->
+      <div class="sidebar-panel">
+        <div class="leaderboard-card">
+          <div class="leaderboard-header">
+            <div class="leaderboard-title">🏆 خزائن المزايدين المباشرة</div>
+            <span style="font-size: 0.85rem; color: #94a3b8;">${Object.keys(G.players).length} مشارك</span>
+          </div>
+          <div id="tvPlayerRows" class="player-list">
+            ${renderTvLeaderboardRows()}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function updateTvBiddingDisplay() {
+  const bidEl = document.getElementById('tvBidVal');
+  const bidderEl = document.getElementById('tvBidderVal');
+  if (bidEl) bidEl.innerText = `${G.currentBid.toLocaleString('ar-SA')} ر.س`;
+  if (bidderEl) {
+    bidderEl.innerHTML = `👑 صاحب السومة: <strong style="color: var(--gold-1);">${escapeHtml(G.highestBidderName || '')}</strong>`;
+  }
+}
+
+function updateTvLeaderboard() {
+  const pRows = document.getElementById('tvPlayerRows');
+  if (pRows) pRows.innerHTML = renderTvLeaderboardRows();
+
+  const lobbyGrid = document.getElementById('lobbyPlayerGrid');
+  if (lobbyGrid) lobbyGrid.innerHTML = renderLobbyPlayerPills();
+
+  const lCount = document.getElementById('lobbyPlayerCount');
+  if (lCount) lCount.innerText = `${Object.keys(G.players).length} لاعبين`;
+}
+
+function renderTvLeaderboardRows() {
+  const sorted = Object.values(G.players).sort((a, b) => b.balance - a.balance);
+  if (sorted.length === 0) {
+    return `<div style="text-align: center; color: #94a3b8; padding: 20px;">بانتظار اتصال اللاعبين...</div>`;
+  }
+  return sorted.map((p, idx) => {
+    const isHighest = (p.id === G.highestBidderId);
+    return `
+      <div class="player-row ${isHighest ? 'is-highest-bidder' : ''}">
+        <div class="player-info-left">
+          <div class="player-rank-badge tabular">${idx + 1}</div>
+          <div>
+            <div class="player-name">${escapeHtml(p.name)} ${isHighest ? '👑' : ''}</div>
+            <div style="font-size: 0.8rem; color: #94a3b8;">ربح ${p.itemsWon.length} سلع</div>
+          </div>
+        </div>
+        <div class="player-money tabular">${p.balance.toLocaleString('ar-SA')} ر.س</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* عداد المزاد ودقات المطرقة */
+function startTvTimer() {
+  if (G.timerInterval) clearInterval(G.timerInterval);
+
+  G.timerInterval = setInterval(() => {
+    if (G.status !== 'ACTIVE') return;
+
+    G.timerSec--;
+    if (G.timerSec <= 4 && G.timerSec > 0) {
+      audio.playTick();
+    }
+
+    const timerNum = document.getElementById('tvTimerNum');
+    const timerBar = document.getElementById('tvTimerBar');
+    const phaseText = document.getElementById('tvStagePhase');
+
+    if (timerNum) timerNum.innerText = G.timerSec;
+    if (timerBar) {
+      const totalOffset = 163.36;
+      const progress = Math.max(0, G.timerSec / 12);
+      timerBar.style.strokeDashoffset = (totalOffset * (1 - progress)).toString();
+      if (G.timerSec <= 3) {
+        timerBar.style.stroke = 'var(--crimson)';
+      } else {
+        timerBar.style.stroke = 'var(--gold-2)';
+      }
+    }
+
+    if (phaseText) {
+      if (G.timerSec === 3) phaseText.innerText = 'السومة الأولى... 🔨';
+      else if (G.timerSec === 2) phaseText.innerText = 'السومة الثانية... 🔨🔨';
+      else if (G.timerSec === 1) phaseText.innerText = 'السومة الثالثة والأخيرة!';
+      else if (G.timerSec > 3) phaseText.innerText = 'المزاد جاري...';
+    }
+
+    if (G.timerSec <= 0) {
+      clearInterval(G.timerInterval);
+      resolveCurrentAuctionRound();
+    }
+  }, 1000);
+}
+
+/* رفع اليد الفوري المنبثق على التلفزيون (CRITICAL) */
+function showTvHandRaise(name, amount, inc) {
+  const container = document.getElementById('tvHandRaiseContainer');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="hand-raise-alert">
+      <div class="hand-raise-icon">🖐️</div>
+      <div>
+        <div class="hand-raise-title">رفع السوم: ${escapeHtml(name)}!</div>
+        <div class="hand-raise-amount tabular">+${inc.toLocaleString('ar-SA')} ر.س ➔ ${amount.toLocaleString('ar-SA')} ر.س</div>
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    container.innerHTML = '';
+  }, 2200);
+}
+
+/* حسم الجولة: بيع القطعة وكشف المستور (المفاجأة) */
+function resolveCurrentAuctionRound() {
+  G.status = 'SOLD';
+  audio.playSold();
+  broadcastTvState();
+
+  const item = AUCTION_ITEMS[G.itemIndex];
+  const winner = G.players[G.highestBidderId];
+
+  // إذا لم يزِد أحد على السلعة
+  if (!winner) {
+    showTvRevealModal(null, item, 0);
+    return;
+  }
+
+  // حساب النتيجة المالية (الملعوبة!)
+  const paidPrice = G.currentBid;
+  const penalty = item.penalty || 0;
+  const netProfit = item.trueValue - paidPrice - penalty;
+
+  winner.balance = Math.max(0, winner.balance - paidPrice + item.trueValue - penalty);
+  winner.itemsWon.push({
+    item: item,
+    paid: paidPrice,
+    profit: netProfit
+  });
+
+  updateTvLeaderboard();
+
+  // فتح نافذة الكشف التفاعلية بعد ثانية واحدة
+  setTimeout(() => {
+    showTvRevealModal(winner, item, netProfit);
+  }, 1200);
+}
+
+function showTvRevealModal(winner, item, netProfit) {
+  G.status = 'REVEAL';
+  const modalContainer = document.getElementById('tvRevealModalContainer');
+  if (!modalContainer) return;
+
+  const isTreasure = (item.type === 'treasure');
+  const isTrap = (item.type === 'trap' || item.type === 'penalty');
+
+  if (isTreasure) audio.playJackpot();
+  else if (isTrap) audio.playTrap();
+
+  modalContainer.innerHTML = `
+    <div class="reveal-modal-overlay">
+      <div class="reveal-box">
+        <span class="reveal-type-badge ${isTreasure ? 'reveal-treasure' : 'reveal-trap'}">
+          ${isTreasure ? '✨ كنز أصلي ونادر!' : '😱 مقلب ملعوب وطاحت الفاس بالراس!'}
+        </span>
+
+        <h2 class="reveal-title gold-gradient-text">${escapeHtml(item.name)}</h2>
+        <p class="reveal-text">${escapeHtml(item.revealText)}</p>
+
+        <div class="reveal-numbers-grid">
+          <div class="reveal-num-card">
+            <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 4px;">السعر الذي رسا عليه المزاد</div>
+            <div style="font-size: 1.5rem; font-weight: 900; color: #fff;" class="tabular">
+              ${winner ? G.currentBid.toLocaleString('ar-SA') : 'لم تُبع'} ر.س
+            </div>
+            <div style="font-size: 0.85rem; color: var(--gold-2); margin-top: 4px;">
+              المشتري: ${winner ? escapeHtml(winner.name) : 'لا أحد'}
+            </div>
+          </div>
+
+          <div class="reveal-num-card">
+            <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 4px;">القيمة الحقيقية للسلعة</div>
+            <div style="font-size: 1.5rem; font-weight: 900; color: ${isTreasure ? '#34d399' : '#f87171'};" class="tabular">
+              ${item.trueValue.toLocaleString('ar-SA')} ر.س
+            </div>
+            <div style="font-size: 0.85rem; color: ${netProfit >= 0 ? '#34d399' : '#f87171'}; margin-top: 4px;">
+              الصافي: ${netProfit >= 0 ? `+${netProfit.toLocaleString('ar-SA')}` : netProfit.toLocaleString('ar-SA')} ر.س
+            </div>
+          </div>
+        </div>
+
+        <button onclick="nextAuctionItem()" class="btn-gold" style="padding: 14px 36px; font-size: 1.15rem;">
+          القطعة التالية ➔
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function nextAuctionItem() {
+  const modalContainer = document.getElementById('tvRevealModalContainer');
+  if (modalContainer) modalContainer.innerHTML = '';
+
+  G.itemIndex++;
+  loadCurrentItem();
+}
+
+/* شاشة تتويج ملك المزاد النهائي (FINALE) */
+function showTvFinale() {
+  G.status = 'FINALE';
+  broadcastTvState();
+  audio.playJackpot();
+
+  const sorted = Object.values(G.players).sort((a, b) => b.balance - a.balance);
+  const p1 = sorted[0];
+  const p2 = sorted[1];
+  const p3 = sorted[2];
+
+  // احتساب أكبر مقلب وأذكى صفقة
+  let biggestTrap = null;
+  let bestDeal = null;
+
+  for (const p of sorted) {
+    for (const win of p.itemsWon) {
+      if (win.profit < 0) {
+        if (!biggestTrap || Math.abs(win.profit) > Math.abs(biggestTrap.profit)) {
+          biggestTrap = { p, win, profit: win.profit };
+        }
+      } else if (win.profit > 0) {
+        if (!bestDeal || win.profit > bestDeal.profit) {
+          bestDeal = { p, win, profit: win.profit };
+        }
+      }
+    }
+  }
+
+  const container = document.getElementById('tvContent');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
+      <div style="font-size: 54px; margin-bottom: 6px;">👑</div>
+      <h2 class="gold-gradient-text" style="font-size: 2.8rem; font-weight: 900; margin-bottom: 4px;">ملك مزاد ليالي الرياض VIP</h2>
+      <p style="color: #cbd5e1; font-size: 1.15rem; margin-bottom: 24px;">انتهى المزاد وحان وقت فرز الثروات وتتويج الأذكى وتكريم من أكل المقلب!</p>
+
+      <!-- منصات التتويج -->
+      <div class="finale-podium-wrap">
+        ${p2 ? `
+          <div class="podium-slot">
+            <div style="font-size: 28px; margin-bottom: 4px;">🥈</div>
+            <div style="font-weight: 800; font-size: 1.1rem; color: #e2e8f0;">${escapeHtml(p2.name)}</div>
+            <div style="color: var(--gold-2); font-size: 0.95rem; margin-bottom: 8px;" class="tabular">${p2.balance.toLocaleString('ar-SA')} ر.س</div>
+            <div class="podium-pillar podium-2">
+              <span style="font-size: 1.6rem;">2</span>
+            </div>
+          </div>
+        ` : ''}
+
+        ${p1 ? `
+          <div class="podium-slot">
+            <div style="font-size: 38px; margin-bottom: 4px;">👑</div>
+            <div style="font-weight: 900; font-size: 1.3rem; color: var(--gold-1);">${escapeHtml(p1.name)}</div>
+            <div style="color: #fff; font-size: 1.1rem; font-weight: 800; margin-bottom: 8px;" class="tabular">${p1.balance.toLocaleString('ar-SA')} ر.س</div>
+            <div class="podium-pillar podium-1">
+              <span style="font-size: 2.2rem; color: var(--gold-1);">1</span>
+            </div>
+          </div>
+        ` : ''}
+
+        ${p3 ? `
+          <div class="podium-slot">
+            <div style="font-size: 28px; margin-bottom: 4px;">🥉</div>
+            <div style="font-weight: 800; font-size: 1.1rem; color: #e2e8f0;">${escapeHtml(p3.name)}</div>
+            <div style="color: var(--gold-2); font-size: 0.95rem; margin-bottom: 8px;" class="tabular">${p3.balance.toLocaleString('ar-SA')} ر.س</div>
+            <div class="podium-pillar podium-3">
+              <span style="font-size: 1.4rem;">3</span>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- جوائز ومقالب الشرف -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 700px; margin-bottom: 30px;">
+        <div class="card" style="padding: 16px; text-align: right; border-color: rgba(239, 68, 68, 0.4);">
+          <div style="color: #f87171; font-weight: 800; font-size: 0.95rem; margin-bottom: 4px;">🤡 أكل أكبر مقلب أليم:</div>
+          <div style="font-size: 1.1rem; font-weight: 800;">
+            ${biggestTrap ? `${escapeHtml(biggestTrap.p.name)} في (${escapeHtml(biggestTrap.win.item.name)})` : 'لا يوجد متورطون!'}
+          </div>
+          <div style="color: #fca5a5; font-size: 0.85rem;" class="tabular">
+            ${biggestTrap ? `خسارة: ${Math.abs(biggestTrap.profit).toLocaleString('ar-SA')} ر.س` : ''}
+          </div>
+        </div>
+
+        <div class="card" style="padding: 16px; text-align: right; border-color: rgba(16, 185, 129, 0.4);">
+          <div style="color: #34d399; font-weight: 800; font-size: 0.95rem; margin-bottom: 4px;">💡 أذكى صفقة ذهبية:</div>
+          <div style="font-size: 1.1rem; font-weight: 800;">
+            ${bestDeal ? `${escapeHtml(bestDeal.p.name)} في (${escapeHtml(bestDeal.win.item.name)})` : 'لا يوجد صفقات!'}
+          </div>
+          <div style="color: #6ee7b7; font-size: 0.85rem;" class="tabular">
+            ${bestDeal ? `ربح صافي: +${bestDeal.profit.toLocaleString('ar-SA')} ر.س` : ''}
+          </div>
+        </div>
+      </div>
+
+      <button onclick="location.reload()" class="btn-gold" style="font-size: 1.15rem; padding: 14px 40px;">
+        🔄 جولة مزاد جديدة
+      </button>
+    </div>
+  `;
+}
+
+/* ===================== جهة الجوال (PHONE CONTROLLER) ===================== */
+let myPhoneState = {
+  name: 'مزايد VIP',
+  balance: 25000,
+  currentBid: 6000,
+  isHighestBidder: false,
+  highestBidderName: null,
+  passed: false,
+  itemName: '',
+  timerSec: 12
+};
+
+function startPhone() {
+  myPhoneState.name = (EMB && EMB.name) ? EMB.name : 'مزايد VIP';
+  renderPhoneDom();
+
+  // إرسال رسالة انضمام فوري للتلفزيون
+  ctlSend({ t: 'join', name: myPhoneState.name });
+}
+
+function onCtlMsg(data) {
+  if (!data || data.t !== 'sync') return;
+  myPhoneState.balance = data.balance;
+  myPhoneState.passed = data.passed;
+  myPhoneState.currentBid = data.currentBid;
+  myPhoneState.isHighestBidder = data.isHighestBidder;
+  myPhoneState.highestBidderName = data.highestBidderName;
+  myPhoneState.itemName = data.itemName;
+  myPhoneState.timerSec = data.timerSec;
+
+  updatePhoneDom();
+}
+
+function ctlSend(obj) {
+  try {
+    parent.postMessage({ __emb: 1, data: obj }, '*');
+  } catch(e){}
+}
+
+function renderPhoneDom() {
+  const code = (EMB && EMB.code) ? EMB.code : '7890';
+  document.getElementById('root').innerHTML = `
+    <div class="ph-screen">
+      <!-- الشريط العلوي للجوال -->
+      <div class="ph-topbar">
+        <div>
+          <div class="ph-user-name">${escapeHtml(myPhoneState.name)}</div>
+          <div style="color: #94a3b8; font-size: 0.8rem;">غرفة: <strong style="color: var(--gold-2);">${code}</strong></div>
+        </div>
+        <div class="ph-balance-box">
+          <div class="ph-balance-label">رصيدك المتاح للسوم</div>
+          <div id="phBalanceVal" class="ph-balance-amount tabular">${myPhoneState.balance.toLocaleString('ar-SA')} ر.س</div>
+        </div>
+      </div>
+
+      <!-- بطاقة القطعة الحالية -->
+      <div class="ph-item-card">
+        <div class="ph-item-icon">🏛️</div>
+        <div style="flex: 1; overflow: hidden;">
+          <div id="phItemName" class="ph-item-name">${escapeHtml(myPhoneState.itemName || 'المزاد قادم')}</div>
+          <div class="ph-current-bid-box tabular">
+            السعر الحالي: <strong id="phCurrentBidVal" style="color: #fff;">${myPhoneState.currentBid.toLocaleString('ar-SA')} ر.س</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- حالة المزايدة الحالية للّاعب -->
+      <div id="phStatusBanner" class="ph-status-banner ph-status-winning" style="display: none;">
+        👑 أنت صاحب أعلى سومة حالياً!
+      </div>
+
+      <!-- أزرار المزايدة السريعة والواضحة -->
+      <div class="ph-bid-controls">
+        <div style="text-align: center; color: var(--gold-2); font-weight: 800; font-size: 0.95rem; margin-bottom: 4px;">
+          اختر المبلغ لرفع السوم فوراً:
+        </div>
+
+        <div class="ph-quick-bids-grid">
+          <button onclick="phonePlaceBid(100)" id="btnBid100" class="btn-bid-step">
+            +100
+            <span class="btn-bid-step-sub">ريال</span>
+          </button>
+          <button onclick="phonePlaceBid(250)" id="btnBid250" class="btn-bid-step">
+            +250
+            <span class="btn-bid-step-sub">ريال</span>
+          </button>
+          <button onclick="phonePlaceBid(500)" id="btnBid500" class="btn-bid-step">
+            +500
+            <span class="btn-bid-step-sub">ريال</span>
+          </button>
+          <button onclick="phonePlaceBid(1000)" id="btnBid1000" class="btn-bid-step">
+            +1,000
+            <span class="btn-bid-step-sub">ريال</span>
+          </button>
+        </div>
+
+        <button onclick="phonePlaceBid(2500)" id="btnBid2500" class="btn-bid-step" style="width: 100%; padding: 14px;">
+          +2,500 ريال 🔥
+          <span class="btn-bid-step-sub">ضربة قوية لترهيب الخصوم</span>
+        </button>
+
+        <button onclick="phonePassCurrent()" id="btnPass" class="btn-pass">
+          🛑 انسحاب من هذه القطعة
+        </button>
+      </div>
+    </div>
+  `;
+
+  updatePhoneDom();
+}
+
+function updatePhoneDom() {
+  const balEl = document.getElementById('phBalanceVal');
+  const itemEl = document.getElementById('phItemName');
+  const bidEl = document.getElementById('phCurrentBidVal');
+  const bannerEl = document.getElementById('phStatusBanner');
+  const passBtn = document.getElementById('btnPass');
+
+  if (balEl) balEl.innerText = `${myPhoneState.balance.toLocaleString('ar-SA')} ر.س`;
+  if (itemEl && myPhoneState.itemName) itemEl.innerText = myPhoneState.itemName;
+  if (bidEl) bidEl.innerText = `${myPhoneState.currentBid.toLocaleString('ar-SA')} ر.س`;
+
+  // تحديث شريط الحالة
+  if (bannerEl) {
+    if (myPhoneState.passed) {
+      bannerEl.style.display = 'flex';
+      bannerEl.className = 'ph-status-banner ph-status-passed';
+      bannerEl.innerText = '⛔ لقد انسحبت من هذه القطعة. انتظر القطعة التالية!';
+    } else if (myPhoneState.isHighestBidder) {
+      bannerEl.style.display = 'flex';
+      bannerEl.className = 'ph-status-banner ph-status-winning';
+      bannerEl.innerText = '👑 أنت صاحب أعلى سومة حالياً! السلعة قريبة منك!';
+    } else if (myPhoneState.highestBidderName) {
+      bannerEl.style.display = 'flex';
+      bannerEl.className = 'ph-status-banner ph-status-outbid';
+      bannerEl.innerText = `⚡ ${myPhoneState.highestBidderName} رفع السوم! ارفع سومتك!`;
+    } else {
+      bannerEl.style.display = 'none';
+    }
+  }
+
+  // تفعيل/تعطيل الأزرار حسب رصيد اللاعب والانسحاب
+  [100, 250, 500, 1000, 2500].forEach(inc => {
+    const btn = document.getElementById(`btnBid${inc}`);
+    if (btn) {
+      const needed = myPhoneState.currentBid + inc;
+      const canBid = (!myPhoneState.passed && myPhoneState.balance >= needed);
+      btn.disabled = !canBid;
+    }
+  });
+
+  if (passBtn) {
+    passBtn.disabled = myPhoneState.passed;
+  }
+}
+
+function phonePlaceBid(inc) {
+  if (myPhoneState.passed) return;
+  const needed = myPhoneState.currentBid + inc;
+  if (myPhoneState.balance < needed) return;
+
+  // اهتزاز الجوال التفاعلي
+  if (navigator.vibrate) navigator.vibrate(40);
+
+  ctlSend({ t: 'bid', inc: inc });
+}
+
+function phonePassCurrent() {
+  if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+  ctlSend({ t: 'pass' });
+}
+
+/* ===================== دوال التصدير والـ Base64 ===================== */
+function downloadGameHtml() {
+  const fullHtml = '<!doctype html>' + document.documentElement.outerHTML;
+  const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'riyadh_vip_auction.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function copyBase64Snippet() {
+  const fullHtml = '<!doctype html>' + document.documentElement.outerHTML;
+  const b64 = btoa(unescape(encodeURIComponent(fullHtml)));
+  const snippet = `LIBRARY_GAMES.push({\n  id: 'riyadh_vip_auction',\n  name: 'المزاد الملعوب',\n  icon: '🏛️',\n  b64: '${b64}'\n});`;
+
+  navigator.clipboard.writeText(snippet).then(() => {
+    const btn = document.getElementById('btnCopySnippet');
+    if (btn) {
+      btn.innerText = '✅ تم نسخ كود LIBRARY_GAMES بنجاح!';
+      setTimeout(() => {
+        btn.innerText = '📋 نسخ كود base64 لـ LIBRARY_GAMES';
+      }, 3000);
+    }
+  }).catch(() => {
+    prompt('انسخ كود base64 من هنا:', snippet);
+  });
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// دعم المعاينة المباشرة وتشغيل الأدوار بشكل منفصل تماماً
+try {
+  const urlP = new URLSearchParams(window.location.search);
+  const qRole = urlP.get('role');
+  if (qRole === 'tv' || qRole === 'ph') {
+    EMB = {
+      role: qRole,
+      code: urlP.get('code') || '7890',
+      name: urlP.get('name') || 'مزايد VIP'
+    };
+    embStart();
+  }
+} catch(err){}
+</script>
+
+
+</body></html>
