@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   build:
+    if: false # paused temporarily at user request
     name: Build APK
     runs-on: ubuntu-latest
     steps:
