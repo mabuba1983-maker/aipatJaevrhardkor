@@ -1,0 +1,1877 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>حماة العرين - رحلة النور | ليالي الرياض</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('emb-pending')}catch(e){}</script>
+<style>html.emb-pending body{visibility:hidden}</style>
+<style>
+  :root {
+    --bg-night: #190d26;
+    --bg-surface: #25153a;
+    --bg-card: #2f1b49;
+    --gold-1: #ffd166;
+    --gold-2: #ff9a3d;
+    --teal: #34d399;
+    --coral: #fb7185;
+    --sky: #38bdf8;
+    --violet: #c084fc;
+    --text-main: #fff8eb;
+    --text-muted: #c8b8dc;
+    --border-soft: rgba(255, 209, 102, 0.22);
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-night);
+    color: var(--text-main);
+    font-family: "Tajawal", system-ui, -apple-system, sans-serif;
+  }
+  #root { width: 100%; height: 100%; position: relative; }
+  .card {
+    max-width: 480px;
+    margin: 40px auto;
+    padding: 24px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 24px;
+    text-align: center;
+    line-height: 1.7;
+  }
+  .gold-text {
+    background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .gold-btn {
+    background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+    color: #190d26;
+    border: none;
+    border-radius: 16px;
+    font-family: inherit;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease;
+    box-shadow: 0 8px 24px rgba(255, 154, 61, 0.3);
+  }
+  .gold-btn:hover { filter: brightness(1.06); }
+  .gold-btn:active { transform: scale(0.96); }
+  .gold-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+  .sec-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-main);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 14px;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .sec-btn:active { transform: scale(0.96); }
+
+  /* TV Stage */
+  .tv-shell { position: relative; width: 100%; height: 100%; background: var(--bg-night); overflow: hidden; }
+  #tv-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .tv-hud {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 10px 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .tv-hud-group { display: flex; align-items: center; gap: 10px; pointer-events: auto; }
+  .hud-plate {
+    background: rgba(25, 13, 38, 0.9);
+    border: 1px solid rgba(255, 209, 102, 0.24);
+    border-radius: 14px;
+    padding: 7px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+  .hud-num { font-variant-numeric: tabular-nums; font-weight: 900; }
+  .room-code-pill {
+    background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+    color: #190d26;
+    font-weight: 900;
+    font-size: 1.05rem;
+    padding: 3px 12px;
+    border-radius: 10px;
+    letter-spacing: 0.1em;
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-strip { display: flex; align-items: center; gap: 8px; }
+  .hero-hud-card {
+    background: rgba(25, 13, 38, 0.9);
+    border: 2px solid rgba(255,255,255,0.14);
+    border-radius: 14px;
+    padding: 5px 10px;
+    min-width: 118px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .hp-track {
+    width: 100%;
+    height: 6px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.12);
+    overflow: hidden;
+  }
+  .hp-fill { height: 100%; border-radius: 4px; transition: width 0.14s ease; }
+  .boss-bar-wrap {
+    position: absolute;
+    top: 68px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(520px, 56vw);
+    background: rgba(25, 13, 38, 0.92);
+    border: 1px solid rgba(251, 113, 133, 0.45);
+    border-radius: 14px;
+    padding: 7px 14px;
+    z-index: 6;
+    pointer-events: none;
+    display: none;
+  }
+  .boss-bar-wrap.visible { display: block; }
+  .boss-hp-track {
+    width: 100%;
+    height: 11px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.12);
+    overflow: hidden;
+    position: relative;
+    margin-top: 4px;
+  }
+  .boss-hp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #fb7185, #ff9a3d);
+    transition: width 0.12s ease;
+  }
+  .mute-btn {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(25, 13, 38, 0.9);
+    color: var(--text-main);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  /* Overlays */
+  .tv-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; z-index: 10; pointer-events: none;
+  }
+  .tv-overlay.hidden { display: none; }
+  .tv-panel {
+    pointer-events: auto;
+    width: min(880px, 94vw);
+    background: rgba(25, 13, 38, 0.93);
+    border: 1px solid rgba(255, 209, 102, 0.3);
+    border-radius: 26px;
+    padding: 26px 30px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+    text-align: center;
+  }
+  .chapter-roadmap {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 14px 0 18px;
+  }
+  .chap-node {
+    background: var(--bg-surface);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+  .chap-node.done { border-color: var(--teal); color: var(--teal); }
+  .chap-node.curr { border-color: var(--gold-1); background: rgba(255, 209, 102, 0.12); }
+  .roster-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .roster-card {
+    background: var(--bg-surface);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 10px 14px;
+    width: 196px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: right;
+  }
+
+  /* Phone Controller */
+  .ph-shell {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    background: var(--bg-night);
+    padding: env(safe-area-inset-top, 10px) 12px env(safe-area-inset-bottom, 12px);
+    gap: 10px;
+    transition: box-shadow 0.16s ease;
+  }
+  .ph-shell.flash-gold { box-shadow: inset 0 0 0 6px var(--gold-1); }
+  .ph-shell.flash-hurt { box-shadow: inset 0 0 0 6px var(--coral); }
+  .ph-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 8px 12px;
+    flex-shrink: 0;
+  }
+  .ph-main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .ph-lobby { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; overflow-y: auto; }
+  .class-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .class-btn {
+    background: var(--bg-surface);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 10px;
+    color: var(--text-main);
+    font-family: inherit;
+    text-align: right;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .class-btn.active { border-color: var(--gold-1); background: rgba(255, 209, 102, 0.14); }
+
+  /* Combat Pad */
+  .ph-combat {
+    flex: 1; min-height: 0;
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 460px) and (orientation: portrait) {
+    .ph-combat { grid-template-columns: 1fr; grid-template-rows: 1.25fr 1fr; }
+  }
+  .stick-zone {
+    position: relative;
+    background: radial-gradient(circle at center, rgba(255, 209, 102, 0.08), rgba(37, 21, 58, 0.92));
+    border: 2px dashed rgba(255, 209, 102, 0.28);
+    border-radius: 22px;
+    touch-action: none;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .stick-hint { color: var(--text-muted); font-size: 0.9rem; font-weight: 700; text-align: center; pointer-events: none; padding: 10px; }
+  .stick-base {
+    position: absolute; width: 118px; height: 118px; border-radius: 50%;
+    border: 3px solid rgba(255, 209, 102, 0.45); background: rgba(25, 13, 38, 0.65);
+    transform: translate(-50%, -50%); pointer-events: none;
+  }
+  .stick-knob {
+    position: absolute; width: 52px; height: 52px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+    box-shadow: 0 6px 18px rgba(255, 154, 61, 0.45);
+    transform: translate(-50%, -50%); pointer-events: none;
+  }
+  .act-col { display: grid; grid-template-rows: 1.3fr 1fr 1fr; gap: 8px; }
+  .act-btn {
+    border-radius: 18px;
+    border: 2px solid rgba(255,255,255,0.16);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    font-family: inherit;
+    font-weight: 900;
+    cursor: pointer;
+    touch-action: manipulation;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 1.1rem;
+  }
+  .act-btn:active { transform: scale(0.95); }
+  .act-atk { background: linear-gradient(145deg, #3b205d, #281442); border-color: rgba(255, 209, 102, 0.48); color: var(--gold-1); font-size: 1.25rem; }
+  .act-dash.ready { border-color: var(--sky); background: rgba(56, 189, 248, 0.16); color: #e0f2fe; }
+  .act-ult.ready {
+    background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+    color: #190d26;
+    border-color: #fff8eb;
+    box-shadow: 0 0 22px rgba(255, 209, 102, 0.45);
+  }
+  .shop-list { display: flex; flex-direction: column; gap: 8px; }
+  .shop-card {
+    background: var(--bg-surface);
+    border: 2px solid rgba(255, 209, 102, 0.25);
+    border-radius: 16px;
+    padding: 12px;
+    color: var(--text-main);
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; text-align: right;
+  }
+  .shop-card:disabled { opacity: 0.42; cursor: not-allowed; }
+  .ph-box {
+    flex: 1; background: var(--bg-surface); border: 1px solid var(--border-soft);
+    border-radius: 22px; padding: 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 10px;
+  }
+</style>
+<script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
+<body>
+<div id="root">
+<div id="role" class="card"><p>هذي اللعبة جزء من لوبي «ليالي الرياض» — افتحها من هناك حتى تتوصل تلقائيًا.</p></div>
+</div>
+<script>
+/* ===================== EMB BRIDGE (لا تغيّر هذا الجزء) ===================== */
+let EMB=null; const embHostConns={};
+window.addEventListener('message', e=>{
+  const m=e&&e.data; if(!m||!m.__emb) return;
+  if(m.init){ EMB={role:m.role,code:m.code,name:m.name}; return embStart(); }
+  if(!EMB) return;
+  if(EMB.role==='tv'){
+    if(m.event==='data'){
+      let c=embHostConns[m.id];
+      if(!c)c=embHostConns[m.id]={id:m.id,send:obj=>{try{parent.postMessage({__emb:1,to:m.id,data:obj},'*')}catch(e){}}};
+      try{onHostMsg(c,m.data)}catch(e){}
+    } else if(m.event==='disconnect'){
+      try{onPlayerLeave(m.id)}catch(e){}
+      delete embHostConns[m.id];
+    }
+  } else if(EMB.role==='ph'){
+    if(m.data!==undefined){try{onCtlMsg(m.data)}catch(e){}}
+  }
+});
+function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
+function embStart(){
+  embReveal();
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
+}
+setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
+
+/* ===================== من هنا تبدأ لعبتك ===================== */
+const ARENA_W = 1280;
+const ARENA_H = 720;
+const PAD_X = 54;
+const PAD_TOP = 96;
+const PAD_BOT = 48;
+const PLAYER_R = 24;
+
+const HERO_CLASSES = {
+  knight: { id: 'knight', name: 'الفارس', icon: '⚔️', role: 'سيف واسع وصحة عالية', color: '#ffd166', maxHp: 150, speed: 270, dmg: 36, cd: 0.36, range: 98 },
+  archer: { id: 'archer', name: 'الرامي', icon: '🏹', role: 'سهام سريعة وبعيدة المدى', color: '#34d399', maxHp: 115, speed: 315, dmg: 25, cd: 0.27, range: 500 },
+  mage:   { id: 'mage',   name: 'الساحر', icon: '🔮', role: 'شرارات تتبع الأعداء', color: '#c084fc', maxHp: 110, speed: 285, dmg: 29, cd: 0.34, range: 430 },
+  healer: { id: 'healer', name: 'الحارس', icon: '✨', role: 'هجمات نور وشفاء الفريق', color: '#38bdf8', maxHp: 135, speed: 290, dmg: 23, cd: 0.34, range: 370 }
+};
+
+const CHAPTERS = [
+  { num: 1, title: 'بوابة الصحراء المظلمة', floor: '#261728', tile: 'rgba(255, 190, 92, 0.08)', border: '#ffb703', bossName: 'حارس البوابة الحجري', bossIcon: '🗿', bossColor: '#fb923c' },
+  { num: 2, title: 'واحة البلور المتجمد', floor: '#11223b', tile: 'rgba(56, 189, 248, 0.09)', border: '#38bdf8', bossName: 'عقرب البلور العملاق', bossIcon: '🦂', bossColor: '#38bdf8' },
+  { num: 3, title: 'أنفاق الحمم والحدادين', floor: '#2b1218', tile: 'rgba(251, 113, 133, 0.09)', border: '#fb7185', bossName: 'عملاق الصهر البركاني', bossIcon: '🔥', bossColor: '#fb7185' },
+  { num: 4, title: 'عرش ملك الظلال', floor: '#170c29', tile: 'rgba(192, 132, 252, 0.09)', border: '#c084fc', bossName: 'ملك الظلال', bossIcon: '👑', bossColor: '#c084fc' }
+];
+
+const UPGRADES = [
+  { id: 'dmg',   title: 'سلاح مسحور', desc: '+35% قوة الهجوم', cost: 45, icon: '⚔️' },
+  { id: 'hp',    title: 'درع الحياة', desc: '+45 صحة قصوى + شفاء كامل', cost: 40, icon: '❤️' },
+  { id: 'multi', title: 'هجمة مزدوجة', desc: 'ضربة/قذيفة إضافية', cost: 65, icon: '🌟' },
+  { id: 'haste', title: 'أحذية البرق', desc: 'سرعة +18% وشحن أسرع', cost: 50, icon: '⚡' }
+];
+
+/* ---------- Web Audio Sound FX ---------- */
+const SFX = {
+  ctx: null, muted: false,
+  ensure() {
+    if (this.muted) return null;
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) this.ctx = new AC();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(()=>{});
+    return this.ctx;
+  },
+  tone(freq, dur, type, vol, slide) {
+    const ctx = this.ensure();
+    if (!ctx) return;
+    try {
+      const t = ctx.currentTime;
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = type || 'sine';
+      o.frequency.setValueAtTime(freq, t);
+      if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + dur);
+      g.gain.setValueAtTime(vol || 0.1, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + dur);
+    } catch (e) {}
+  },
+  slash() { this.tone(360, 0.1, 'triangle', 0.09, 140); },
+  shoot() { this.tone(620, 0.08, 'sine', 0.07, 340); },
+  hit() { this.tone(180, 0.09, 'square', 0.08, 90); },
+  hurt() { this.tone(140, 0.16, 'sawtooth', 0.1, 65); },
+  coin() { this.tone(920, 0.11, 'triangle', 0.09, 1280); },
+  ult() { [440, 587, 880].forEach((f, i) => setTimeout(() => this.tone(f, 0.18, 'triangle', 0.12), i * 65)); },
+  bossRoar() { this.tone(110, 0.45, 'sawtooth', 0.14, 58); },
+  fanfare() { [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => this.tone(f, 0.24, 'triangle', 0.13), i * 100)); }
+};
+
+/* ---------- Pooled Particle Ring Buffer ---------- */
+const POOL_SIZE = 220;
+const particles = Array.from({ length: POOL_SIZE }, () => ({
+  active: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 1, size: 4, color: '#ffd166'
+}));
+let particleIdx = 0;
+function spawnParticles(x, y, color, count, spdMax) {
+  for (let i = 0; i < count; i++) {
+    const p = particles[particleIdx];
+    particleIdx = (particleIdx + 1) % POOL_SIZE;
+    const a = Math.random() * Math.PI * 2;
+    const s = 50 + Math.random() * (spdMax || 220);
+    p.active = true; p.x = x; p.y = y;
+    p.vx = Math.cos(a) * s; p.vy = Math.sin(a) * s;
+    p.life = 0; p.maxLife = 0.3 + Math.random() * 0.35;
+    p.size = 3 + Math.random() * 4.5; p.color = color;
+  }
+}
+
+/* ---------- Campaign State ---------- */
+let G = null;
+let tvCanvas = null, tvCtx = null, lastFrame = 0, tvBroadcastTimer = null;
+
+function createState() {
+  return {
+    phase: 'title', // 'title' | 'intro' | 'playing' | 'shop' | 'defeat' | 'victory'
+    chapter: 1,
+    wave: 1,
+    maxWaves: 2,
+    introTimer: 0,
+    hostId: null,
+    players: {},
+    enemies: [],
+    pProj: [],   // player projectiles & melee slash arcs
+    eProj: [],   // enemy projectiles
+    telegraphs: [],
+    drops: [],   // gold & potions
+    popups: [],
+    stars: Array.from({ length: 40 }, () => ({ x: Math.random() * ARENA_W, y: Math.random() * ARENA_H, r: 1 + Math.random() * 1.8, ph: Math.random() * 6 })),
+    hitstop: 0,
+    trauma: 0,
+    bossSpawned: false,
+    waveDelay: 0
+  };
+}
+
+function getPlayers() { return Object.values(G.players); }
+
+function ensureHost() {
+  const list = getPlayers();
+  if (!list.length) { G.hostId = null; return; }
+  if (!G.hostId || !G.players[G.hostId]) G.hostId = list[0].id;
+}
+
+function makeHero(id, name, classId) {
+  const cls = HERO_CLASSES[classId] || HERO_CLASSES.knight;
+  const idx = Object.keys(G.players).length;
+  return {
+    id,
+    name: (name || 'بطل').slice(0, 14),
+    classId: cls.id,
+    hp: cls.maxHp,
+    maxHp: cls.maxHp,
+    downed: false,
+    reviveProg: 0,
+    x: ARENA_W / 2 + (idx - 1) * 70,
+    y: ARENA_H / 2 + 80,
+    vx: 0, vy: 0, dx: 0, dy: 0,
+    facing: -Math.PI / 2,
+    atkHeld: false,
+    atkCd: 0,
+    dashTimer: 0,
+    dashCd: 0,
+    ultCharge: 0, // 0..100
+    shieldTimer: 0,
+    invulnTimer: 0,
+    flashTimer: 0,
+    squashX: 1, squashY: 1,
+    gold: 0,
+    kills: 0,
+    damageDealt: 0,
+    revives: 0,
+    dmgPct: 0,
+    multiShot: 0,
+    hasteLevel: 0,
+    shopReady: false,
+    trail: []
+  };
+}
+
+function applyClassToHero(p, classId) {
+  const cls = HERO_CLASSES[classId] || HERO_CLASSES.knight;
+  p.classId = cls.id;
+  p.maxHp = cls.maxHp;
+  p.hp = cls.maxHp;
+}
+
+function startCampaign() {
+  if (!G || getPlayers().length === 0) return;
+  getPlayers().forEach((p, i) => {
+    const cls = HERO_CLASSES[p.classId] || HERO_CLASSES.knight;
+    p.maxHp = cls.maxHp;
+    p.hp = cls.maxHp;
+    p.downed = false; p.reviveProg = 0;
+    p.gold = 25; p.kills = 0; p.damageDealt = 0; p.revives = 0;
+    p.dmgPct = 0; p.multiShot = 0; p.hasteLevel = 0;
+    p.ultCharge = 35;
+    p.x = ARENA_W / 2 + (i - (getPlayers().length - 1) / 2) * 80;
+    p.y = ARENA_H / 2 + 95;
+  });
+  beginChapter(1);
+}
+
+function beginChapter(chNum) {
+  G.chapter = chNum;
+  G.wave = 1;
+  G.maxWaves = chNum >= 3 ? 3 : 2;
+  G.bossSpawned = false;
+  G.enemies = [];
+  G.pProj = [];
+  G.eProj = [];
+  G.telegraphs = [];
+  G.drops = [];
+  G.popups = [];
+  G.phase = 'intro';
+  G.introTimer = 2.1;
+  document.body.dataset.state = 'playing';
+
+  const list = getPlayers();
+  list.forEach((p, i) => {
+    p.downed = false;
+    p.reviveProg = 0;
+    p.hp = Math.min(p.maxHp, p.hp + Math.round(p.maxHp * 0.5));
+    p.shopReady = false;
+    p.x = ARENA_W / 2 + (i - (list.length - 1) / 2) * 76;
+    p.y = ARENA_H - 135;
+    p.vx = 0; p.vy = 0;
+  });
+
+  SFX.fanfare();
+  broadcastState();
+  renderTvOverlay();
+}
+
+function spawnWaveEnemies() {
+  const party = Math.max(1, getPlayers().length);
+  const count = 4 + G.chapter * 2 + Math.floor(party * 1.4) + (G.wave - 1) * 2;
+  const types = ['swarmer', 'archer'];
+  if (G.chapter >= 2 || G.wave >= 2) types.push('charger');
+  if (G.chapter >= 2) types.push('bomber');
+
+  for (let i = 0; i < count; i++) {
+    const kind = i === 0 && G.chapter >= 2 ? 'charger' : types[i % types.length];
+    const side = i % 4;
+    let sx = PAD_X + 60 + Math.random() * (ARENA_W - PAD_X * 2 - 120);
+    let sy = PAD_TOP + 50 + Math.random() * (ARENA_H - PAD_TOP - PAD_BOT - 100);
+    if (side === 0) sy = PAD_TOP + 34;
+    else if (side === 1) sy = ARENA_H - PAD_BOT - 34;
+    else if (side === 2) sx = PAD_X + 34;
+    else sx = ARENA_W - PAD_X - 34;
+
+    const baseHp = kind === 'charger' ? 115 : (kind === 'bomber' ? 85 : (kind === 'archer' ? 60 : 52));
+    const hp = Math.round(baseHp * (1 + (G.chapter - 1) * 0.38) * (1 + (party - 1) * 0.25));
+    G.enemies.push({
+      id: 'e_' + Math.random().toString(36).slice(2, 8),
+      kind, // 'swarmer' | 'archer' | 'charger' | 'bomber' | 'boss'
+      x: sx, y: sy, vx: 0, vy: 0,
+      radius: kind === 'charger' ? 24 : 19,
+      hp, maxHp: hp,
+      speed: kind === 'swarmer' ? 148 + G.chapter * 12 : (kind === 'charger' ? 95 : 108),
+      state: 'seek', // 'seek' | 'windup' | 'charge'
+      stateTimer: 0.7 + Math.random() * 1.2,
+      aimX: 0, aimY: 0,
+      flashTimer: 0,
+      koTimer: 0
+    });
+  }
+}
+
+function spawnChapterBoss() {
+  G.bossSpawned = true;
+  const ch = CHAPTERS[G.chapter - 1];
+  const party = Math.max(1, getPlayers().length);
+  const hp = Math.round((460 + G.chapter * 280) * (1 + (party - 1) * 0.42));
+  G.enemies.push({
+    id: 'boss_' + G.chapter,
+    kind: 'boss',
+    name: ch.bossName,
+    icon: ch.bossIcon,
+    color: ch.bossColor,
+    x: ARENA_W / 2,
+    y: PAD_TOP + 110,
+    vx: 0, vy: 0,
+    radius: 44,
+    hp, maxHp: hp,
+    speed: 98 + G.chapter * 12,
+    state: 'seek',
+    stateTimer: 1.6,
+    patternIdx: 0,
+    aimX: 0, aimY: 0,
+    flashTimer: 0,
+    koTimer: 0
+  });
+  G.trauma = 0.55;
+  spawnParticles(ARENA_W / 2, PAD_TOP + 110, ch.bossColor, 32, 300);
+  SFX.bossRoar();
+  addPopup(ARENA_W / 2, PAD_TOP + 170, `تحذير: ${ch.bossName}!`, ch.bossColor);
+}
+
+function addPopup(x, y, text, color) {
+  G.popups.push({ x, y, text, color: color || '#ffd166', life: 0, maxLife: 0.8 });
+}
+
+function nearestAliveHero(x, y) {
+  let best = null, bestD = Infinity;
+  for (const p of getPlayers()) {
+    if (p.downed) continue;
+    const d = Math.hypot(p.x - x, p.y - y);
+    if (d < bestD) { bestD = d; best = p; }
+  }
+  return best;
+}
+
+function nearestEnemyInCone(p, range) {
+  let best = null, bestScore = Infinity;
+  for (const e of G.enemies) {
+    if (e.koTimer > 0) continue;
+    const dx = e.x - p.x, dy = e.y - p.y;
+    const d = Math.hypot(dx, dy);
+    if (d > range) continue;
+    const angDiff = Math.abs(Math.atan2(Math.sin(Math.atan2(dy, dx) - p.facing), Math.cos(Math.atan2(dy, dx) - p.facing)));
+    const score = d + angDiff * 140;
+    if (score < bestScore) { bestScore = score; best = e; }
+  }
+  return best;
+}
+
+function performHeroAttack(p) {
+  if (p.downed || p.atkCd > 0) return;
+  const cls = HERO_CLASSES[p.classId] || HERO_CLASSES.knight;
+  const hasteMult = 1 - Math.min(0.35, p.hasteLevel * 0.12);
+  p.atkCd = cls.cd * hasteMult;
+
+  const target = nearestEnemyInCone(p, cls.range + 60);
+  const aimAng = target ? Math.atan2(target.y - p.y, target.x - p.x) : p.facing;
+  p.facing = aimAng;
+  const isCrit = Math.random() < 0.16;
+  const dmg = Math.round(cls.dmg * (1 + p.dmgPct / 100) * (isCrit ? 1.75 : 1));
+
+  if (cls.id === 'knight') {
+    SFX.slash();
+    p.squashX = 1.24; p.squashY = 0.82;
+    G.pProj.push({
+      kind: 'slash', ownerId: p.id, x: p.x, y: p.y, ang: aimAng,
+      radius: cls.range + p.multiShot * 16, dmg, isCrit, color: cls.color, life: 0, maxLife: 0.18, hitIds: new Set()
+    });
+  } else {
+    SFX.shoot();
+    const shots = 1 + p.multiShot;
+    for (let s = 0; s < shots; s++) {
+      const spread = shots === 1 ? 0 : (s - (shots - 1) / 2) * 0.18;
+      const a = aimAng + spread;
+      const spd = cls.id === 'archer' ? 680 : (cls.id === 'mage' ? 490 : 530);
+      G.pProj.push({
+        kind: cls.id, ownerId: p.id,
+        x: p.x + Math.cos(a) * 20, y: p.y + Math.sin(a) * 20,
+        vx: Math.cos(a) * spd, vy: Math.sin(a) * spd,
+        radius: cls.id === 'archer' ? 9 : 11,
+        dmg, isCrit, color: cls.color, life: 0, maxLife: cls.range / spd,
+        homing: cls.id === 'mage', healOnHit: cls.id === 'healer'
+      });
+    }
+  }
+}
+
+function triggerHeroDash(p) {
+  if (p.downed || p.dashCd > 0) return;
+  let dx = p.dx, dy = p.dy;
+  const mag = Math.hypot(dx, dy);
+  if (mag < 0.1) { dx = Math.cos(p.facing); dy = Math.sin(p.facing); }
+  else { dx /= mag; dy /= mag; }
+  p.vx = dx * 760; p.vy = dy * 760;
+  p.dashTimer = 0.22;
+  p.invulnTimer = 0.28;
+  p.dashCd = Math.max(0.8, 1.4 - p.hasteLevel * 0.15);
+  p.squashX = 1.3; p.squashY = 0.74;
+  spawnParticles(p.x, p.y, HERO_CLASSES[p.classId].color, 10, 180);
+  SFX.slash();
+}
+
+function triggerHeroUlt(p) {
+  if (p.downed || p.ultCharge < 100) return;
+  p.ultCharge = 0;
+  const cls = HERO_CLASSES[p.classId];
+  SFX.ult();
+  G.trauma = Math.min(1, G.trauma + 0.4);
+  spawnParticles(p.x, p.y, cls.color, 34, 340);
+  addPopup(p.x, p.y - 36, 'القدرة القصوى!', cls.color);
+
+  if (cls.id === 'knight') {
+    p.shieldTimer = 6;
+    for (const ally of getPlayers()) {
+      if (!ally.downed && Math.hypot(ally.x - p.x, ally.y - p.y) < 280) ally.shieldTimer = 6;
+    }
+    damageEnemiesInRadius(p.x, p.y, 210, Math.round(95 * (1 + p.dmgPct / 100)), p, true);
+  } else if (cls.id === 'archer') {
+    for (let i = 0; i < 16; i++) {
+      const a = (i / 16) * Math.PI * 2;
+      G.pProj.push({
+        kind: 'archer', ownerId: p.id, x: p.x, y: p.y,
+        vx: Math.cos(a) * 660, vy: Math.sin(a) * 660, radius: 11,
+        dmg: Math.round(52 * (1 + p.dmgPct / 100)), isCrit: true, color: '#ffd166', life: 0, maxLife: 0.85
+      });
+    }
+  } else if (cls.id === 'mage') {
+    damageEnemiesInRadius(p.x, p.y, 330, Math.round(125 * (1 + p.dmgPct / 100)), p, true);
+    G.telegraphs.push({ kind: 'nova', x: p.x, y: p.y, r: 330, timer: 0, dur: 0.35, color: '#c084fc' });
+  } else if (cls.id === 'healer') {
+    for (const ally of getPlayers()) {
+      if (ally.downed) {
+        ally.downed = false;
+        ally.hp = Math.round(ally.maxHp * 0.65);
+        ally.invulnTimer = 1.5;
+        p.revives += 1;
+        addPopup(ally.x, ally.y - 28, 'إنعاش فوري!', '#38bdf8');
+      } else {
+        ally.hp = Math.min(ally.maxHp, ally.hp + 70);
+        addPopup(ally.x, ally.y - 24, '+70 شفاء', '#34d399');
+      }
+    }
+    damageEnemiesInRadius(p.x, p.y, 230, Math.round(65 * (1 + p.dmgPct / 100)), p, false);
+  }
+}
+
+function damageEnemiesInRadius(cx, cy, radius, dmg, owner, knockback) {
+  for (const e of G.enemies) {
+    if (e.koTimer > 0) continue;
+    const dx = e.x - cx, dy = e.y - cy;
+    const d = Math.hypot(dx, dy);
+    if (d <= radius + e.radius) {
+      applyDamageToEnemy(e, dmg, owner, true, knockback ? (d > 1 ? dx / d : 1) * 320 : 0, knockback ? (d > 1 ? dy / d : 0) * 320 : 0);
+    }
+  }
+}
+
+function applyDamageToEnemy(e, dmg, owner, isCrit, kx, ky) {
+  if (e.koTimer > 0) return;
+  e.hp -= dmg;
+  e.flashTimer = 0.08;
+  if (kx || ky) { e.vx += kx * (e.kind === 'boss' ? 0.2 : 1); e.vy += ky * (e.kind === 'boss' ? 0.2 : 1); }
+  if (owner) {
+    owner.damageDealt += dmg;
+    owner.ultCharge = Math.min(100, owner.ultCharge + (e.kind === 'boss' ? 4.5 : 8));
+  }
+  addPopup(e.x, e.y - e.radius - 6, isCrit ? `حرج ${dmg}!` : String(dmg), isCrit ? '#ffd166' : '#fff8eb');
+  spawnParticles(e.x, e.y, isCrit ? '#ffd166' : '#fb7185', isCrit ? 10 : 5, 160);
+  SFX.hit();
+
+  if (e.hp <= 0) {
+    e.hp = 0;
+    e.koTimer = 0.3;
+    if (owner) owner.kills += 1;
+    G.hitstop = Math.max(G.hitstop, e.kind === 'boss' ? 0.08 : 0.03);
+    G.trauma = Math.min(1, G.trauma + (e.kind === 'boss' ? 0.65 : 0.16));
+    const goldDrop = e.kind === 'boss' ? 45 : (e.kind === 'charger' ? 14 : 7);
+    G.drops.push({ kind: 'gold', x: e.x, y: e.y, val: goldDrop, ttl: 16, bob: Math.random() * 6 });
+    if (Math.random() < 0.14 || e.kind === 'boss') {
+      G.drops.push({ kind: 'potion', x: e.x + 18, y: e.y, val: 38, ttl: 16, bob: 0 });
+    }
+  }
+}
+
+function hurtHero(p, dmg) {
+  if (p.downed || p.invulnTimer > 0) return;
+  const finalDmg = p.shieldTimer > 0 ? Math.max(3, Math.round(dmg * 0.35)) : dmg;
+  p.hp = Math.max(0, p.hp - finalDmg);
+  p.invulnTimer = 0.55;
+  p.flashTimer = 0.14;
+  G.trauma = Math.min(1, G.trauma + 0.22);
+  SFX.hurt();
+  addPopup(p.x, p.y - 26, `-${finalDmg}`, '#fb7185');
+  sendPhoneEvent(p.id, { t: 'fx', kind: 'hurt' });
+
+  if (p.hp <= 0) {
+    p.downed = true;
+    p.reviveProg = 0;
+    addPopup(p.x, p.y - 38, 'سقط البطل! اقترب للإنعاش', '#fb7185');
+    // Check if entire team is downed
+    if (getPlayers().every(pl => pl.downed)) {
+      G.phase = 'defeat';
+      document.body.dataset.state = 'gameover';
+      broadcastState();
+      renderTvOverlay();
+    }
+  }
+}
+
+function stepPhysics(dt) {
+  if (G.phase === 'intro') {
+    G.introTimer -= dt;
+    if (G.introTimer <= 0) {
+      G.phase = 'playing';
+      spawnWaveEnemies();
+      renderTvOverlay();
+      broadcastState();
+    }
+    return;
+  }
+  if (G.phase !== 'playing') return;
+  if (G.hitstop > 0) { G.hitstop = Math.max(0, G.hitstop - dt); return; }
+
+  const players = getPlayers();
+
+  // Heroes update & revive check
+  for (const p of players) {
+    p.atkCd = Math.max(0, p.atkCd - dt);
+    p.dashCd = Math.max(0, p.dashCd - dt);
+    p.dashTimer = Math.max(0, p.dashTimer - dt);
+    p.shieldTimer = Math.max(0, p.shieldTimer - dt);
+    p.invulnTimer = Math.max(0, p.invulnTimer - dt);
+    p.flashTimer = Math.max(0, p.flashTimer - dt);
+    p.squashX += (1 - p.squashX) * Math.min(1, dt * 12);
+    p.squashY += (1 - p.squashY) * Math.min(1, dt * 12);
+
+    if (p.downed) {
+      let helpers = 0;
+      for (const ally of players) {
+        if (!ally.downed && ally.id !== p.id && Math.hypot(ally.x - p.x, ally.y - p.y) <= 90) helpers++;
+      }
+      if (helpers > 0) {
+        p.reviveProg = Math.min(1, p.reviveProg + (dt * (1 + (helpers - 1) * 0.4)) / 2.0);
+        if (p.reviveProg >= 1) {
+          p.downed = false;
+          p.hp = Math.round(p.maxHp * 0.55);
+          p.invulnTimer = 1.4;
+          spawnParticles(p.x, p.y, '#38bdf8', 20, 200);
+          SFX.ult();
+          addPopup(p.x, p.y - 28, 'تم الإنعاش!', '#38bdf8');
+        }
+      } else {
+        p.reviveProg = Math.max(0, p.reviveProg - dt * 0.2);
+      }
+      continue;
+    }
+
+    const cls = HERO_CLASSES[p.classId] || HERO_CLASSES.knight;
+    const spd = cls.speed * (1 + p.hasteLevel * 0.14);
+    if (p.dashTimer <= 0) {
+      p.vx += (p.dx * spd - p.vx) * Math.min(1, dt * 11);
+      p.vy += (p.dy * spd - p.vy) * Math.min(1, dt * 11);
+    } else {
+      p.trail.push({ x: p.x, y: p.y });
+      if (p.trail.length > 6) p.trail.shift();
+    }
+    if (p.dashTimer <= 0 && p.trail.length) p.trail.shift();
+
+    if (Math.hypot(p.dx, p.dy) > 0.14) p.facing = Math.atan2(p.dy, p.dx);
+    p.x = Math.max(PAD_X + PLAYER_R, Math.min(ARENA_W - PAD_X - PLAYER_R, p.x + p.vx * dt));
+    p.y = Math.max(PAD_TOP + PLAYER_R, Math.min(ARENA_H - PAD_BOT - PLAYER_R, p.y + p.vy * dt));
+
+    if (p.atkHeld) performHeroAttack(p);
+  }
+
+  // Player projectiles
+  for (let i = G.pProj.length - 1; i >= 0; i--) {
+    const pr = G.pProj[i];
+    pr.life += dt;
+    if (pr.life >= pr.maxLife) { G.pProj.splice(i, 1); continue; }
+
+    const owner = G.players[pr.ownerId];
+    if (pr.kind === 'slash') {
+      for (const e of G.enemies) {
+        if (e.koTimer > 0 || pr.hitIds.has(e.id)) continue;
+        if (Math.hypot(e.x - pr.x, e.y - pr.y) <= pr.radius + e.radius) {
+          pr.hitIds.add(e.id);
+          applyDamageToEnemy(e, pr.dmg, owner, pr.isCrit, Math.cos(pr.ang) * 260, Math.sin(pr.ang) * 260);
+        }
+      }
+      continue;
+    }
+
+    if (pr.homing && G.enemies.length) {
+      let best = null, bd = 320;
+      for (const e of G.enemies) {
+        if (e.koTimer > 0) continue;
+        const d = Math.hypot(e.x - pr.x, e.y - pr.y);
+        if (d < bd) { bd = d; best = e; }
+      }
+      if (best) {
+        const ta = Math.atan2(best.y - pr.y, best.x - pr.x);
+        const spd = Math.hypot(pr.vx, pr.vy);
+        const ca = Math.atan2(pr.vy, pr.vx);
+        const diff = Math.atan2(Math.sin(ta - ca), Math.cos(ta - ca));
+        const na = ca + Math.max(-dt * 4.5, Math.min(dt * 4.5, diff));
+        pr.vx = Math.cos(na) * spd;
+        pr.vy = Math.sin(na) * spd;
+      }
+    }
+
+    pr.x += pr.vx * dt;
+    pr.y += pr.vy * dt;
+
+    let hit = false;
+    for (const e of G.enemies) {
+      if (e.koTimer > 0) continue;
+      if (Math.hypot(e.x - pr.x, e.y - pr.y) <= pr.radius + e.radius) {
+        applyDamageToEnemy(e, pr.dmg, owner, pr.isCrit, pr.vx * 0.14, pr.vy * 0.14);
+        if (pr.healOnHit && owner && !owner.downed) {
+          owner.hp = Math.min(owner.maxHp, owner.hp + 4);
+        }
+        hit = true;
+        break;
+      }
+    }
+    if (hit) G.pProj.splice(i, 1);
+  }
+
+  // Attack token pool: cap simultaneous telegraph windups
+  let activeTelegraphs = G.enemies.filter(e => e.state === 'windup').length;
+
+  // Enemies update
+  for (let i = G.enemies.length - 1; i >= 0; i--) {
+    const e = G.enemies[i];
+    e.flashTimer = Math.max(0, e.flashTimer - dt);
+    if (e.koTimer > 0) {
+      e.koTimer -= dt;
+      if (e.koTimer <= 0) G.enemies.splice(i, 1);
+      continue;
+    }
+
+    const target = nearestAliveHero(e.x, e.y);
+    if (!target) continue;
+    const dx = target.x - e.x, dy = target.y - e.y;
+    const d = Math.hypot(dx, dy) || 1;
+
+    if (e.kind === 'swarmer') {
+      e.vx += ((dx / d) * e.speed - e.vx) * Math.min(1, dt * 8);
+      e.vy += ((dy / d) * e.speed - e.vy) * Math.min(1, dt * 8);
+    } else if (e.kind === 'archer') {
+      e.stateTimer -= dt;
+      if (e.state === 'seek') {
+        const moveSign = d < 220 ? -0.7 : (d > 340 ? 1 : 0);
+        e.vx += ((dx / d) * e.speed * moveSign - e.vx) * Math.min(1, dt * 6);
+        e.vy += ((dy / d) * e.speed * moveSign - e.vy) * Math.min(1, dt * 6);
+        if (e.stateTimer <= 0 && activeTelegraphs < 3) {
+          e.state = 'windup'; e.stateTimer = 0.55; e.aimX = target.x; e.aimY = target.y;
+          activeTelegraphs++;
+        }
+      } else {
+        e.vx *= 0.85; e.vy *= 0.85;
+        if (e.stateTimer <= 0) {
+          const a = Math.atan2(e.aimY - e.y, e.aimX - e.x);
+          G.eProj.push({ x: e.x, y: e.y, vx: Math.cos(a) * 330, vy: Math.sin(a) * 330, r: 8, dmg: 16 + G.chapter * 3, color: '#fb7185', life: 0, maxLife: 2.2 });
+          e.state = 'seek'; e.stateTimer = 1.7 + Math.random() * 0.8;
+        }
+      }
+    } else if (e.kind === 'charger') {
+      e.stateTimer -= dt;
+      if (e.state === 'seek') {
+        e.vx += ((dx / d) * e.speed - e.vx) * Math.min(1, dt * 6);
+        e.vy += ((dy / d) * e.speed - e.vy) * Math.min(1, dt * 6);
+        if (e.stateTimer <= 0 && d < 420 && activeTelegraphs < 3) {
+          e.state = 'windup'; e.stateTimer = 0.72;
+          const a = Math.atan2(dy, dx);
+          e.aimX = Math.cos(a); e.aimY = Math.sin(a);
+          activeTelegraphs++;
+        }
+      } else if (e.state === 'windup') {
+        e.vx *= 0.8; e.vy *= 0.8;
+        if (e.stateTimer <= 0) {
+          e.state = 'charge'; e.stateTimer = 0.45;
+          e.vx = e.aimX * 560; e.vy = e.aimY * 560;
+        }
+      } else {
+        if (e.stateTimer <= 0) { e.state = 'seek'; e.stateTimer = 1.6; }
+      }
+    } else if (e.kind === 'bomber') {
+      e.stateTimer -= dt;
+      e.vx += ((dx / d) * e.speed * (d < 240 ? -0.5 : 0.8) - e.vx) * Math.min(1, dt * 5);
+      e.vy += ((dy / d) * e.speed * (d < 240 ? -0.5 : 0.8) - e.vy) * Math.min(1, dt * 5);
+      if (e.stateTimer <= 0) {
+        G.telegraphs.push({ kind: 'bomb', x: target.x, y: target.y, r: 78, timer: 0, dur: 1.15, dmg: 22 + G.chapter * 4, color: '#fb923c' });
+        e.stateTimer = 2.6 + Math.random();
+      }
+    } else if (e.kind === 'boss') {
+      const rage = e.hp < e.maxHp * 0.5;
+      e.stateTimer -= dt;
+      if (e.state === 'seek') {
+        e.vx += ((dx / d) * e.speed * (rage ? 1.25 : 1) - e.vx) * Math.min(1, dt * 5);
+        e.vy += ((dy / d) * e.speed * (rage ? 1.25 : 1) - e.vy) * Math.min(1, dt * 5);
+        if (e.stateTimer <= 0) {
+          e.state = 'windup';
+          e.stateTimer = rage ? 0.55 : 0.72;
+          e.patternIdx = (e.patternIdx + 1) % 3;
+          e.aimX = Math.atan2(dy, dx);
+        }
+      } else if (e.state === 'windup') {
+        e.vx *= 0.85; e.vy *= 0.85;
+        if (e.stateTimer <= 0) {
+          if (e.patternIdx === 0) {
+            // Radial orb volley
+            const count = rage ? 12 : 8;
+            for (let k = 0; k < count; k++) {
+              const a = (k / count) * Math.PI * 2 + e.aimX;
+              G.eProj.push({ x: e.x, y: e.y, vx: Math.cos(a) * 290, vy: Math.sin(a) * 290, r: 10, dmg: 20 + G.chapter * 4, color: e.color, life: 0, maxLife: 2.6 });
+            }
+            e.state = 'seek'; e.stateTimer = rage ? 1.1 : 1.5;
+          } else if (e.patternIdx === 1) {
+            // Bomb ring on players
+            for (const p of players) {
+              if (!p.downed) G.telegraphs.push({ kind: 'bomb', x: p.x, y: p.y, r: 84, timer: 0, dur: 1.0, dmg: 24 + G.chapter * 4, color: e.color });
+            }
+            e.state = 'seek'; e.stateTimer = rage ? 1.2 : 1.6;
+          } else {
+            // Boss dash
+            e.state = 'charge'; e.stateTimer = 0.52;
+            e.vx = Math.cos(e.aimX) * 520; e.vy = Math.sin(e.aimX) * 520;
+          }
+        }
+      } else {
+        if (e.stateTimer <= 0) { e.state = 'seek'; e.stateTimer = 1.2; }
+      }
+    }
+
+    e.x = Math.max(PAD_X + e.radius, Math.min(ARENA_W - PAD_X - e.radius, e.x + e.vx * dt));
+    e.y = Math.max(PAD_TOP + e.radius, Math.min(ARENA_H - PAD_BOT - e.radius, e.y + e.vy * dt));
+
+    for (const p of players) {
+      if (!p.downed && Math.hypot(p.x - e.x, p.y - e.y) < PLAYER_R + e.radius) {
+        hurtHero(p, e.kind === 'boss' ? 24 + G.chapter * 4 : 15 + G.chapter * 2);
+      }
+    }
+  }
+
+  // Enemy projectiles
+  for (let i = G.eProj.length - 1; i >= 0; i--) {
+    const ep = G.eProj[i];
+    ep.life += dt;
+    ep.x += ep.vx * dt; ep.y += ep.vy * dt;
+    if (ep.life >= ep.maxLife || ep.x < PAD_X || ep.x > ARENA_W - PAD_X || ep.y < PAD_TOP || ep.y > ARENA_H - PAD_BOT) {
+      G.eProj.splice(i, 1); continue;
+    }
+    for (const p of players) {
+      if (!p.downed && Math.hypot(p.x - ep.x, p.y - ep.y) < PLAYER_R + ep.r) {
+        hurtHero(p, ep.dmg);
+        G.eProj.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  // Telegraphs
+  for (let i = G.telegraphs.length - 1; i >= 0; i--) {
+    const t = G.telegraphs[i];
+    t.timer += dt;
+    if (t.timer >= t.dur) {
+      if (t.kind === 'bomb') {
+        spawnParticles(t.x, t.y, t.color, 20, 260);
+        SFX.hurt();
+        for (const p of players) {
+          if (!p.downed && Math.hypot(p.x - t.x, p.y - t.y) <= t.r + PLAYER_R * 0.6) hurtHero(p, t.dmg);
+        }
+      }
+      G.telegraphs.splice(i, 1);
+    }
+  }
+
+  // Drops collection
+  for (let i = G.drops.length - 1; i >= 0; i--) {
+    const dr = G.drops[i];
+    dr.bob += dt * 4; dr.ttl -= dt;
+    if (dr.ttl <= 0) { G.drops.splice(i, 1); continue; }
+    for (const p of players) {
+      if (!p.downed && Math.hypot(p.x - dr.x, p.y - dr.y) < PLAYER_R + 20) {
+        if (dr.kind === 'gold') {
+          for (const ally of players) ally.gold += dr.val;
+          addPopup(dr.x, dr.y - 14, `+${dr.val} ذهب`, '#ffd166');
+          SFX.coin();
+        } else {
+          p.hp = Math.min(p.maxHp, p.hp + dr.val);
+          addPopup(dr.x, dr.y - 14, `+${dr.val} صحة`, '#34d399');
+          SFX.coin();
+        }
+        G.drops.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  // Wave / Boss / Chapter progression
+  if (G.enemies.length === 0) {
+    if (!G.bossSpawned) {
+      if (G.wave < G.maxWaves) {
+        G.wave += 1;
+        addPopup(ARENA_W / 2, ARENA_H / 2, `الموجة ${G.wave}!`, '#ffd166');
+        spawnWaveEnemies();
+      } else {
+        spawnChapterBoss();
+      }
+    } else {
+      // Chapter Cleared!
+      SFX.fanfare();
+      if (G.chapter < 4) {
+        G.phase = 'shop';
+        document.body.dataset.state = 'shop';
+      } else {
+        G.phase = 'victory';
+        document.body.dataset.state = 'gameover';
+      }
+      broadcastState();
+      renderTvOverlay();
+    }
+  }
+}
+
+function updateFx(dt) {
+  G.trauma = Math.max(0, G.trauma - dt * 2.0);
+  for (let i = 0; i < POOL_SIZE; i++) {
+    const p = particles[i];
+    if (!p.active) continue;
+    p.life += dt;
+    if (p.life >= p.maxLife) { p.active = false; continue; }
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.93; p.vy *= 0.93;
+  }
+  for (let i = G.popups.length - 1; i >= 0; i--) {
+    const pop = G.popups[i];
+    pop.life += dt; pop.y -= 34 * dt;
+    if (pop.life >= pop.maxLife) G.popups.splice(i, 1);
+  }
+}
+
+function drawTv(nowSec) {
+  if (!tvCtx || !tvCanvas) return;
+  const ctx = tvCtx;
+  const rect = tvCanvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(1, Math.round(rect.width * dpr));
+  const h = Math.max(1, Math.round(rect.height * dpr));
+  if (tvCanvas.width !== w || tvCanvas.height !== h) { tvCanvas.width = w; tvCanvas.height = h; }
+
+  const ch = CHAPTERS[G.chapter - 1];
+  ctx.save();
+  ctx.scale(w / ARENA_W, h / ARENA_H);
+  if (G.trauma > 0) {
+    const sh = G.trauma * G.trauma * 13;
+    ctx.translate((Math.random() * 2 - 1) * sh, (Math.random() * 2 - 1) * sh);
+  }
+
+  ctx.fillStyle = '#140920';
+  ctx.fillRect(0, 0, ARENA_W, ARENA_H);
+  for (const s of G.stars) {
+    ctx.fillStyle = `rgba(255, 228, 160, ${(0.2 + 0.4 * Math.sin(nowSec * 1.8 + s.ph)).toFixed(2)})`;
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+  }
+
+  const fw = ARENA_W - PAD_X * 2, fh = ARENA_H - PAD_TOP - PAD_BOT;
+  ctx.fillStyle = ch.floor;
+  roundRect(ctx, PAD_X, PAD_TOP, fw, fh, 26); ctx.fill();
+
+  ctx.save();
+  roundRect(ctx, PAD_X, PAD_TOP, fw, fh, 26); ctx.clip();
+  ctx.strokeStyle = ch.tile; ctx.lineWidth = 1.5;
+  for (let gx = PAD_X; gx <= PAD_X + fw; gx += 68) { ctx.beginPath(); ctx.moveTo(gx, PAD_TOP); ctx.lineTo(gx, PAD_TOP + fh); ctx.stroke(); }
+  for (let gy = PAD_TOP; gy <= PAD_TOP + fh; gy += 68) { ctx.beginPath(); ctx.moveTo(PAD_X, gy); ctx.lineTo(PAD_X + fw, gy); ctx.stroke(); }
+  ctx.restore();
+
+  ctx.strokeStyle = ch.border; ctx.globalAlpha = 0.45; ctx.lineWidth = 3;
+  roundRect(ctx, PAD_X, PAD_TOP, fw, fh, 26); ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // Telegraphs
+  for (const t of G.telegraphs) {
+    const p = Math.min(1, t.timer / t.dur);
+    if (t.kind === 'nova') {
+      ctx.strokeStyle = t.color; ctx.globalAlpha = 1 - p; ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.arc(t.x, t.y, t.r * p, 0, Math.PI * 2); ctx.stroke();
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.fillStyle = `rgba(251, 113, 133, ${(0.12 + p * 0.28).toFixed(2)})`;
+      ctx.beginPath(); ctx.arc(t.x, t.y, t.r * p, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = t.color; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2); ctx.stroke();
+    }
+  }
+
+  // Drops
+  for (const dr of G.drops) {
+    const yy = dr.y + Math.sin(dr.bob) * 4;
+    ctx.font = '22px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(dr.kind === 'gold' ? '🪙' : '🧪', dr.x, yy);
+  }
+
+  // Enemies
+  for (const e of G.enemies) {
+    ctx.save();
+    if (e.koTimer > 0) ctx.globalAlpha = Math.max(0, e.koTimer / 0.3);
+
+    if (e.state === 'windup' && e.kind === 'charger') {
+      ctx.strokeStyle = 'rgba(251, 113, 133, 0.55)'; ctx.lineWidth = 14;
+      ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(e.x + e.aimX * 260, e.y + e.aimY * 260); ctx.stroke();
+    } else if (e.state === 'windup' && e.kind === 'archer') {
+      ctx.strokeStyle = 'rgba(251, 113, 133, 0.5)'; ctx.setLineDash([6, 6]); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(e.aimX, e.aimY); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.beginPath(); ctx.ellipse(e.x, e.y + e.radius, e.radius * 0.85, 8, 0, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = e.flashTimer > 0 ? '#ffffff' : (e.kind === 'boss' ? e.color : (e.kind === 'charger' ? '#f97316' : (e.kind === 'bomber' ? '#a855f7' : (e.kind === 'archer' ? '#fb7185' : '#e11d48'))));
+    ctx.beginPath(); ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#140920'; ctx.lineWidth = 3; ctx.stroke();
+
+    ctx.font = (e.kind === 'boss' ? '40px' : '22px') + ' sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const icon = e.kind === 'boss' ? e.icon : (e.kind === 'charger' ? '🐗' : (e.kind === 'bomber' ? '💣' : (e.kind === 'archer' ? '🏹' : '🪲')));
+    ctx.fillText(icon, e.x, e.y + 2);
+
+    if (e.kind !== 'boss' && e.hp < e.maxHp) {
+      const bw = 34;
+      ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(e.x - bw / 2, e.y - e.radius - 10, bw, 5);
+      ctx.fillStyle = '#fb7185'; ctx.fillRect(e.x - bw / 2, e.y - e.radius - 10, bw * (e.hp / e.maxHp), 5);
+    }
+    ctx.restore();
+  }
+
+  // Player slashes & projectiles
+  for (const pr of G.pProj) {
+    if (pr.kind === 'slash') {
+      ctx.save();
+      ctx.strokeStyle = pr.color;
+      ctx.globalAlpha = 1 - pr.life / pr.maxLife;
+      ctx.lineWidth = 14;
+      ctx.beginPath();
+      ctx.arc(pr.x, pr.y, pr.radius * 0.72, pr.ang - 0.9, pr.ang + 0.9);
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      ctx.fillStyle = pr.color;
+      ctx.beginPath(); ctx.arc(pr.x, pr.y, pr.radius, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  for (const ep of G.eProj) {
+    ctx.fillStyle = ep.color;
+    ctx.beginPath(); ctx.arc(ep.x, ep.y, ep.r, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // Heroes
+  for (const p of getPlayers()) {
+    const cls = HERO_CLASSES[p.classId] || HERO_CLASSES.knight;
+    for (let i = 0; i < p.trail.length; i++) {
+      ctx.fillStyle = cls.color; ctx.globalAlpha = ((i + 1) / p.trail.length) * 0.3;
+      ctx.beginPath(); ctx.arc(p.trail[i].x, p.trail[i].y, PLAYER_R * 0.75, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (p.downed) {
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 46, 0, Math.PI * 2); ctx.stroke();
+      if (p.reviveProg > 0) {
+        ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 46, -Math.PI / 2, -Math.PI / 2 + p.reviveProg * Math.PI * 2); ctx.stroke();
+      }
+    }
+
+    if (p.shieldTimer > 0) {
+      ctx.strokeStyle = 'rgba(255, 209, 102, 0.75)'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(p.x, p.y, PLAYER_R + 9, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.beginPath(); ctx.ellipse(p.x, p.y + PLAYER_R - 2, PLAYER_R * 0.9, 8, 0, 0, Math.PI * 2); ctx.fill();
+
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.scale(p.squashX, p.squashY);
+    if (p.downed) ctx.globalAlpha = 0.5;
+    ctx.fillStyle = p.flashTimer > 0 ? '#ffffff' : cls.color;
+    ctx.beginPath(); ctx.arc(0, 0, PLAYER_R, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#140920'; ctx.lineWidth = 3.5; ctx.stroke();
+    ctx.fillStyle = 'rgba(20, 9, 32, 0.76)';
+    ctx.beginPath(); ctx.arc(0, 0, PLAYER_R - 6, 0, Math.PI * 2); ctx.fill();
+    ctx.font = '23px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(p.downed ? '💫' : cls.icon, 0, 2);
+    ctx.restore();
+
+    ctx.font = '800 13px Tajawal, sans-serif'; ctx.textAlign = 'center';
+    ctx.lineWidth = 4; ctx.strokeStyle = '#140920';
+    ctx.strokeText(p.name, p.x, p.y - PLAYER_R - 9);
+    ctx.fillStyle = p.downed ? '#fb7185' : '#fff8eb';
+    ctx.fillText(p.name, p.x, p.y - PLAYER_R - 9);
+  }
+
+  for (let i = 0; i < POOL_SIZE; i++) {
+    const p = particles[i];
+    if (!p.active) continue;
+    const a = Math.max(0, 1 - p.life / p.maxLife);
+    ctx.globalAlpha = a; ctx.fillStyle = p.color;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.size * a, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  for (const pop of G.popups) {
+    ctx.globalAlpha = Math.max(0, 1 - pop.life / pop.maxLife);
+    ctx.font = '900 17px Tajawal, sans-serif'; ctx.textAlign = 'center';
+    ctx.lineWidth = 4; ctx.strokeStyle = '#140920';
+    ctx.strokeText(pop.text, pop.x, pop.y);
+    ctx.fillStyle = pop.color; ctx.fillText(pop.text, pop.x, pop.y);
+  }
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+}
+
+function updateTvHud() {
+  const chEl = document.getElementById('hud-chap');
+  const wvEl = document.getElementById('hud-wave');
+  const strip = document.getElementById('hud-heroes');
+  const bossWrap = document.getElementById('boss-wrap');
+  const bossName = document.getElementById('boss-name');
+  const bossFill = document.getElementById('boss-fill');
+  if (!chEl || !wvEl || !strip) return;
+
+  const ch = CHAPTERS[G.chapter - 1];
+  chEl.textContent = `الفصل ${G.chapter}/4 · ${ch.title}`;
+  wvEl.textContent = G.bossSpawned ? 'معركة الزعيم!' : `موجة ${G.wave}/${G.maxWaves}`;
+
+  strip.innerHTML = getPlayers().slice(0, 6).map(p => {
+    const cls = HERO_CLASSES[p.classId] || HERO_CLASSES.knight;
+    const pct = Math.max(0, Math.round((p.hp / p.maxHp) * 100));
+    return `
+      <div class="hero-hud-card" style="border-color:${p.downed ? '#fb7185' : cls.color}">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:12px;font-weight:800">
+          <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70px">${cls.icon} ${escapeHtml(p.name)}</span>
+          <span class="hud-num" style="color:#ffd166">${p.gold}🪙</span>
+        </div>
+        <div class="hp-track"><div class="hp-fill" style="width:${pct}%;background:${p.downed ? '#fb7185' : '#34d399'}"></div></div>
+      </div>
+    `;
+  }).join('');
+
+  const boss = G.enemies.find(e => e.kind === 'boss');
+  if (boss && bossWrap && bossName && bossFill) {
+    bossWrap.classList.add('visible');
+    bossName.textContent = `${boss.icon} ${boss.name} (${Math.ceil(boss.hp)}/${boss.maxHp})`;
+    bossFill.style.width = `${Math.max(0, (boss.hp / boss.maxHp) * 100)}%`;
+  } else if (bossWrap) {
+    bossWrap.classList.remove('visible');
+  }
+}
+
+function renderTvOverlay() {
+  const overlay = document.getElementById('tv-overlay');
+  const panel = document.getElementById('tv-panel');
+  if (!overlay || !panel) return;
+  if (G.phase === 'playing') { overlay.classList.add('hidden'); return; }
+  overlay.classList.remove('hidden');
+
+  if (G.phase === 'intro') {
+    const ch = CHAPTERS[G.chapter - 1];
+    panel.innerHTML = `
+      <div style="font-size:15px;color:#ffd166;font-weight:800">الفصل ${ch.num} من 4</div>
+      <h2 class="gold-text" style="margin:6px 0;font-size:2.4rem;font-weight:900">${ch.title}</h2>
+      <div style="color:#c8b8dc;font-weight:700">الزعيم المنتظر: ${ch.bossIcon} ${ch.bossName}</div>
+    `;
+    return;
+  }
+
+  if (G.phase === 'title') {
+    const list = getPlayers();
+    const roadmap = CHAPTERS.map(c => `
+      <div class="chap-node ${c.num === 1 ? 'curr' : ''}">
+        <div style="font-size:20px">${c.bossIcon}</div>
+        <div style="font-weight:800;margin-top:4px">فصل ${c.num}</div>
+        <div style="font-size:11px;color:#c8b8dc">${c.title}</div>
+      </div>
+    `).join('');
+    const roster = list.length ? list.map(p => {
+      const cls = HERO_CLASSES[p.classId];
+      return `
+        <div class="roster-card" style="border-color:${cls.color}">
+          <span style="font-size:28px">${cls.icon}</span>
+          <div style="min-width:0;flex:1">
+            <div style="font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.name)}</div>
+            <div style="font-size:12px;color:#c8b8dc">${cls.name} · ${p.id === G.hostId ? '👑 القائد' : 'جاهز'}</div>
+          </div>
+        </div>
+      `;
+    }).join('') : `<div style="padding:14px;color:#c8b8dc;font-weight:700">بانتظار دخول الأبطال من جوالاتهم...</div>`;
+
+    panel.innerHTML = `
+      <h1 class="gold-text" style="margin:0;font-size:clamp(2rem,4vw,2.75rem);font-weight:900">حماة العرين · رحلة النور</h1>
+      <div style="color:#c8b8dc;font-weight:700;margin-top:4px">تختيم تعاوني من 4 فصول · قاتلوا الوحوش والزعماء، أنعشوا بعضكم، وطوّروا أبطالكـم!</div>
+      <div class="chapter-roadmap">${roadmap}</div>
+      <div class="roster-grid">${roster}</div>
+      <button id="tv-start-btn" class="gold-btn" style="padding:12px 32px;font-size:1.1rem" ${list.length === 0 ? 'disabled' : ''}>ابدأ رحلة التختيم!</button>
+    `;
+    const btn = document.getElementById('tv-start-btn');
+    if (btn) btn.onclick = () => startCampaign();
+    return;
+  }
+
+  if (G.phase === 'shop') {
+    const list = getPlayers();
+    const readyCount = list.filter(p => p.shopReady).length;
+    panel.innerHTML = `
+      <div style="font-size:14px;color:#34d399;font-weight:800">انتصار في الفصل ${G.chapter}!</div>
+      <h2 class="gold-text" style="margin:4px 0 8px;font-size:2rem;font-weight:900">معسكر التطوير والاستراحة 🔥</h2>
+      <div style="color:#c8b8dc;font-weight:700;margin-bottom:14px">اشتروا تطويرات أبطالكم من الجوال (${readyCount}/${list.length} مستعد)</div>
+      <div class="roster-grid">
+        ${list.map(p => {
+          const cls = HERO_CLASSES[p.classId];
+          return `
+            <div class="roster-card" style="border-color:${p.shopReady ? '#34d399' : cls.color}">
+              <span style="font-size:26px">${cls.icon}</span>
+              <div>
+                <div style="font-weight:800">${escapeHtml(p.name)}</div>
+                <div style="font-size:12px;color:#ffd166">${p.gold}🪙 · ${p.shopReady ? '✅ مستعد' : 'يتسوق...'}</div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <button id="tv-next-ch" class="gold-btn" style="padding:12px 28px;font-size:1.05rem">انطلق للفصل ${G.chapter + 1}</button>
+    `;
+    const nxt = document.getElementById('tv-next-ch');
+    if (nxt) nxt.onclick = () => beginChapter(G.chapter + 1);
+    return;
+  }
+
+  const isWin = G.phase === 'victory';
+  panel.innerHTML = `
+    <h2 class="gold-text" style="margin:0 0 6px;font-size:2.3rem;font-weight:900">${isWin ? '🏆 اكتمل التختيم — أنتم حماة العرين!' : '💀 سقط جميع الأبطال!'}</h2>
+    <div style="color:#c8b8dc;font-weight:700;margin-bottom:16px">${isWin ? 'هزمتم ملك الظلال وحررتم الفصول الأربعة!' : `توقفت الرحلة عند الفصل ${G.chapter} — بإمكانكم إعادة الفصل بنفس التطويرات!`}</div>
+    <div class="roster-grid">
+      ${getPlayers().map(p => {
+        const cls = HERO_CLASSES[p.classId];
+        return `
+          <div class="roster-card" style="border-color:${cls.color}">
+            <span style="font-size:26px">${cls.icon}</span>
+            <div>
+              <div style="font-weight:800">${escapeHtml(p.name)}</div>
+              <div style="font-size:12px;color:#c8b8dc">قتلى: ${p.kills} · إنعاش: ${p.revives}</div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+      ${!isWin ? `<button id="tv-retry-ch" class="gold-btn" style="padding:12px 26px;font-size:1.05rem">إعادة الفصل ${G.chapter}</button>` : ''}
+      <button id="tv-restart" class="${isWin ? 'gold-btn' : 'sec-btn'}" style="padding:12px 26px;font-size:1.05rem">تختيم جديد من الفصل 1</button>
+    </div>
+  `;
+  const rtry = document.getElementById('tv-retry-ch');
+  if (rtry) rtry.onclick = () => beginChapter(G.chapter);
+  const rst = document.getElementById('tv-restart');
+  if (rst) rst.onclick = () => startCampaign();
+}
+
+function sendPhoneEvent(id, obj) {
+  const c = embHostConns[id];
+  if (c) try { c.send(obj); } catch (e) {}
+}
+
+function broadcastState() {
+  if (!G) return;
+  const snap = {
+    t: 'st',
+    phase: G.phase,
+    chapter: G.chapter,
+    hostId: G.hostId,
+    players: getPlayers().map(p => ({
+      id: p.id, name: p.name, classId: p.classId,
+      hp: Math.ceil(p.hp), maxHp: p.maxHp, downed: p.downed,
+      gold: p.gold, dashCd: Number(p.dashCd.toFixed(1)), ult: Math.floor(p.ultCharge),
+      shopReady: p.shopReady, dmgPct: p.dmgPct, multiShot: p.multiShot, hasteLevel: p.hasteLevel
+    }))
+  };
+  Object.keys(embHostConns).forEach(id => {
+    try { embHostConns[id].send({ ...snap, meId: id }); } catch (e) {}
+  });
+}
+
+function startTv() {
+  G = createState();
+  document.body.dataset.state = 'title';
+  document.getElementById('root').innerHTML = `
+    <div class="tv-shell">
+      <canvas id="tv-canvas" data-testid="arena-canvas"></canvas>
+      <div class="tv-hud">
+        <div class="tv-hud-group">
+          <div class="hud-plate"><span style="font-weight:800;font-size:14px">الغرفة</span><span class="room-code-pill">${escapeHtml(EMB.code || '0000')}</span></div>
+          <div class="hud-plate"><span id="hud-chap" style="font-weight:800;font-size:14px">الفصل 1/4</span><span style="opacity:0.4">·</span><span id="hud-wave" style="font-weight:800;color:#ffd166;font-size:14px">موجة 1/2</span></div>
+        </div>
+        <div class="tv-hud-group">
+          <div id="hud-heroes" class="hero-strip"></div>
+          <button id="mute-btn" class="mute-btn" aria-label="كتم الصوت">🔊</button>
+        </div>
+      </div>
+      <div id="boss-wrap" class="boss-bar-wrap">
+        <div id="boss-name" style="font-weight:900;font-size:13px;color:#fff8eb;text-align:center"></div>
+        <div class="boss-hp-track"><div id="boss-fill" class="boss-hp-fill" style="width:100%"></div></div>
+      </div>
+      <div id="tv-overlay" class="tv-overlay"><div id="tv-panel" class="tv-panel"></div></div>
+    </div>
+  `;
+  tvCanvas = document.getElementById('tv-canvas');
+  tvCtx = tvCanvas.getContext('2d');
+  document.getElementById('mute-btn').onclick = e => {
+    SFX.muted = !SFX.muted;
+    e.currentTarget.textContent = SFX.muted ? '🔇' : '🔊';
+  };
+  renderTvOverlay();
+  updateTvHud();
+
+  lastFrame = performance.now();
+  const loop = now => {
+    const dt = Math.min(Math.max((now - lastFrame) / 1000, 0), 0.05);
+    lastFrame = now;
+    stepPhysics(dt);
+    updateFx(dt);
+    drawTv(now / 1000);
+    updateTvHud();
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+  if (tvBroadcastTimer) clearInterval(tvBroadcastTimer);
+  tvBroadcastTimer = setInterval(broadcastState, 150);
+}
+
+function onHostMsg(c, data) {
+  if (!G || !data || typeof data !== 'object') return;
+  const id = c.id;
+  if (data.t === 'join') {
+    if (!G.players[id]) {
+      const classes = Object.keys(HERO_CLASSES);
+      const cls = classes[Object.keys(G.players).length % classes.length];
+      G.players[id] = makeHero(id, data.name || 'بطل', data.classId || cls);
+      ensureHost();
+      if (G.phase === 'title') renderTvOverlay();
+      broadcastState();
+    }
+    return;
+  }
+  const p = G.players[id];
+  if (!p) return;
+
+  if (data.t === 'class' && HERO_CLASSES[data.classId] && G.phase === 'title') {
+    applyClassToHero(p, data.classId);
+    renderTvOverlay(); broadcastState();
+  } else if (data.t === 'start' && id === G.hostId) {
+    if (G.phase === 'title') startCampaign();
+    else if (G.phase === 'defeat') beginChapter(data.retry ? G.chapter : 1);
+    else if (G.phase === 'victory') startCampaign();
+    else if (G.phase === 'shop') beginChapter(G.chapter + 1);
+  } else if (data.t === 'buy' && G.phase === 'shop') {
+    const up = UPGRADES.find(u => u.id === data.upId);
+    if (up && p.gold >= up.cost) {
+      p.gold -= up.cost;
+      if (up.id === 'dmg') p.dmgPct += 35;
+      else if (up.id === 'hp') { p.maxHp += 45; p.hp = p.maxHp; }
+      else if (up.id === 'multi') p.multiShot = Math.min(3, p.multiShot + 1);
+      else if (up.id === 'haste') p.hasteLevel = Math.min(3, p.hasteLevel + 1);
+      SFX.coin();
+      broadcastState();
+    }
+  } else if (data.t === 'ready' && G.phase === 'shop') {
+    p.shopReady = true;
+    if (getPlayers().every(pl => pl.shopReady)) beginChapter(G.chapter + 1);
+    else { renderTvOverlay(); broadcastState(); }
+  } else if (data.t === 'in' && G.phase === 'playing') {
+    const dx = Number(data.dx) || 0, dy = Number(data.dy) || 0;
+    const m = Math.hypot(dx, dy);
+    if (m > 1) { p.dx = dx / m; p.dy = dy / m; }
+    else if (m < 0.08) { p.dx = 0; p.dy = 0; }
+    else { p.dx = dx; p.dy = dy; }
+    if (typeof data.atkHeld === 'boolean') p.atkHeld = data.atkHeld;
+    if (data.atk) performHeroAttack(p);
+    if (data.dash) triggerHeroDash(p);
+    if (data.ult) triggerHeroUlt(p);
+  }
+}
+
+function onPlayerLeave(id) {
+  if (!G || !G.players[id]) return;
+  delete G.players[id];
+  ensureHost();
+  renderTvOverlay(); broadcastState();
+}
+
+/* ---------- Phone Controller ---------- */
+let PH = { state: null, myClass: 'knight', stickActive: false, ox: 0, oy: 0, dx: 0, dy: 0, lastSent: 0, ultWasReady: false };
+let phJoinedAck = false, phJoinTimer = null;
+
+function startPhone() {
+  document.body.dataset.state = 'phone';
+  phJoinedAck = false;
+  const sendJoin = () => { if (!phJoinedAck) ctlSend({ t: 'join', name: EMB.name || 'بطل', classId: PH.myClass }); };
+  sendJoin();
+  if (phJoinTimer) clearInterval(phJoinTimer);
+  phJoinTimer = setInterval(() => { if (phJoinedAck) { clearInterval(phJoinTimer); phJoinTimer = null; } else sendJoin(); }, 300);
+
+  document.getElementById('root').innerHTML = `
+    <div id="ph-shell" class="ph-shell">
+      <div class="ph-topbar">
+        <div style="display:flex;align-items:center;gap:8px;font-weight:800">
+          <span id="ph-icon" style="font-size:22px">⚔️</span>
+          <span id="ph-name">${escapeHtml(EMB.name || 'بطل')}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-weight:800;font-variant-numeric:tabular-nums">
+          <span id="ph-hp" style="color:#34d399">150/150</span>
+          <span id="ph-gold" style="color:#ffd166">0🪙</span>
+        </div>
+      </div>
+      <div id="ph-main" class="ph-main"></div>
+    </div>
+  `;
+  renderPhoneMain();
+}
+
+function onCtlMsg(data) {
+  if (!data || typeof data !== 'object') return;
+  if (data.t === 'fx') {
+    const sh = document.getElementById('ph-shell');
+    if (sh) {
+      const cls = data.kind === 'hurt' ? 'flash-hurt' : 'flash-gold';
+      sh.classList.add(cls); setTimeout(() => sh.classList.remove(cls), 220);
+    }
+    try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) {}
+    return;
+  }
+  if (data.t === 'st') {
+    phJoinedAck = true;
+    if (phJoinTimer) { clearInterval(phJoinTimer); phJoinTimer = null; }
+    const prevPhase = PH.state ? PH.state.phase : null;
+    const prevHost = PH.state ? PH.state.hostId : null;
+    PH.state = data;
+
+    const me = (data.players || []).find(p => p.id === data.meId);
+    if (me) {
+      const cls = HERO_CLASSES[me.classId] || HERO_CLASSES.knight;
+      const ic = document.getElementById('ph-icon'), hp = document.getElementById('ph-hp'), gd = document.getElementById('ph-gold');
+      if (ic) ic.textContent = cls.icon;
+      if (hp) { hp.textContent = me.downed ? 'ساقط 💫' : `${me.hp}/${me.maxHp}`; hp.style.color = me.downed ? '#fb7185' : '#34d399'; }
+      if (gd) gd.textContent = `${me.gold}🪙`;
+    }
+
+    if ((data.phase === 'playing' || data.phase === 'intro') && (prevPhase === 'playing' || prevPhase === 'intro')) {
+      updateCombatButtons(me);
+      return;
+    }
+    if (prevPhase !== data.phase || prevHost !== data.hostId || data.phase === 'shop') {
+      renderPhoneMain();
+    }
+  }
+}
+
+function updateCombatButtons(me) {
+  if (!me) return;
+  const dBtn = document.getElementById('ph-dash-btn');
+  const uBtn = document.getElementById('ph-ult-btn');
+  if (dBtn) {
+    dBtn.classList.toggle('ready', me.dashCd <= 0.05);
+    dBtn.textContent = me.dashCd <= 0.05 ? '⚡ اندفاع' : `⚡ ${me.dashCd.toFixed(1)}ث`;
+  }
+  if (uBtn) {
+    const ready = me.ult >= 100;
+    uBtn.classList.toggle('ready', ready);
+    uBtn.textContent = ready ? '🌟 القدرة القصوى!' : `🌟 ${me.ult}%`;
+    if (ready && !PH.ultWasReady) {
+      try { if (navigator.vibrate) navigator.vibrate([30, 40, 30]); } catch (e) {}
+    }
+    PH.ultWasReady = ready;
+  }
+}
+
+function renderPhoneMain() {
+  const main = document.getElementById('ph-main');
+  if (!main) return;
+  const st = PH.state;
+  const phase = st ? st.phase : 'title';
+  const isHost = st && st.meId && st.hostId === st.meId;
+  const me = st && (st.players || []).find(p => p.id === st.meId);
+
+  if (phase === 'title') {
+    const curr = me ? me.classId : PH.myClass;
+    main.innerHTML = `
+      <div class="ph-lobby">
+        <div>
+          <div style="font-weight:800;font-size:0.95rem;color:#c8b8dc;margin-bottom:8px">اختر بطلك للتختيم</div>
+          <div class="class-grid">
+            ${Object.values(HERO_CLASSES).map(c => `
+              <button class="class-btn ${curr === c.id ? 'active' : ''}" data-cls="${c.id}">
+                <span style="font-size:28px">${c.icon}</span>
+                <div>
+                  <div style="font-weight:900;font-size:1rem;color:${c.color}">${c.name}</div>
+                  <div style="font-size:11px;color:#c8b8dc">${c.role}</div>
+                </div>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+        ${isHost ? `<button id="ph-start-btn" class="gold-btn" style="padding:15px;font-size:1.15rem;width:100%">ابدأ التختيم على التلفزيون!</button>`
+          : `<div class="ph-box"><div style="font-size:32px">📺</div><div style="font-weight:800">بطلك جاهز!</div><div style="color:#c8b8dc;font-size:0.9rem">شاهد التلفزيون وانتظر القائد يبدأ المغامرة</div></div>`}
+      </div>
+    `;
+    main.querySelectorAll('[data-cls]').forEach(btn => {
+      btn.onclick = () => {
+        PH.myClass = btn.dataset.cls;
+        ctlSend({ t: 'class', classId: PH.myClass });
+        main.querySelectorAll('[data-cls]').forEach(b => b.classList.toggle('active', b.dataset.cls === PH.myClass));
+      };
+    });
+    const sb = document.getElementById('ph-start-btn');
+    if (sb) sb.onclick = () => ctlSend({ t: 'start' });
+    return;
+  }
+
+  if (phase === 'intro' || phase === 'playing') {
+    main.innerHTML = `
+      <div class="ph-combat">
+        <div id="stick-zone" class="stick-zone" aria-label="عصا الحركة">
+          <div id="stick-hint" class="stick-hint">حرّك بإصبعك بأي مكان<br><span style="font-size:0.8rem;opacity:0.75">عيونك على شاشة التلفزيون 📺</span></div>
+          <div id="stick-base" class="stick-base" style="display:none"></div>
+          <div id="stick-knob" class="stick-knob" style="display:none"></div>
+        </div>
+        <div class="act-col">
+          <button id="ph-atk-btn" class="act-btn act-atk">⚔️ هجوم</button>
+          <button id="ph-dash-btn" class="act-btn act-dash ready">⚡ اندفاع</button>
+          <button id="ph-ult-btn" class="act-btn act-ult">🌟 0%</button>
+        </div>
+      </div>
+    `;
+    const zone = document.getElementById('stick-zone'), base = document.getElementById('stick-base'), knob = document.getElementById('stick-knob'), hint = document.getElementById('stick-hint');
+    const maxR = 54;
+    const sendStick = force => {
+      const now = performance.now();
+      if (!force && now - PH.lastSent < 45) return;
+      PH.lastSent = now;
+      ctlSend({ t: 'in', dx: Number(PH.dx.toFixed(3)), dy: Number(PH.dy.toFixed(3)) });
+    };
+    zone.addEventListener('pointerdown', e => {
+      zone.setPointerCapture(e.pointerId);
+      const r = zone.getBoundingClientRect();
+      PH.stickActive = true; PH.ox = e.clientX - r.left; PH.oy = e.clientY - r.top;
+      base.style.display = 'block'; knob.style.display = 'block'; hint.style.opacity = '0.2';
+      base.style.left = PH.ox + 'px'; base.style.top = PH.oy + 'px';
+      knob.style.left = PH.ox + 'px'; knob.style.top = PH.oy + 'px';
+    });
+    zone.addEventListener('pointermove', e => {
+      if (!PH.stickActive) return;
+      const r = zone.getBoundingClientRect();
+      const rx = (e.clientX - r.left) - PH.ox, ry = (e.clientY - r.top) - PH.oy;
+      const d = Math.hypot(rx, ry), cl = Math.min(d, maxR), a = Math.atan2(ry, rx);
+      knob.style.left = (PH.ox + Math.cos(a) * cl) + 'px';
+      knob.style.top = (PH.oy + Math.sin(a) * cl) + 'px';
+      PH.dx = (cl / maxR) * Math.cos(a); PH.dy = (cl / maxR) * Math.sin(a);
+      sendStick(false);
+    });
+    const endStick = () => {
+      if (!PH.stickActive) return;
+      PH.stickActive = false; PH.dx = 0; PH.dy = 0;
+      base.style.display = 'none'; knob.style.display = 'none'; hint.style.opacity = '0.85';
+      sendStick(true);
+    };
+    zone.addEventListener('pointerup', endStick);
+    zone.addEventListener('pointercancel', endStick);
+
+    const atkBtn = document.getElementById('ph-atk-btn');
+    atkBtn.addEventListener('pointerdown', e => { e.preventDefault(); ctlSend({ t: 'in', dx: PH.dx, dy: PH.dy, atk: true, atkHeld: true }); });
+    atkBtn.addEventListener('pointerup', () => ctlSend({ t: 'in', dx: PH.dx, dy: PH.dy, atkHeld: false }));
+    atkBtn.addEventListener('pointercancel', () => ctlSend({ t: 'in', dx: PH.dx, dy: PH.dy, atkHeld: false }));
+
+    document.getElementById('ph-dash-btn').addEventListener('pointerdown', e => { e.preventDefault(); ctlSend({ t: 'in', dx: PH.dx, dy: PH.dy, dash: true }); });
+    document.getElementById('ph-ult-btn').addEventListener('pointerdown', e => { e.preventDefault(); ctlSend({ t: 'in', dx: PH.dx, dy: PH.dy, ult: true }); });
+    updateCombatButtons(me);
+    return;
+  }
+
+  if (phase === 'shop') {
+    const gold = me ? me.gold : 0;
+    main.innerHTML = `
+      <div class="ph-lobby">
+        <div style="font-weight:900;font-size:1.1rem;color:#ffd166">معسكر التطوير · رصيدك ${gold}🪙</div>
+        <div class="shop-list">
+          ${UPGRADES.map(u => `
+            <button class="shop-card" data-up="${u.id}" ${gold < u.cost ? 'disabled' : ''}>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:26px">${u.icon}</span>
+                <div><div style="font-weight:900">${u.title}</div><div style="font-size:12px;color:#c8b8dc">${u.desc}</div></div>
+              </div>
+              <span style="font-weight:900;color:#ffd166">${u.cost}🪙</span>
+            </button>
+          `).join('')}
+        </div>
+        <button id="ph-ready-btn" class="${me && me.shopReady ? 'sec-btn' : 'gold-btn'}" style="padding:14px;font-size:1.05rem;width:100%">
+          ${me && me.shopReady ? '✅ مستعد — بانتظار البقية' : `مستعد للفصل ${(st ? st.chapter : 1) + 1}!`}
+        </button>
+      </div>
+    `;
+    main.querySelectorAll('[data-up]').forEach(b => { b.onclick = () => ctlSend({ t: 'buy', upId: b.dataset.up }); });
+    const rb = document.getElementById('ph-ready-btn');
+    if (rb) rb.onclick = () => ctlSend({ t: 'ready' });
+    return;
+  }
+
+  const isWin = phase === 'victory';
+  main.innerHTML = `
+    <div class="ph-box">
+      <div style="font-size:44px">${isWin ? '🏆' : '💀'}</div>
+      <div class="gold-text" style="font-weight:900;font-size:1.35rem">${isWin ? 'أبطال العرين!' : 'سقط الفريق!'}</div>
+      ${isHost ? `
+        <div style="display:flex;gap:10px;width:100%;margin-top:8px">
+          ${!isWin ? `<button id="ph-retry-btn" class="gold-btn" style="flex:1;padding:13px">إعادة الفصل</button>` : ''}
+          <button id="ph-new-btn" class="${isWin ? 'gold-btn' : 'sec-btn'}" style="flex:1;padding:13px">تختيم جديد</button>
+        </div>
+      ` : `<div style="color:#c8b8dc">شاهد النتائج على التلفزيون</div>`}
+    </div>
+  `;
+  const rt = document.getElementById('ph-retry-btn');
+  if (rt) rt.onclick = () => ctlSend({ t: 'start', retry: true });
+  const nw = document.getElementById('ph-new-btn');
+  if (nw) nw.onclick = () => ctlSend({ t: 'start', retry: false });
+}
+
+function ctlSend(obj) { try { parent.postMessage({ __emb: 1, data: obj }, '*'); } catch (e) {} }
+function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+</script>
+</body>
+</html>
