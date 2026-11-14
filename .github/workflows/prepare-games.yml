@@ -120,7 +120,7 @@ jobs:
           for library in targets[:2]:
               source = library.read_text(encoding="utf-8", errors="replace")
               for game_id in expected_ids:
-                  pattern = r'"id"\\s*:\\s*"' + re.escape(game_id) + r'"[\\s\\S]*?"b64"\\s*:\\s*"([^"]*)"'
+                  pattern = r'"id"\s*:\s*"' + re.escape(game_id) + r'"[\s\S]*?"b64"\s*:\s*"([^"]*)"'
                   match = re.search(pattern, source)
                   if not match or not match.group(1):
                       raise SystemExit(f"Missing embedded HTML base64 for {game_id} in {library}")
@@ -137,11 +137,11 @@ jobs:
               pages = [(str(p), p.read_text(encoding="utf-8", errors="replace")) for p in targets if p.is_file()]
               pages += virtual_pages
               for label, source in pages:
-                  for index, match in enumerate(re.finditer(r"<script\\b([^>]*)>([\\s\\S]*?)</script\\s*>", source, re.I)):
+                  for index, match in enumerate(re.finditer(r"<script\b([^>]*)>([\s\S]*?)</script\s*>", source, re.I)):
                       attrs, code = match.group(1), match.group(2)
-                      if re.search(r"\\bsrc\\s*=", attrs, re.I) or not code.strip():
+                      if re.search(r"\bsrc\s*=", attrs, re.I) or not code.strip():
                           continue
-                      typ = re.search(r"""\\btype\\s*=\\s*["']([^"']+)["']""", attrs, re.I)
+                      typ = re.search(r"""\btype\s*=\s*["']([^"']+)["']""", attrs, re.I)
                       if typ and typ.group(1).lower() not in ("text/javascript", "application/javascript", "module"):
                           continue
                       script = Path(tmp) / f"check_{checked}.js"
