@@ -28,10 +28,17 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Copy all root HTML game files into Android assets
+      - name: Copy root HTML games into Android assets without replacing app-specific files
+        shell: bash
         run: |
           mkdir -p app/src/main/assets
-          find . -maxdepth 1 -type f -iname '*.html' -exec cp -n {} app/src/main/assets/ \\;
+          shopt -s nullglob
+          for file in ./*.html; do
+            name="$(basename "$file")"
+            if [ ! -e "app/src/main/assets/$name" ]; then
+              cp "$file" "app/src/main/assets/$name"
+            fi
+          done
           echo "HTML files included in APK assets:"
           find app/src/main/assets -maxdepth 1 -type f -iname '*.html' -printf '%f (%s bytes)\\n' | sort
 
