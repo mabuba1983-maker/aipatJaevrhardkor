@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
                 if (pendingRequest == request) pendingRequest = null;
             }
         });
-        if (savedInstanceState == null) webView.loadUrl("file:///android_asset/مكتبة_الألعاب-1.html");
+        if (savedInstanceState == null) webView.loadUrl("file:///android_asset/game-library.html");
         else webView.restoreState(savedInstanceState);
     }
 
