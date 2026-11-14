@@ -80,6 +80,14 @@ jobs:
           print(f"Nested ZIP files: {len(manifest['zip_files'])}")
           for item in records:
               print(f"- {item['path']} | {item['size_bytes']} bytes | {item['type']}")
+              p = Path(item["path"])
+              if p.name == "info.json":
+                  print("  INFO.JSON:", p.read_text(encoding="utf-8", errors="replace"))
+              elif p.suffix.lower() == ".html":
+                  import re
+                  html = p.read_text(encoding="utf-8", errors="replace")
+                  title = re.search(r"<title[^>]*>(.*?)</title>", html, re.I | re.S)
+                  print("  HTML TITLE:", re.sub(r"\\s+", " ", title.group(1)).strip() if title else "(no title tag)")
           PY
 
       - name: Upload fully extracted files for inspection
