@@ -61,23 +61,9 @@ window.addEventListener('message', e=>{
   }
 });
 function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
-
-function embShowRoomCode(){
-  if(!EMB || EMB.role!=='tv' || !EMB.code) return;
-  if(document.getElementById('emb-room-code-card')) return;
-  const style=document.createElement('style');
-  style.textContent='#emb-room-code-card{position:fixed;top:14px;right:14px;z-index:2147483000;min-width:150px;padding:9px 16px;border-radius:18px;text-align:center;background:rgba(25,13,38,.94);border:2px solid rgba(255,209,102,.58);box-shadow:0 8px 28px rgba(0,0,0,.4),0 0 24px rgba(255,154,61,.16);backdrop-filter:blur(12px);pointer-events:none;color:#fff;font-family:Tajawal,system-ui,sans-serif}#emb-room-code-card span{display:block;font-size:12px;font-weight:800;color:#ffd166;margin-bottom:2px}#emb-room-code-card strong{display:block;font:900 30px/1.1 monospace,monospace;letter-spacing:6px;color:#ffd166}@media(max-width:600px){#emb-room-code-card{top:8px;right:8px;min-width:112px;padding:6px 10px}#emb-room-code-card strong{font-size:23px;letter-spacing:4px}}';
-  document.head.appendChild(style);
-  const card=document.createElement('div');
-  card.id='emb-room-code-card';
-  const label=document.createElement('span'); label.textContent='رمز الغرفة';
-  const code=document.createElement('strong'); code.textContent=String(EMB.code).slice(0,4);
-  card.append(label,code); document.body.appendChild(card);
-}
-
 function embStart(){
   embReveal();
-  if(EMB.role==='tv'){ embShowRoomCode(); startTv(); } else { startPhone(); }
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
 }
 setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
 
@@ -496,19 +482,10 @@ function tvLoop() {
   requestAnimationFrame(tvLoop);
 }
 
-
-function showRoomCodeCard() {
- if (EMB?.role !== 'tv') return;
- const code=String(EMB?.code||'').replace(/[^a-z0-9]/gi,'').slice(0,4).toUpperCase()||'----';
- let card=document.getElementById('layali-room-code-card');
- if(!card){card=document.createElement('div');card.id='layali-room-code-card';card.style.cssText='position:fixed;right:14px;bottom:14px;z-index:99999;min-width:150px;padding:10px 16px;border:2px solid #ffd166;border-radius:16px;background:rgba(18,12,28,.94);color:#fff;text-align:center;font-family:inherit;box-shadow:0 8px 24px rgba(0,0,0,.38);pointer-events:none;direction:rtl;';const label=document.createElement('div');label.textContent='رمز الغرفة';label.style.cssText='font-size:12px;font-weight:800;color:#ffd166;margin-bottom:3px;';const value=document.createElement('strong');value.id='layali-room-code-value';value.style.cssText='display:block;font-size:30px;line-height:1.15;letter-spacing:7px;font-weight:900;font-variant-numeric:tabular-nums;';const hint=document.createElement('div');hint.textContent='اكتب الرمز من جوالك';hint.style.cssText='font-size:11px;color:#f3e8c8;margin-top:4px;';card.append(label,value,hint);document.body.appendChild(card);}
- const value=document.getElementById('layali-room-code-value');if(value)value.textContent=code;
-}
 function startTv() {
   if (!verifyG5Integrity()) return;
   G.discs = createDiscs();
   buildTvUI();
-  showRoomCodeCard();
   setInterval(broadcastState, 160);
   requestAnimationFrame(tvLoop);
 }
