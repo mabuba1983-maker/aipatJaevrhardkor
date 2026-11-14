@@ -1,7 +1,16 @@
-name: PAUSED - Layali Riyadh APK (Manual Only)
+name: Layali Riyadh APK + AAB
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'prepared-games/**'
+      - 'مكتبة_الألعاب-1.html'
+      - 'app/src/main/assets/مكتبة_الألعاب-1.html'
+      - 'tahadi_al_ashara (1).html'
+      - 'captain-bean-layali-riyadh (1).html'
 
 permissions:
   contents: read
