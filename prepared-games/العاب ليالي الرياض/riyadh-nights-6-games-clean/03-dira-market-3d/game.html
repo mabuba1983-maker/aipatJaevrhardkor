@@ -706,10 +706,26 @@ function wireJoystick(zoneId, knobId, onChange) {
 }
 
 let phUiKey = '';
+
+function showRoomCodeCard() {
+  if (EMB?.role !== 'tv') return;
+  const code = String(EMB?.code || '').replace(/[^a-z0-9]/gi, '').slice(0, 4).toUpperCase() || '----';
+  let card = document.getElementById('layali-room-code-card');
+  if (!card) {
+    card = document.createElement('div'); card.id = 'layali-room-code-card';
+    card.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:99999;min-width:150px;padding:10px 16px;border:2px solid #ffd166;border-radius:16px;background:rgba(18,12,28,.94);color:#fff;text-align:center;font-family:inherit;box-shadow:0 8px 24px rgba(0,0,0,.38);pointer-events:none;direction:rtl;';
+    const label=document.createElement('div');label.textContent='رمز الغرفة';label.style.cssText='font-size:12px;font-weight:800;color:#ffd166;margin-bottom:3px;';
+    const value=document.createElement('strong');value.id='layali-room-code-value';value.style.cssText='display:block;font-size:30px;line-height:1.15;letter-spacing:7px;font-weight:900;font-variant-numeric:tabular-nums;';
+    const hint=document.createElement('div');hint.textContent='اكتب الرمز من جوالك';hint.style.cssText='font-size:11px;color:#f3e8c8;margin-top:4px;';
+    card.append(label,value,hint);document.body.appendChild(card);
+  }
+  const value=document.getElementById('layali-room-code-value');if(value)value.textContent=code;
+}
 window.__G3D = {
   startTv() {
     if (!verifyMarketIntegrity()) return;
     buildTvUI();
+    showRoomCodeCard();
     updateOverlay();
     setInterval(broadcastState, 160);
     lastTs = performance.now();
