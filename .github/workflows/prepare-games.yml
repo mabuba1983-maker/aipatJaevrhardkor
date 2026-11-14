@@ -117,11 +117,11 @@ jobs:
                   if not page.is_file():
                       continue
                   source = page.read_text(encoding="utf-8", errors="replace")
-                  for index, match in enumerate(re.finditer(r"<script\\b([^>]*)>([\\s\\S]*?)</script\\s*>", source, re.I)):
+                  for index, match in enumerate(re.finditer(r"<script\b([^>]*)>([\s\S]*?)</script\s*>", source, re.I)):
                       attrs, code = match.group(1), match.group(2)
-                      if re.search(r"\\bsrc\\s*=", attrs, re.I) or not code.strip():
+                      if re.search(r"\bsrc\s*=", attrs, re.I) or not code.strip():
                           continue
-                      typ = re.search(r"""\\btype\\s*=\\s*["']([^"']+)["']""", attrs, re.I)
+                      typ = re.search(r"""\btype\s*=\s*["']([^"']+)["']""", attrs, re.I)
                       if typ and typ.group(1).lower() not in ("text/javascript", "application/javascript", "module"):
                           continue
                       script = Path(tmp) / f"check_{checked}.js"
