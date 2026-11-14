@@ -1,14 +1,16 @@
-name: Prepare Layali Riyadh Games
+name: Prepare New Layali Riyadh Archive
 
 on:
   workflow_dispatch:
   push:
     paths:
-      - 'العاب ليالي الرياض.zip'
+      - 'العاب ليالي الرياض (١).zip'
       - '.github/workflows/prepare-games.yml'
       - 'مكتبة_الألعاب-1.html'
       - 'app/src/main/assets/مكتبة_الألعاب-1.html'
       - 'Rocket_Soccer-4.html'
+      - 'العاب ليالي الرياض (١).zip'
+      - '.github/workflows/prepare-games.yml'
       - 'highway-race-1.html'
 
 permissions:
@@ -32,7 +34,7 @@ jobs:
 
           root = Path("prepared-games")
           root.mkdir(exist_ok=True)
-          outer = Path("العاب ليالي الرياض.zip")
+          outer = Path("العاب ليالي الرياض (١).zip")
           if not outer.is_file():
               raise SystemExit("ERROR: outer archive missing")
 
