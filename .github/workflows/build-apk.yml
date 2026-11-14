@@ -11,7 +11,6 @@ permissions:
 
 jobs:
   build:
-    if: false # paused temporarily at user request
     name: Build APK
     runs-on: ubuntu-latest
     steps:
@@ -32,9 +31,9 @@ jobs:
       - name: Copy all root HTML game files into Android assets
         run: |
           mkdir -p app/src/main/assets
-          find . -maxdepth 1 -type f -iname '*.html' -exec cp -n {} app/src/main/assets/ \;
+          find . -maxdepth 1 -type f -iname '*.html' -exec cp -n {} app/src/main/assets/ \\;
           echo "HTML files included in APK assets:"
-          find app/src/main/assets -maxdepth 1 -type f -iname '*.html' -printf '%f (%s bytes)\n' | sort
+          find app/src/main/assets -maxdepth 1 -type f -iname '*.html' -printf '%f (%s bytes)\\n' | sort
 
       - name: Build installable debug APK
         run: gradle --no-daemon assembleDebug
