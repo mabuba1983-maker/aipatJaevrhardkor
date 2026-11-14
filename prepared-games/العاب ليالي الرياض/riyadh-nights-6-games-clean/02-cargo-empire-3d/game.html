@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>ناقلة القوافل 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('emb-pending')}catch(e){}</script>
+<style>html.emb-pending body{visibility:hidden}</style>
+<style>
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#1b110c;color:#fef3c7;font-family:'Tajawal',system-ui,sans-serif}
+#root{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center}
+.card{background:rgba(28,16,12,0.94);border:1px solid rgba(251,191,36,0.38);border-radius:20px;padding:22px;max-width:520px;width:92%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+.btn{cursor:pointer;border:none;border-radius:14px;padding:12px 24px;font-family:inherit;font-size:17px;font-weight:800;background:linear-gradient(135deg,#ffd166,#ff9a3d);color:#190d26}
+.btn-alt{background:rgba(255,255,255,0.08);color:#fef3c7;border:1px solid rgba(251,191,36,0.35)}
+.tv-wrap{width:100%;height:100%;position:relative;overflow:hidden;background:#f5b87b}
+#glMount{position:absolute;inset:0;width:100%;height:100%}
+.tv-hud{position:absolute;top:12px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;gap:10px;z-index:3}
+.hud-box{background:rgba(20,12,10,0.88);border:1px solid rgba(251,191,36,0.38);border-radius:14px;padding:8px 14px;display:flex;align-items:center;gap:12px;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+.gold{color:#ffd166}
+.dash-strip{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(20,12,10,0.9);border:1px solid rgba(251,191,36,0.35);border-radius:16px;padding:8px 18px;display:flex;align-items:center;gap:18px;font-size:13px;font-weight:700;z-index:3;pointer-events:none;font-variant-numeric:tabular-nums}
+.bar-wrap{width:84px;height:8px;background:rgba(255,255,255,0.12);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#f59e0b,#10b981)}
+.tv-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(18,10,8,0.8);padding:20px;z-index:6}
+.ph-wrap{width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:14px;background:linear-gradient(180deg,#24150e,#140a07)}
+.ph-head{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.08);border-radius:14px;padding:10px 14px}
+.ph-stats{display:flex;justify-content:space-around;gap:8px;background:rgba(0,0,0,0.32);border-radius:12px;padding:8px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.ph-pad{flex:1;display:flex;align-items:center;justify-content:space-between;gap:12px;max-height:320px;margin:auto 0}
+.steer-row{display:flex;gap:10px}
+.ctrl-btn{touch-action:none;cursor:pointer;border:2px solid rgba(251,191,36,0.5);border-radius:16px;background:rgba(24,14,10,0.92);color:#ffd166;font-family:inherit;font-size:18px;font-weight:800;width:82px;height:86px}
+.pedal-gas{touch-action:none;cursor:pointer;border:none;border-radius:18px;background:linear-gradient(135deg,#10b981,#059669);color:#042f2e;font-family:inherit;font-size:20px;font-weight:800;width:96px;height:112px}
+.pedal-brk{touch-action:none;cursor:pointer;border:none;border-radius:18px;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;font-family:inherit;font-size:18px;font-weight:800;width:84px;height:86px}
+.mini-act{padding:8px 12px;border-radius:10px;border:1px solid rgba(251,191,36,0.45);background:rgba(255,255,255,0.08);color:#ffd166;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.qp-controls{position:absolute;bottom:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;z-index:4}
+.qp-controls>*{pointer-events:auto}
+.mute-btn{pointer-events:auto;background:rgba(20,12,10,0.9);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:10px;padding:7px 12px;font-family:inherit;font-weight:700;cursor:pointer}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="root">
+<div id="role" class="card"><p>هذي اللعبة جزء من لوبي «ليالي الرياض» — افتحها من هناك حتى تتوصل تلقائيًا.</p></div>
+</div>
+<script>
+/* ===================== EMB BRIDGE (لا تغيّر هذا الجزء) ===================== */
+let EMB=null; const embHostConns={};
+window.addEventListener('message', e=>{
+  const m=e&&e.data; if(!m||!m.__emb) return;
+  if(m.init){ EMB={role:m.role,code:m.code,name:m.name}; return embStart(); }
+  if(!EMB) return;
+  if(EMB.role==='tv'){
+    if(m.event==='data'){
+      let c=embHostConns[m.id];
+      if(!c)c=embHostConns[m.id]={id:m.id,send:obj=>{try{parent.postMessage({__emb:1,to:m.id,data:obj},'*')}catch(e){}}};
+      try{onHostMsg(c,m.data)}catch(e){}
+    } else if(m.event==='disconnect'){
+      try{onPlayerLeave(m.id)}catch(e){}
+      delete embHostConns[m.id];
+    }
+  } else if(EMB.role==='ph'){
+    if(m.data!==undefined){try{onCtlMsg(m.data)}catch(e){}}
+  }
+});
+function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
+function embStart(){
+  embReveal();
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
+}
+setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
+
+/* ===================== من هنا تبدأ لعبتك ===================== */
+function ctlSend(obj){ try{parent.postMessage({__emb:1,data:obj},'*')}catch(e){} }
+
+// نظام حماية مستقل للعبة ناقلة القوافل 3D
+const GAME_SECURITY_CARGO = Object.freeze({
+  gameId: 'cargo_empire_3d',
+  ownerKeyId: 'OWNER-KEY-G2-CARGO3D-9102',
+  sealHash: 'cargo9102f4b8'
+});
+function verifyCargoIntegrity() {
+  if (!GAME_SECURITY_CARGO || GAME_SECURITY_CARGO.gameId !== 'cargo_empire_3d' || GAME_SECURITY_CARGO.ownerKeyId !== 'OWNER-KEY-G2-CARGO3D-9102') {
+    document.getElementById('root').innerHTML = '<div class="card"><h2>تم إيقاف التشغيل</h2><p>تم اكتشاف تعديل غير مصرح به في ملفات اللعبة — يلزم تفويض المالك.</p></div>';
+    return false;
+  }
+  return true;
+}
+
+const __q = [];
+function __call(fn, args) {
+  if (window.__G3D && window.__G3D[fn]) return window.__G3D[fn](...args);
+  __q.push([fn, args]);
+}
+function startTv() { __call('startTv', []); }
+function startPhone() { __call('startPhone', []); }
+function onHostMsg(c, data) { __call('onHostMsg', [c, data]); }
+function onPlayerLeave(id) { __call('onPlayerLeave', [id]); }
+function onCtlMsg(data) { __call('onCtlMsg', [data]); }
+function startQuickPlay() { __call('startQuickPlay', []); }
+function startShift() { __call('startShift', []); }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const TRUCK_COLORS = [0xea580c, 0x0284c7, 0x16a34a, 0x9333ea];
+const COLOR_HEX = ['#fb923c', '#38bdf8', '#4ade80', '#c084fc'];
+const CONTRACTS = [
+  { name: 'صناديق إلكترونيات', reward: 450, from: 'depot', to: 'port', crates: 3, color: 0x38bdf8 },
+  { name: 'معدات طاقة شمسية', reward: 650, from: 'port', to: 'hill', crates: 4, color: 0xfacc15 },
+  { name: 'إمدادات طبية عاجلة', reward: 850, from: 'depot', to: 'hill', crates: 3, color: 0xef4444 },
+  { name: 'حاوية تجارية ثقيلة', reward: 550, from: 'hill', to: 'port', crates: 5, color: 0x22c55e }
+];
+const STATIONS = {
+  depot: { id: 'depot', label: 'مستودع الشحن الرئيسي', x: 0, z: -22, r: 10, color: 0xf59e0b },
+  port:  { id: 'port',  label: 'ميناء البضائع الغربي', x: -78, z: -78, r: 10, color: 0x38bdf8 },
+  hill:  { id: 'hill',  label: 'المجمع الجبلي الشرقي', x: 78, z: -86, r: 10, color: 0x22c55e },
+  fuel:  { id: 'fuel',  label: 'محطة الديزل والصيانة', x: 24, z: -72, r: 8, color: 0xef4444 }
+};
+
+let audioCtx = null, muted = false, userInteracted = false;
+window.addEventListener('pointerdown', () => { userInteracted = true; }, { passive: true });
+window.addEventListener('keydown', () => { userInteracted = true; }, { passive: true });
+function sfx(freq, dur, type='sawtooth', vol=0.09) {
+  if (muted || !userInteracted) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch(e) {}
+}
+
+function terrainY(x, z) {
+  // Smooth paved flat road corridors + scenic rolling desert hills around them
+  const hillEast = Math.max(0, 1 - Math.hypot(x - 78, z + 86) / 36) * 5.2;
+  const dunes = Math.sin(x * 0.035) * Math.cos(z * 0.035) * 1.1;
+  const nearRoad = Math.min(Math.abs(x), Math.abs(z + 22), Math.abs(x + 78), Math.abs(z + 82)) < 9;
+  return hillEast + (nearRoad ? 0 : dunes * 0.45);
+}
+
+const G = {
+  phase: 'lobby', // lobby | playing | matchEnd
+  adminId: null,
+  players: [],
+  botsCount: 2,
+  timeLeft: 180,
+  camMode: 0, // 0=chase, 1=roof, 2=wide
+  quickplay: false
+};
+
+function makeTruckPlayer(id, name, idx, isBot) {
+  const startX = -6 + idx * 4.8;
+  return {
+    id, name, color: TRUCK_COLORS[idx % TRUCK_COLORS.length], colorHex: COLOR_HEX[idx % COLOR_HEX.length], isBot,
+    x: startX, z: 6, yaw: 0, trailerYaw: 0, speed: 0, throttle: 0, steer: 0, gear: 'D',
+    fuel: 100, stability: 100, cash: 0, deliveries: 0,
+    cargo: null, targetBay: 'depot', statusText: 'توجّه لمستودع الشحن لاستلام حمولة',
+    lightsOn: true, wheelSpin: 0, mesh: null, botPhaseT: 0
+  };
+}
+
+function syncBots() {
+  G.players = G.players.filter(p => !p.isBot);
+  const bNames = ['راعي الشاص', 'صقر الصحراء', 'ناقل الخليج'];
+  for (let i = 0; i < G.botsCount && G.players.length < 4; i++) {
+    G.players.push(makeTruckPlayer('bot_' + i, bNames[i % bNames.length] + ' (بوت)', G.players.length, true));
+  }
+}
+
+let renderer, scene, camera, isSoftwareGl = false, frameId = 0, lastTs = 0;
+const _v = new THREE.Vector3(), _look = new THREE.Vector3();
+
+function detectSoftwareGl() {
+  try {
+    const c = document.createElement('canvas');
+    const gl = c.getContext('webgl2') || c.getContext('webgl');
+    if (!gl) return true;
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const gpu = String(gl.getParameter(ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER));
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    return /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(gpu);
+  } catch { return true; }
+}
+
+function makeRoadTexture() {
+  const cv = document.createElement('canvas'); cv.width = 512; cv.height = 512;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#2d2d34'; ctx.fillRect(0, 0, 512, 512);
+  ctx.fillStyle = '#e5e7eb'; ctx.fillRect(18, 0, 12, 512); ctx.fillRect(482, 0, 12, 512);
+  ctx.fillStyle = '#facc15';
+  for (let y = 0; y < 512; y += 64) ctx.fillRect(250, y + 10, 12, 36);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+function buildTruckMesh(colorNum) {
+  const root = new THREE.Group();
+
+  // Cab assembly
+  const cabGrp = new THREE.Group();
+  const paintMat = new THREE.MeshPhysicalMaterial({ color: colorNum, roughness: 0.28, metalness: 0.35, clearcoat: 0.65 });
+  const chromeMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.16, metalness: 0.92 });
+  const darkMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.72, metalness: 0.15 });
+  const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x0f172a, roughness: 0.08, metalness: 0.25, clearcoat: 0.9 });
+  const headMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, emissive: 0xfacc15, emissiveIntensity: 0.9 });
+
+  const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.42, 4.4), darkMat);
+  chassis.position.set(0, 0.55, 0); chassis.castShadow = true;
+  const cabBody = new THREE.Mesh(new THREE.BoxGeometry(2.05, 1.55, 2.2), paintMat);
+  cabBody.position.set(0, 1.45, -0.5); cabBody.castShadow = true;
+  const nose = new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.05, 1.45), paintMat);
+  nose.position.set(0, 1.18, -2.0); nose.castShadow = true;
+  const grille = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.75, 0.14), chromeMat);
+  grille.position.set(0, 1.15, -2.74);
+  const windshield = new THREE.Mesh(new THREE.BoxGeometry(1.82, 0.62, 0.12), glassMat);
+  windshield.position.set(0, 1.75, -1.58);
+  const stackL = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 1.9, 10), chromeMat);
+  stackL.position.set(-0.92, 2.0, 0.45);
+  const stackR = stackL.clone(); stackR.position.x = 0.92;
+  const hlL = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.2, 0.12), headMat);
+  hlL.position.set(-0.68, 0.92, -2.73);
+  const hlR = hlL.clone(); hlR.position.x = 0.68;
+  const beacon = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.18, 0.28), headMat);
+  beacon.position.set(0, 2.3, -0.7);
+  cabGrp.add(chassis, cabBody, nose, grille, windshield, stackL, stackR, hlL, hlR, beacon);
+
+  const wheels = [];
+  const tireGeo = new THREE.CylinderGeometry(0.52, 0.52, 0.4, 14);
+  tireGeo.rotateZ(Math.PI / 2);
+  for (const [wx, wz] of [[-1.08, -1.75], [1.08, -1.75], [-1.08, 1.15], [1.08, 1.15]]) {
+    const w = new THREE.Mesh(tireGeo, darkMat);
+    w.position.set(wx, 0.52, wz);
+    cabGrp.add(w); wheels.push(w);
+  }
+  root.add(cabGrp);
+
+  // Articulated trailer pivot attached behind fifth wheel
+  const trailerPivot = new THREE.Group();
+  trailerPivot.position.set(0, 0, 1.5);
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.34, 5.2), darkMat);
+  deck.position.set(0, 0.88, 2.9); deck.castShadow = true;
+  const rim = new THREE.Mesh(new THREE.BoxGeometry(2.36, 0.16, 5.24), paintMat);
+  rim.position.set(0, 1.02, 2.9);
+  for (const [wx, wz] of [[-1.1, 4.2], [1.1, 4.2], [-1.1, 5.1], [1.1, 5.1]]) {
+    const w = new THREE.Mesh(tireGeo, darkMat);
+    w.position.set(wx, 0.52, wz);
+    trailerPivot.add(w); wheels.push(w);
+  }
+  const cargoGroup = new THREE.Group();
+  cargoGroup.position.set(0, 1.06, 2.9);
+  trailerPivot.add(deck, rim, cargoGroup);
+  root.add(trailerPivot);
+
+  root.userData = { trailerPivot, cargoGroup, wheels, cargoShown: -1 };
+  return root;
+}
+
+function updateTruckCargoVisual(p) {
+  if (!p.mesh) return;
+  const { cargoGroup, cargoShown } = p.mesh.userData;
+  const key = p.cargo ? p.cargo.crates : 0;
+  if (cargoShown === key) return;
+  p.mesh.userData.cargoShown = key;
+  cargoGroup.clear();
+  if (!p.cargo) return;
+  const boxMat = new THREE.MeshStandardMaterial({ color: p.cargo.color, roughness: 0.42, metalness: 0.15 });
+  const strapMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.3 });
+  for (let i = 0; i < p.cargo.crates; i++) {
+    const zOff = -1.7 + i * 0.95;
+    const crate = new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.05, 0.8), boxMat);
+    crate.position.set(0, 0.55, zOff); crate.castShadow = true;
+    const strap = new THREE.Mesh(new THREE.BoxGeometry(1.76, 1.1, 0.14), strapMat);
+    strap.position.set(0, 0.55, zOff);
+    cargoGroup.add(crate, strap);
+  }
+}
+
+function init3D(mountEl) {
+  isSoftwareGl = detectSoftwareGl();
+  renderer = new THREE.WebGLRenderer({ antialias: !isSoftwareGl, powerPreference: 'high-performance' });
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.12;
+  renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(mountEl.clientWidth || 1280, mountEl.clientHeight || 720);
+  renderer.shadowMap.enabled = !isSoftwareGl;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  mountEl.innerHTML = '';
+  mountEl.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xf6bd80);
+  scene.fog = new THREE.FogExp2(0xf6bd80, 0.0042);
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  pmrem.dispose();
+
+  camera = new THREE.PerspectiveCamera(56, (mountEl.clientWidth || 1280) / (mountEl.clientHeight || 720), 0.2, 420);
+  camera.position.set(0, 12, 22);
+
+  scene.add(new THREE.HemisphereLight(0xfff1d6, 0x92400e, 0.9));
+  const sun = new THREE.DirectionalLight(0xfff7ed, 2.0);
+  sun.position.set(60, 85, 45);
+  if (!isSoftwareGl) {
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(1024, 1024);
+    sun.shadow.camera.near = 10; sun.shadow.camera.far = 260;
+    sun.shadow.camera.left = -90; sun.shadow.camera.right = 90;
+    sun.shadow.camera.top = 90; sun.shadow.camera.bottom = -90;
+  }
+  scene.add(sun);
+
+  // Expansive desert terrain (never boxed inside indoor walls)
+  const terGeo = new THREE.PlaneGeometry(520, 520, 64, 64);
+  terGeo.rotateX(-Math.PI / 2);
+  const pos = terGeo.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const vx = pos.getX(i), vz = pos.getZ(i);
+    pos.setY(i, terrainY(vx, vz));
+  }
+  terGeo.computeVertexNormals();
+  const sandMat = new THREE.MeshStandardMaterial({ color: 0xd99b52, roughness: 0.92, metalness: 0.02 });
+  const terrain = new THREE.Mesh(terGeo, sandMat);
+  terrain.receiveShadow = true;
+  scene.add(terrain);
+
+  // Paved logistics highways
+  const roadTex = makeRoadTexture();
+  roadTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const roadMat = new THREE.MeshStandardMaterial({ map: roadTex, roughness: 0.72, metalness: 0.05 });
+  const addRoadSeg = (x, z, w, l, rotY=0) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, 0.14, l), roadMat);
+    m.position.set(x, terrainY(x, z) + 0.08, z); m.rotation.y = rotY;
+    m.receiveShadow = true;
+    scene.add(m);
+  };
+  addRoadSeg(0, -40, 12, 110, 0);
+  addRoadSeg(-40, -78, 12, 92, Math.PI / 2);
+  addRoadSeg(40, -82, 12, 96, Math.PI / 2);
+  addRoadSeg(-78, -46, 12, 74, 0);
+
+  // Sandstone desert mesas & rock outcrops (InstancedMesh)
+  const rockMat = new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.88, metalness: 0.05 });
+  const mesas = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1.5, 1, 7), rockMat, 28);
+  const dummy = new THREE.Object3D();
+  for (let i = 0; i < 28; i++) {
+    const a = (i / 28) * Math.PI * 2;
+    const rad = 115 + (i % 4) * 32;
+    const mx = Math.cos(a) * rad, mz = -55 + Math.sin(a) * rad;
+    dummy.position.set(mx, terrainY(mx, mz) + 8, mz);
+    dummy.scale.set(10 + (i % 5) * 4, 16 + (i % 3) * 9, 10 + (i % 4) * 3);
+    dummy.rotation.y = i * 0.7;
+    dummy.updateMatrix();
+    mesas.setMatrixAt(i, dummy.matrix);
+  }
+  mesas.computeBoundingSphere();
+  scene.add(mesas);
+
+  // Stations (Depot, Port, Mountain Hub, Fuel Station)
+  Object.values(STATIONS).forEach(st => {
+    const sy = terrainY(st.x, st.z);
+    const pad = new THREE.Mesh(
+      new THREE.RingGeometry(st.r - 1.2, st.r, 32),
+      new THREE.MeshBasicMaterial({ color: st.color, side: THREE.DoubleSide })
+    );
+    pad.rotation.x = -Math.PI / 2; pad.position.set(st.x, sy + 0.2, st.z);
+    const canopy = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 6), new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.6 }));
+    canopy.position.set(st.x + 8, sy + 4.8, st.z);
+    const col1 = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 4.8, 10), new THREE.MeshStandardMaterial({ color: st.color, emissive: st.color, emissiveIntensity: 0.3 }));
+    col1.position.set(st.x + 4, sy + 2.4, st.z - 2.2);
+    const col2 = col1.clone(); col2.position.z = st.z + 2.2;
+    scene.add(pad, canopy, col1, col2);
+  });
+
+  window.addEventListener('resize', () => {
+    if (!renderer || !mountEl) return;
+    const w = mountEl.clientWidth || window.innerWidth, h = mountEl.clientHeight || window.innerHeight;
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  });
+}
+
+function syncTruckMeshes() {
+  if (!scene) return;
+  const ids = new Set(G.players.map(p => p.id));
+  scene.children.filter(o => o.userData && o.userData.truckId && !ids.has(o.userData.truckId)).forEach(o => scene.remove(o));
+  for (const p of G.players) {
+    if (!p.mesh) {
+      p.mesh = buildTruckMesh(p.color);
+      p.mesh.userData.truckId = p.id;
+      scene.add(p.mesh);
+    }
+  }
+}
+
+function assignNextContract(p) {
+  const c = CONTRACTS[Math.floor(Math.random() * CONTRACTS.length)];
+  p.cargo = c;
+  p.targetBay = c.to;
+  p.statusText = `شحنة: ${c.name} ← توصيل إلى ${STATIONS[c.to].label}`;
+  sfx(640, 0.16, 'triangle', 0.13);
+}
+
+function startShift() {
+  if (!verifyCargoIntegrity()) return;
+  syncBots();
+  if (G.players.length < 2) { G.botsCount = 2; syncBots(); }
+  G.timeLeft = 180;
+  G.players.forEach((p, idx) => {
+    p.x = -6 + idx * 4.8; p.z = 8; p.yaw = 0; p.trailerYaw = 0; p.speed = 0;
+    p.fuel = 100; p.stability = 100; p.cash = 0; p.deliveries = 0;
+    p.cargo = null; p.targetBay = 'depot'; p.statusText = 'توجّه لمستودع الشحن لاستلام شحنتك الأولى';
+  });
+  syncTruckMeshes();
+  G.phase = 'playing';
+  sfx(520, 0.25, 'triangle', 0.16);
+  updateOverlay();
+  broadcastState();
+}
+
+function stepSim(dt) {
+  if (G.phase !== 'playing') return;
+  G.timeLeft = Math.max(0, G.timeLeft - dt);
+  if (G.timeLeft <= 0) {
+    G.phase = 'matchEnd';
+    updateOverlay();
+    broadcastState();
+    return;
+  }
+
+  for (const p of G.players) {
+    if (p.isBot) {
+      const target = STATIONS[p.fuel < 25 ? 'fuel' : (p.cargo ? p.cargo.to : p.targetBay)];
+      const dx = target.x - p.x, dz = target.z - p.z;
+      const desiredYaw = Math.atan2(-dx, -dz);
+      let diff = desiredYaw - p.yaw;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      p.steer = Math.max(-1, Math.min(1, diff * 1.6));
+      p.throttle = Math.abs(diff) > 1.2 ? 0.45 : 0.88;
+      p.gear = 'D';
+    }
+
+    const maxFwd = p.gear === 'L' ? 14 : 25;
+    const accel = p.gear === 'L' ? 18 : 13;
+    if (p.fuel <= 0) {
+      p.speed *= Math.pow(0.25, dt);
+    } else if (p.throttle > 0.05) {
+      p.speed = Math.min(maxFwd, p.speed + accel * p.throttle * dt);
+    } else if (p.throttle < -0.05) {
+      p.speed = Math.max(-9, p.speed + 16 * p.throttle * dt);
+    } else {
+      p.speed *= Math.pow(0.35, dt);
+    }
+
+    const turnFactor = Math.min(1, Math.abs(p.speed) / 4.5);
+    const dirSign = p.speed >= -0.1 ? 1 : -1;
+    p.yaw -= p.steer * 1.45 * turnFactor * dirSign * dt;
+
+    p.x -= Math.sin(p.yaw) * p.speed * dt;
+    p.z -= Math.cos(p.yaw) * p.speed * dt;
+    p.x = Math.max(-195, Math.min(195, p.x));
+    p.z = Math.max(-210, Math.min(130, p.z));
+
+    // Trailer articulation follows cab yaw smoothly
+    let tDiff = p.yaw - p.trailerYaw;
+    while (tDiff > Math.PI) tDiff -= Math.PI * 2;
+    while (tDiff < -Math.PI) tDiff += Math.PI * 2;
+    p.trailerYaw += tDiff * Math.min(1, dt * (2.6 + Math.abs(p.speed) * 0.14));
+
+    // Fuel & stability simulation
+    p.fuel = Math.max(0, p.fuel - (Math.abs(p.speed) * 0.09 + 0.15) * dt);
+    if (p.cargo && Math.abs(p.steer) > 0.65 && Math.abs(p.speed) > 18) {
+      p.stability = Math.max(20, p.stability - 12 * dt);
+    } else {
+      p.stability = Math.min(100, p.stability + 6 * dt);
+    }
+
+    // Check station bays
+    if (Math.hypot(p.x - STATIONS.fuel.x, p.z - STATIONS.fuel.z) < STATIONS.fuel.r) {
+      if (p.fuel < 99) { p.fuel = Math.min(100, p.fuel + 38 * dt); p.stability = Math.min(100, p.stability + 30 * dt); }
+    }
+    if (!p.cargo) {
+      const loadBay = STATIONS[p.targetBay] || STATIONS.depot;
+      if (Math.hypot(p.x - loadBay.x, p.z - loadBay.z) < loadBay.r) {
+        assignNextContract(p);
+      }
+    } else {
+      const dropBay = STATIONS[p.cargo.to];
+      if (Math.hypot(p.x - dropBay.x, p.z - dropBay.z) < dropBay.r && Math.abs(p.speed) < 14) {
+        const bonus = Math.round(p.cargo.reward * (0.6 + 0.4 * (p.stability / 100)));
+        p.cash += bonus;
+        p.deliveries += 1;
+        p.targetBay = p.cargo.to;
+        p.cargo = null;
+        p.statusText = `تم تسليم الشحنة! (+${bonus} ر.س) خذ شحنة جديدة من الميناء أو المستودع`;
+        if (!p.isBot) sfx(880, 0.25, 'triangle', 0.18);
+      }
+    }
+
+    // Visual transform
+    if (p.mesh) {
+      const y = terrainY(p.x, p.z);
+      p.mesh.position.set(p.x, y, p.z);
+      p.mesh.rotation.y = p.yaw;
+      p.mesh.userData.trailerPivot.rotation.y = p.trailerYaw - p.yaw;
+      p.wheelSpin += p.speed * dt * 1.4;
+      p.mesh.userData.wheels.forEach(w => { w.rotation.x = p.wheelSpin; });
+      updateTruckCargoVisual(p);
+    }
+  }
+}
+
+function afterDraw(cb) {
+  const gl = renderer.getContext();
+  const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+  gl.flush();
+  const poll = () => {
+    const st = sync && gl.getSyncParameter(sync, gl.SYNC_STATUS);
+    if (st === gl.UNSIGNALED) frameId = setTimeout(poll, 5);
+    else { gl.deleteSync(sync); frameId = setTimeout(cb, 80); }
+  };
+  frameId = setTimeout(poll, 5);
+}
+
+function tick(ts) {
+  const dt = Math.min(0.05, Math.max(0.001, (ts - lastTs) / 1000));
+  lastTs = ts;
+  stepSim(dt);
+
+  const hero = G.players.find(p => !p.isBot) || G.players[0];
+  if (hero && camera) {
+    const hy = terrainY(hero.x, hero.z);
+    if (G.camMode === 0) {
+      _v.set(hero.x + Math.sin(hero.yaw) * 14, hy + 7.2, hero.z + Math.cos(hero.yaw) * 14);
+      _look.set(hero.x - Math.sin(hero.yaw) * 12, hy + 1.8, hero.z - Math.cos(hero.yaw) * 12);
+    } else if (G.camMode === 1) {
+      _v.set(hero.x - Math.sin(hero.yaw) * 0.6, hy + 3.2, hero.z - Math.cos(hero.yaw) * 0.6);
+      _look.set(hero.x - Math.sin(hero.yaw) * 26, hy + 1.4, hero.z - Math.cos(hero.yaw) * 26);
+    } else {
+      _v.set(hero.x + Math.sin(hero.yaw) * 24, hy + 16, hero.z + Math.cos(hero.yaw) * 24);
+      _look.set(hero.x, hy + 1, hero.z);
+    }
+    camera.position.lerp(_v, Math.min(1, dt * 6));
+    camera.lookAt(_look);
+  }
+
+  updateHud();
+  renderer.render(scene, camera);
+  if (isSoftwareGl) afterDraw(() => tick(performance.now()));
+  else frameId = requestAnimationFrame(tick);
+}
+
+function updateHud() {
+  const tm = document.getElementById('hudTime'), sc = document.getElementById('hudScores');
+  if (tm) tm.textContent = Math.ceil(G.timeLeft) + ' ث';
+  if (sc) sc.innerHTML = [...G.players].sort((a,b) => b.cash - a.cash).map(p => `<span style="color:${p.colorHex}">${p.name.split(' ')[0]}: <b class="gold">${p.cash} ر.س</b></span>`).join(' · ');
+  const hero = G.players.find(p => !p.isBot) || G.players[0];
+  if (hero) {
+    const sp = document.getElementById('dSpeed'), gr = document.getElementById('dGear'), fl = document.getElementById('dFuel'), st = document.getElementById('dStatus');
+    if (sp) sp.textContent = Math.round(Math.abs(hero.speed) * 4.2) + ' كم/س';
+    if (gr) gr.textContent = hero.gear === 'L' ? '4x4 عزم' : 'D قيادة';
+    if (fl) fl.style.width = Math.round(hero.fuel) + '%';
+    if (st) st.textContent = hero.statusText;
+  }
+}
+
+function updateOverlay() {
+  const ov = document.getElementById('overlay'); if (!ov) return;
+  if (G.phase === 'playing') { ov.style.display = 'none'; document.body.dataset.state = 'playing'; return; }
+  ov.style.display = 'flex';
+  if (G.phase === 'lobby') {
+    document.body.dataset.state = 'title';
+    const humans = G.players.filter(p => !p.isBot);
+    ov.innerHTML = `<div class="card">
+      <h1 style="color:#ffd166;margin:0 0 8px">ناقلة القوافل 3D</h1>
+      <p style="opacity:0.86;margin:0 0 12px">محاكي شاحنات نقل ثقيلة ثلاثي الأبعاد: حمّل البضائع من المستودعات والموانئ، راقب الوقود وتوازن المقطورة، واربح عقود التوصيل!</p>
+      <div style="margin:10px 0;color:#4ade80;font-weight:700">${humans.length ? 'السائقون المتصلون: ' + humans.map(h=>h.name).join(' · ') : 'بانتظار دخول السائقين من ليالي الرياض...'}</div>
+      <button class="btn" data-start="true" onclick="startShift()">ابدأ رحلة التوصيل</button>
+    </div>`;
+  } else {
+    document.body.dataset.state = 'gameover';
+    const sorted = [...G.players].sort((a,b) => b.cash - a.cash);
+    ov.innerHTML = `<div class="card">
+      <h1 style="color:#ffd166;margin:0 0 10px">بطل النقل: ${sorted[0]?.name || ''}</h1>
+      <div style="margin:14px 0;text-align:right">${sorted.map((p,i)=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1)"><span>${i+1}. ${p.name} (${p.deliveries} توصيلات)</span><b class="gold">${p.cash} ر.س</b></div>`).join('')}</div>
+      <button class="btn" onclick="startShift()">وردية نقل جديدة</button>
+    </div>`;
+  }
+}
+
+function buildTvUI() {
+  document.getElementById('root').innerHTML = `
+    <div class="tv-wrap">
+      <div id="glMount"></div>
+      <div class="tv-hud">
+        <div class="hud-box"><span>ناقلة القوافل 3D</span><span class="gold" id="hudTime">180 ث</span></div>
+        <div class="hud-box" id="hudScores"></div>
+        <div style="display:flex;gap:8px;pointer-events:auto">
+          <button class="mute-btn" id="camBtn">الكاميرا</button>
+          <button class="mute-btn" id="muteBtn">${muted?'صامت':'الصوت'}</button>
+        </div>
+      </div>
+      <div class="dash-strip">
+        <span class="gold" id="dSpeed">0 كم/س</span>
+        <span id="dGear">D قيادة</span>
+        <div style="display:flex;align-items:center;gap:6px"><span>الوقود</span><div class="bar-wrap"><div class="bar-fill" id="dFuel" style="width:100%"></div></div></div>
+        <span id="dStatus" style="max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">جاهز للانطلاق</span>
+      </div>
+      <div class="tv-overlay" id="overlay"></div>
+    </div>`;
+  document.getElementById('muteBtn').onclick = () => { muted = !muted; document.getElementById('muteBtn').textContent = muted?'صامت':'الصوت'; };
+  document.getElementById('camBtn').onclick = () => { G.camMode = (G.camMode + 1) % 3; };
+  init3D(document.getElementById('glMount'));
+}
+
+function broadcastState() {
+  const base = { t: 'state', phase: G.phase, adminId: G.adminId, botsCount: G.botsCount, timeLeft: Math.ceil(G.timeLeft) };
+  Object.values(embHostConns).forEach(c => {
+    const me = G.players.find(p => p.id === c.id);
+    c.send({ ...base, me: me ? { id: me.id, cash: me.cash, fuel: Math.round(me.fuel), gear: me.gear, speed: Math.round(Math.abs(me.speed) * 4.2), statusText: me.statusText } : null });
+  });
+}
+
+let phUiKey = '';
+window.__G3D = {
+  startTv() {
+    if (!verifyCargoIntegrity()) return;
+    buildTvUI();
+    updateOverlay();
+    setInterval(broadcastState, 160);
+    lastTs = performance.now();
+    tick(lastTs);
+  },
+  onHostMsg(c, data) {
+    if (!data || !data.t) return;
+    if (data.t === 'join') {
+      if (!G.players.find(p => p.id === c.id)) {
+        const idx = G.players.filter(p => !p.isBot).length;
+        G.players.push(makeTruckPlayer(c.id, (data.name || 'سائق').slice(0,16), idx, false));
+        if (!G.adminId) G.adminId = c.id;
+      }
+      broadcastState();
+    } else if (data.t === 'drive') {
+      const p = G.players.find(x => x.id === c.id);
+      if (p) { p.steer = Number(data.steer) || 0; p.throttle = Number(data.throttle) || 0; }
+    } else if (data.t === 'gear') {
+      const p = G.players.find(x => x.id === c.id);
+      if (p) { p.gear = p.gear === 'D' ? 'L' : 'D'; sfx(420, 0.1, 'square', 0.1); }
+    } else if (data.t === 'horn') {
+      sfx(185, 0.35, 'sawtooth', 0.16);
+    } else if (data.t === 'cam') {
+      G.camMode = (G.camMode + 1) % 3;
+    } else if (data.t === 'admin' && c.id === G.adminId) {
+      if (data.action === 'start') startShift();
+      else if (data.action === 'bots') { G.botsCount = Math.max(0, Math.min(3, Number(data.value) || 0)); broadcastState(); }
+    }
+  },
+  onPlayerLeave(id) {
+    G.players = G.players.filter(p => p.id !== id);
+    if (G.adminId === id) { const n = G.players.find(p => !p.isBot); G.adminId = n ? n.id : null; }
+    syncTruckMeshes();
+    broadcastState();
+  },
+  startPhone() {
+    if (!verifyCargoIntegrity()) return;
+    document.getElementById('root').innerHTML = `
+      <div class="ph-wrap">
+        <div class="ph-head">
+          <div><strong>${EMB?.name || 'سائق'}</strong><div id="phRole" style="font-size:13px;opacity:0.8">متصل</div></div>
+          <div class="gold" id="phCash" style="font-weight:800">0 ر.س</div>
+        </div>
+        <div class="ph-stats" id="phStats" style="display:none">
+          <span>السرعة: <b id="pSpd">0</b></span>
+          <span>الوقود: <b id="pFuel">100%</b></span>
+          <span>الناقل: <b id="pGear">D</b></span>
+        </div>
+        <div id="phBody" style="flex:1;display:flex;flex-direction:column;justify-content:center"></div>
+      </div>`;
+    ctlSend({ t: 'join', name: EMB?.name || 'سائق' });
+  },
+  onCtlMsg(data) {
+    if (!data || data.t !== 'state') return;
+    const isAdmin = data.me && data.adminId === data.me.id;
+    const role = document.getElementById('phRole'), cash = document.getElementById('phCash'), body = document.getElementById('phBody'), stats = document.getElementById('phStats');
+    if (role) role.textContent = isAdmin ? 'أنت الأدمن' : 'مقصورة الشاحنة';
+    if (cash && data.me) cash.textContent = data.me.cash + ' ر.س';
+    if (stats) stats.style.display = data.phase === 'playing' ? 'flex' : 'none';
+    if (data.me) {
+      const s = document.getElementById('pSpd'), f = document.getElementById('pFuel'), g = document.getElementById('pGear');
+      if (s) s.textContent = data.me.speed + ' كم/س';
+      if (f) f.textContent = data.me.fuel + '%';
+      if (g) g.textContent = data.me.gear === 'L' ? '4x4' : 'D';
+    }
+    if (!body) return;
+
+    if (data.phase !== 'playing') {
+      const k = 'adm_' + isAdmin + '_' + data.botsCount + '_' + data.phase;
+      if (phUiKey !== k) {
+        phUiKey = k;
+        body.innerHTML = isAdmin
+          ? `<div class="card" style="margin:auto"><h3>لوحة الأدمن</h3><label style="display:block;margin:10px 0">شاحنات البوت: <select id="admBots" style="padding:8px;border-radius:8px;background:#1b110c;color:#fff"><option value="0" ${data.botsCount===0?'selected':''}>0</option><option value="1" ${data.botsCount===1?'selected':''}>1</option><option value="2" ${data.botsCount===2?'selected':''}>2</option></select></label><button class="btn" id="admStart">${data.phase==='matchEnd'?'وردية نقل جديدة':'ابدأ رحلة الشاحنات'}</button></div>`
+          : `<div class="card" style="margin:auto"><h3>في انتظار الأدمن لبدء الرحلة</h3></div>`;
+        if (isAdmin) {
+          document.getElementById('admBots').onchange = e => ctlSend({ t: 'admin', action: 'bots', value: e.target.value });
+          document.getElementById('admStart').onclick = () => ctlSend({ t: 'admin', action: 'start' });
+        }
+      }
+      return;
+    }
+
+    if (phUiKey !== 'play') {
+      phUiKey = 'play';
+      const st = { steer: 0, throttle: 0 };
+      const send = () => ctlSend({ t: 'drive', ...st });
+      body.innerHTML = `<div style="display:flex;justify-content:center;gap:8px;margin-bottom:8px">
+          <button class="mini-act" id="btnGear">تبديل (D / 4x4)</button>
+          <button class="mini-act" id="btnHorn">بوري</button>
+          <button class="mini-act" id="btnCam">كاميرا</button>
+        </div>
+        <div class="ph-pad">
+          <div class="steer-row"><button class="ctrl-btn" id="btnL">يسار</button><button class="ctrl-btn" id="btnR">يمين</button></div>
+          <div class="steer-row"><button class="pedal-brk" id="btnBrk">فرامل / خلف</button><button class="pedal-gas" id="btnGas">دعس</button></div>
+        </div>`;
+      const hold = (id, fn) => {
+        const el = document.getElementById(id);
+        el.onpointerdown = e => { e.preventDefault(); el.setPointerCapture(e.pointerId); fn(true); send(); };
+        el.onpointerup = el.onpointercancel = () => { fn(false); send(); };
+      };
+      hold('btnL', v => { st.steer = v ? -1 : 0; });
+      hold('btnR', v => { st.steer = v ? 1 : 0; });
+      hold('btnGas', v => { st.throttle = v ? 1 : 0; });
+      hold('btnBrk', v => { st.throttle = v ? -1 : 0; });
+      document.getElementById('btnGear').onpointerdown = e => { e.preventDefault(); ctlSend({ t: 'gear' }); };
+      document.getElementById('btnHorn').onpointerdown = e => { e.preventDefault(); ctlSend({ t: 'horn' }); };
+      document.getElementById('btnCam').onpointerdown = e => { e.preventDefault(); ctlSend({ t: 'cam' }); };
+    }
+  },
+  startShift,
+  startQuickPlay() {
+    if (!verifyCargoIntegrity()) return;
+    embReveal();
+    G.quickplay = true;
+    G.adminId = 'qp_1';
+    G.players = [makeTruckPlayer('qp_1', 'أنت', 0, false)];
+    buildTvUI();
+    startShift();
+
+    const qp = document.createElement('div');
+    qp.className = 'qp-controls';
+    qp.innerHTML = `
+      <div style="display:flex;gap:8px">
+        <button class="ctrl-btn" id="qpL" style="width:68px;height:66px;font-size:15px">يسار</button>
+        <button class="ctrl-btn" id="qpR" style="width:68px;height:66px;font-size:15px">يمين</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-end">
+        <button class="mini-act" id="qpGear">ناقل D/4x4</button>
+        <button class="pedal-brk" id="qpBrk" style="width:74px;height:66px;font-size:14px">خلف</button>
+        <button class="pedal-gas" id="qpGas" style="width:88px;height:78px;font-size:16px">دعس</button>
+      </div>`;
+    document.querySelector('.tv-wrap').appendChild(qp);
+
+    const me = G.players[0];
+    const bindHold = (id, fn) => {
+      const el = document.getElementById(id);
+      el.onpointerdown = e => { e.preventDefault(); fn(true); };
+      el.onpointerup = el.onpointercancel = () => fn(false);
+    };
+    bindHold('qpL', v => { me.steer = v ? -1 : 0; });
+    bindHold('qpR', v => { me.steer = v ? 1 : 0; });
+    bindHold('qpGas', v => { me.throttle = v ? 1 : 0; });
+    bindHold('qpBrk', v => { me.throttle = v ? -1 : 0; });
+    document.getElementById('qpGear').onclick = () => { me.gear = me.gear === 'D' ? 'L' : 'D'; };
+
+    const keys = new Set();
+    function syncKeys() {
+      me.steer = (keys.has('ArrowRight')||keys.has('KeyD')?1:0) - (keys.has('ArrowLeft')||keys.has('KeyA')?1:0);
+      me.throttle = (keys.has('ArrowUp')||keys.has('KeyW')?1:0) - (keys.has('ArrowDown')||keys.has('KeyS')?1:0);
+    }
+    window.addEventListener('keydown', e => {
+      keys.add(e.code); syncKeys();
+      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyG') me.gear = me.gear === 'D' ? 'L' : 'D';
+      else if (e.code === 'KeyC') G.camMode = (G.camMode + 1) % 3;
+      else if (e.code === 'KeyH') sfx(185, 0.35, 'sawtooth', 0.16);
+    });
+    window.addEventListener('keyup', e => { keys.delete(e.code); syncKeys(); });
+    window.addEventListener('blur', () => { keys.clear(); syncKeys(); });
+    lastTs = performance.now();
+    tick(lastTs);
+  }
+};
+
+while (__q.length) {
+  const [fn, args] = __q.shift();
+  if (window.__G3D[fn]) window.__G3D[fn](...args);
+}
+
+(function() {
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('quickplay') || qs.has('autostart')) window.__G3D.startQuickPlay();
+  else setTimeout(() => {
+    if (!EMB) {
+      embReveal();
+      document.getElementById('root').innerHTML = `<div class="card"><h1 style="color:#ffd166;margin:0 0 10px">ناقلة القوافل 3D</h1><p style="opacity:0.85;margin:0 0 18px">محاكي شاحنات نقل ثقيلة ثلاثي الأبعاد عبر الصحراء والجبال.</p><button class="btn" data-start="true" onclick="startQuickPlay()">تشغيل سريع</button></div>`;
+    }
+  }, 350);
+})();
+</script>
+</body>
+</html>

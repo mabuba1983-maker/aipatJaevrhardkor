@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>كرة القدم 2D</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('emb-pending')}catch(e){}</script>
+<style>html.emb-pending body{visibility:hidden}</style>
+<style>
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#0b2616;color:#f8f5ff;font-family:'Tajawal',system-ui,sans-serif}
+#root{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center}
+.card{background:rgba(19,12,34,0.92);border:1px solid rgba(255,209,102,0.28);border-radius:20px;padding:24px;max-width:520px;width:92%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.btn{cursor:pointer;border:none;border-radius:14px;padding:12px 24px;font-family:inherit;font-size:17px;font-weight:800;background:linear-gradient(135deg,#ffd166,#ff9a3d);color:#190d26}
+.btn:active{transform:scale(0.96)}
+.btn-alt{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
+.tv-wrap{width:100vw;height:100vh;position:relative;background:#0a2214;overflow:hidden}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.tv-scorebar{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(13,10,24,0.82);border:1px solid rgba(255,209,102,0.3);border-radius:14px;padding:6px 20px;display:flex;align-items:center;gap:18px;font-weight:800;font-size:18px;pointer-events:none;white-space:nowrap;z-index:3}
+.gold{color:#ffd166;font-variant-numeric:tabular-nums}
+.tv-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(11,10,22,0.84);padding:20px;z-index:6}
+.bracket-grid{display:flex;gap:18px;justify-content:center;align-items:center;flex-wrap:wrap;margin:14px 0}
+.match-box{background:rgba(255,255,255,0.07);border:1px solid rgba(255,209,102,0.24);border-radius:12px;padding:8px 14px;min-width:170px;text-align:right;font-size:14px}
+.ph-wrap{width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:14px;background:linear-gradient(180deg,#1a102b,#0e0918)}
+.ph-head{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.07);border-radius:14px;padding:10px 14px}
+.ph-pad{flex:1;display:flex;align-items:center;justify-content:space-between;gap:14px;max-height:360px;margin:auto 0}
+.joy-zone{width:168px;height:168px;border-radius:50%;background:rgba(255,255,255,0.05);border:2px solid rgba(255,209,102,0.38);position:relative;touch-action:none;flex-shrink:0}
+.joy-knob{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#ffd166,#ff9a3d);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+.kick-col{display:flex;flex-direction:column;gap:14px}
+.kick-btn{width:124px;height:86px;border-radius:18px;border:none;font-family:inherit;font-size:20px;font-weight:800;cursor:pointer;color:#190d26;background:linear-gradient(135deg,#ffd166,#ff9a3d)}
+.sprint-btn{width:124px;height:62px;border-radius:16px;border:2px solid #06d6a0;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;color:#fff;background:rgba(6,214,160,0.22)}
+.field-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0;font-size:15px}
+.inp{background:#120b20;color:#fff;border:1px solid rgba(255,209,102,0.45);border-radius:10px;padding:8px 12px;font-family:inherit;font-size:15px}
+.qp-controls{position:absolute;bottom:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;z-index:4}
+.qp-controls>*{pointer-events:auto}
+.mute-btn{position:absolute;top:12px;left:14px;z-index:4;background:rgba(13,10,24,0.75);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:10px;padding:6px 12px;font-family:inherit;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="root">
+<div id="role" class="card"><p>هذي اللعبة جزء من لوبي «ليالي الرياض» — افتحها من هناك حتى تتوصل تلقائيًا.</p></div>
+</div>
+<script>
+/* ===================== EMB BRIDGE (لا تغيّر هذا الجزء) ===================== */
+let EMB=null; const embHostConns={};
+window.addEventListener('message', e=>{
+  const m=e&&e.data; if(!m||!m.__emb) return;
+  if(m.init){ EMB={role:m.role,code:m.code,name:m.name}; return embStart(); }
+  if(!EMB) return;
+  if(EMB.role==='tv'){
+    if(m.event==='data'){
+      let c=embHostConns[m.id];
+      if(!c)c=embHostConns[m.id]={id:m.id,send:obj=>{try{parent.postMessage({__emb:1,to:m.id,data:obj},'*')}catch(e){}}};
+      try{onHostMsg(c,m.data)}catch(e){}
+    } else if(m.event==='disconnect'){
+      try{onPlayerLeave(m.id)}catch(e){}
+      delete embHostConns[m.id];
+    }
+  } else if(EMB.role==='ph'){
+    if(m.data!==undefined){try{onCtlMsg(m.data)}catch(e){}}
+  }
+});
+function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
+function embStart(){
+  embReveal();
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
+}
+setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
+
+/* ===================== من هنا تبدأ لعبتك ===================== */
+function ctlSend(obj){ try{parent.postMessage({__emb:1,data:obj},'*')}catch(e){} }
+// نظام حماية مستقل للعبة كرة القدم 2D
+const GAME_SECURITY_G4 = Object.freeze({
+  gameId: 'football_2d',
+  ownerKeyId: 'OWNER-KEY-G4-FOOTBALL-3309',
+  sealHash: '4d9f8b21c60e73a1',
+  cornerBevel: 56,
+  goalHalfHeight: 92
+});
+function verifyG4Integrity() {
+  if (!GAME_SECURITY_G4 || GAME_SECURITY_G4.gameId !== 'football_2d' || GAME_SECURITY_G4.ownerKeyId !== 'OWNER-KEY-G4-FOOTBALL-3309' || GAME_SECURITY_G4.cornerBevel !== 56) {
+    document.getElementById('root').innerHTML = '<div class="card"><h2>تم إيقاف التشغيل</h2><p>تم اكتشاف تعديل غير مصرح به في ملفات اللعبة — يلزم تفويض المالك.</p></div>';
+    return false;
+  }
+  return true;
+}
+
+const PITCH = { width: 1000, height: 600, goalHalfHeight: GAME_SECURITY_G4.goalHalfHeight, goalDepth: 46, cornerBevel: GAME_SECURITY_G4.cornerBevel, ballRadius: 15, playerRadius: 24 };
+let audioCtx = null, muted = false, userInteracted = false;
+window.addEventListener('pointerdown', () => { userInteracted = true; }, { passive: true });
+window.addEventListener('keydown', () => { userInteracted = true; }, { passive: true });
+function sfx(freq, dur, type='sine', vol=0.14) {
+  if (muted || !userInteracted) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch(e) {}
+}
+
+const G = {
+  phase: 'lobby', // lobby | cupDraw | cupNaming | cupBracket | playing | halftime | matchEnd | cupChampion
+  adminId: null,
+  humans: [], // {id, name}
+  settings: {
+    mode: 'friendly', // friendly | cup
+    durationMinutes: 2,
+    friendlyCoopVsBots: true, // true: جميع اللاعبين بنفس الفريق ضد بوتات
+    cupTeamCount: 4
+  },
+  cup: {
+    teams: [], // {id, name, isBotTeam, players:[{id,name}], captainId, confirmedName, suggestions:[]}
+    rounds: [],
+    currentRound: 0,
+    currentMatch: 0,
+    championName: ''
+  },
+  match: {
+    teamAName: 'الصقور',
+    teamBName: 'النسور',
+    teamAId: 'A',
+    teamBId: 'B',
+    scoreA: 0,
+    scoreB: 0,
+    half: 1,
+    timeLeft: 60,
+    halfDuration: 60,
+    goalPause: 0,
+    lastScorer: '',
+    players: [],
+    ball: { x: 500, y: 300, vx: 0, vy: 0, cornerStallTime: 0 },
+    particles: []
+  },
+  quickplay: false,
+  lastTick: 0
+};
+
+function isCornerZone(x, y, margin=75) {
+  return (x < margin || x > PITCH.width - margin) && (y < margin || y > PITCH.height - margin);
+}
+
+function resetPositions() {
+  const m = G.match;
+  m.ball = { x: PITCH.width / 2, y: PITCH.height / 2, vx: 0, vy: 0, cornerStallTime: 0 };
+  const t0 = m.players.filter(p => p.team === 0);
+  const t1 = m.players.filter(p => p.team === 1);
+  t0.forEach((p, i) => {
+    p.x = 240 - (i % 2) * 70;
+    p.y = PITCH.height / 2 + (i - (t0.length - 1) / 2) * 110;
+    p.vx = 0; p.vy = 0; p.stallTime = 0; p.escapeTimer = 0;
+  });
+  t1.forEach((p, i) => {
+    p.x = PITCH.width - 240 + (i % 2) * 70;
+    p.y = PITCH.height / 2 + (i - (t1.length - 1) / 2) * 110;
+    p.vx = 0; p.vy = 0; p.stallTime = 0; p.escapeTimer = 0;
+  });
+}
+
+function makeMatchPlayer(id, name, team, isBot, num) {
+  return {
+    id, name, team, isBot, num,
+    x: 500, y: 300, vx: 0, vy: 0, ix: 0, iy: 0,
+    dirX: team === 0 ? 1 : -1, dirY: 0,
+    kickCd: 0, sprint: false, stallTime: 0, escapeTimer: 0, escapeAngle: 0
+  };
+}
+
+function startFriendlyMatch() {
+  if (!verifyG4Integrity()) return;
+  const m = G.match;
+  const totalSec = Math.max(30, Math.round((Number(G.settings.durationMinutes) || 2) * 60));
+  m.halfDuration = Math.max(15, Math.round(totalSec / 2));
+  m.half = 1; m.timeLeft = m.halfDuration;
+  m.scoreA = 0; m.scoreB = 0; m.goalPause = 0;
+  m.teamAId = 'A'; m.teamBId = 'B';
+  m.players = [];
+
+  if (G.settings.friendlyCoopVsBots) {
+    m.teamAName = 'فريق اللاعبين';
+    m.teamBName = 'فريق البوتات';
+    G.humans.forEach((h, i) => m.players.push(makeMatchPlayer(h.id, h.name, 0, false, i + 1)));
+    const botTotal = Math.max(2, G.humans.length);
+    for (let i = 0; i < botTotal; i++) m.players.push(makeMatchPlayer('bot_b_' + i, 'بوت ' + (i + 1), 1, true, i + 10));
+  } else {
+    m.teamAName = 'الأزرق';
+    m.teamBName = 'البرتقالي';
+    G.humans.forEach((h, i) => m.players.push(makeMatchPlayer(h.id, h.name, i % 2 === 0 ? 0 : 1, false, i + 1)));
+    while (m.players.filter(p => p.team === 0).length < 2) {
+      const idx = m.players.length;
+      m.players.push(makeMatchPlayer('bot_a_' + idx, 'بوت أزرق', 0, true, idx + 1));
+    }
+    while (m.players.filter(p => p.team === 1).length < 2) {
+      const idx = m.players.length;
+      m.players.push(makeMatchPlayer('bot_b_' + idx, 'بوت برتقالي', 1, true, idx + 1));
+    }
+  }
+  resetPositions();
+  G.phase = 'playing';
+  sfx(520, 0.22, 'triangle', 0.16);
+  broadcastState();
+}
+
+// نظام الكأس والفرق
+function startCupDraw() {
+  if (!verifyG4Integrity()) return;
+  const count = Math.max(2, Math.min(64, Number(G.settings.cupTeamCount) || 4));
+  const shuffled = [...G.humans];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  const botClubs = ['صقور الرياض','نجوم العلا','نمور الدرعية','عاصفة نجد','نسور الخليج','فرسان الصحراء','أبطال المجد','صواعق الشرق'];
+  const teams = [];
+  for (let i = 0; i < count; i++) {
+    teams.push({
+      id: 'cup_t_' + (i + 1),
+      name: 'فريق ' + (i + 1),
+      isBotTeam: true,
+      players: [],
+      captainId: null,
+      confirmedName: true,
+      suggestions: []
+    });
+  }
+  shuffled.forEach((p, idx) => {
+    const t = teams[idx % count];
+    t.players.push({ id: p.id, name: p.name });
+    t.isBotTeam = false;
+    t.confirmedName = false;
+  });
+  let bi = 0;
+  for (const t of teams) {
+    if (!t.isBotTeam && t.players.length > 0) {
+      // ترشيح قائد واحد من الفريق لكتابة الاسم النهائي بعد تشاورهم
+      t.captainId = t.players[Math.floor(Math.random() * t.players.length)].id;
+    } else {
+      t.name = botClubs[bi % botClubs.length] + (bi >= botClubs.length ? ' ' + (bi + 1) : '');
+      bi++;
+    }
+  }
+  G.cup.teams = teams;
+  G.phase = 'cupDraw';
+  sfx(620, 0.25, 'triangle', 0.16);
+  broadcastState();
+  setTimeout(() => {
+    if (G.phase === 'cupDraw') {
+      const anyUnconfirmed = G.cup.teams.some(t => !t.isBotTeam && !t.confirmedName);
+      if (anyUnconfirmed) {
+        G.phase = 'cupNaming';
+      } else {
+        launchCupBracket();
+      }
+      broadcastState();
+    }
+  }, 2600);
+}
+
+function launchCupBracket() {
+  const teams = G.cup.teams;
+  let size = 2;
+  while (size < teams.length) size *= 2;
+  const r0 = [];
+  for (let i = 0; i < size / 2; i++) {
+    const a = teams[i * 2] || null;
+    const b = teams[i * 2 + 1] || null;
+    const autoW = a && !b ? a.id : (!a && b ? b.id : null);
+    r0.push({ id: 'r0_' + i, teamAId: a ? a.id : null, teamBId: b ? b.id : null, winnerId: autoW, scoreA: 0, scoreB: 0 });
+  }
+  const rounds = [r0];
+  let cnt = r0.length;
+  while (cnt > 1) {
+    const prev = rounds[rounds.length - 1];
+    const curr = [];
+    for (let i = 0; i < cnt / 2; i++) {
+      curr.push({ id: 'r' + rounds.length + '_' + i, teamAId: prev[i*2].winnerId, teamBId: prev[i*2+1].winnerId, winnerId: null, scoreA: 0, scoreB: 0 });
+    }
+    rounds.push(curr);
+    cnt = curr.length;
+  }
+  G.cup.rounds = rounds;
+  G.cup.currentRound = 0;
+  G.cup.currentMatch = 0;
+  G.phase = 'cupBracket';
+  broadcastState();
+  setTimeout(runNextCupMatch, 2200);
+}
+
+function findNextPlayableMatch() {
+  for (let r = 0; r < G.cup.rounds.length; r++) {
+    for (let m = 0; m < G.cup.rounds[r].length; m++) {
+      const mt = G.cup.rounds[r][m];
+      if (!mt.winnerId && mt.teamAId && mt.teamBId) return { r, m, mt };
+    }
+  }
+  return null;
+}
+
+function runNextCupMatch() {
+  const next = findNextPlayableMatch();
+  if (!next) {
+    const finalRound = G.cup.rounds[G.cup.rounds.length - 1];
+    const champId = finalRound[0]?.winnerId;
+    const champTeam = G.cup.teams.find(t => t.id === champId);
+    G.cup.championName = champTeam ? champTeam.name : '';
+    G.phase = 'cupChampion';
+    sfx(780, 0.45, 'triangle', 0.2);
+    broadcastState();
+    return;
+  }
+  G.cup.currentRound = next.r;
+  G.cup.currentMatch = next.m;
+  const tA = G.cup.teams.find(t => t.id === next.mt.teamAId);
+  const tB = G.cup.teams.find(t => t.id === next.mt.teamBId);
+
+  // إذا كانت المباراة بين فريقين بوتين فقط: محاكاة سريعة مع عرض النتيجة في الجدول
+  if (tA.isBotTeam && tB.isBotTeam) {
+    const sA = Math.floor(Math.random() * 4);
+    let sB = Math.floor(Math.random() * 4);
+    if (sA === sB) sB++;
+    const winId = sA > sB ? tA.id : tB.id;
+    finishCupMatch(next.r, next.m, winId, sA, sB);
+    setTimeout(runNextCupMatch, 1300);
+    return;
+  }
+
+  // مباراة حية على التلفزيون
+  const m = G.match;
+  const totalSec = Math.max(30, Math.round((Number(G.settings.durationMinutes) || 2) * 60));
+  m.halfDuration = Math.max(15, Math.round(totalSec / 2));
+  m.half = 1; m.timeLeft = m.halfDuration;
+  m.scoreA = 0; m.scoreB = 0; m.goalPause = 0;
+  m.teamAId = tA.id; m.teamBId = tB.id;
+  m.teamAName = tA.name; m.teamBName = tB.name;
+  m.players = [];
+
+  if (tA.isBotTeam) {
+    for (let i = 0; i < Math.max(2, tB.players.length); i++) m.players.push(makeMatchPlayer('bot_a_' + i, tA.name + ' ' + (i+1), 0, true, i + 1));
+  } else {
+    tA.players.forEach((p, i) => m.players.push(makeMatchPlayer(p.id, p.name, 0, false, i + 1)));
+  }
+
+  if (tB.isBotTeam) {
+    for (let i = 0; i < Math.max(2, tA.players.length); i++) m.players.push(makeMatchPlayer('bot_b_' + i, tB.name + ' ' + (i+1), 1, true, i + 1));
+  } else {
+    tB.players.forEach((p, i) => m.players.push(makeMatchPlayer(p.id, p.name, 1, false, i + 1)));
+  }
+
+  resetPositions();
+  G.phase = 'playing';
+  sfx(520, 0.22, 'triangle', 0.16);
+  broadcastState();
+}
+
+function finishCupMatch(rIdx, mIdx, winnerId, sA, sB) {
+  const mt = G.cup.rounds[rIdx][mIdx];
+  mt.winnerId = winnerId; mt.scoreA = sA; mt.scoreB = sB;
+  const nextR = G.cup.rounds[rIdx + 1];
+  if (nextR) {
+    const nm = nextR[Math.floor(mIdx / 2)];
+    if (mIdx % 2 === 0) nm.teamAId = winnerId;
+    else nm.teamBId = winnerId;
+  }
+  broadcastState();
+}
+
+function kickBall(p) {
+  if (!p || p.kickCd > 0) return;
+  const b = G.match.ball;
+  const dx = b.x - p.x, dy = b.y - p.y;
+  const d = Math.hypot(dx, dy);
+  if (d < PITCH.playerRadius + PITCH.ballRadius + 24) {
+    const nx = dx / (d || 1), ny = dy / (d || 1);
+    b.vx += nx * 560 + p.vx * 0.35;
+    b.vy += ny * 560 + p.vy * 0.35;
+    p.kickCd = 0.35;
+    sfx(260, 0.1, 'triangle', 0.16);
+    for (let i = 0; i < 8; i++) {
+      G.match.particles.push({ x: b.x, y: b.y, vx: (Math.random()-0.5)*160, vy: (Math.random()-0.5)*160, life: 0.35 });
+    }
+  }
+}
+
+function stepBallAndWalls(dt) {
+  const m = G.match, b = m.ball, r = PITCH.ballRadius;
+  b.x += b.vx * dt; b.y += b.vy * dt;
+  b.vx *= Math.pow(0.28, dt); b.vy *= Math.pow(0.28, dt);
+
+  const inGoalY = Math.abs(b.y - PITCH.height / 2) < PITCH.goalHalfHeight - r * 0.25;
+  if (inGoalY && b.x < -r * 0.35) { return 1; }
+  if (inGoalY && b.x > PITCH.width + r * 0.35) { return 0; }
+
+  if (b.y - r < 0) { b.y = r; b.vy = Math.abs(b.vy) * 0.85; }
+  else if (b.y + r > PITCH.height) { b.y = PITCH.height - r; b.vy = -Math.abs(b.vy) * 0.85; }
+
+  if (!inGoalY) {
+    if (b.x - r < 0) { b.x = r; b.vx = Math.abs(b.vx) * 0.85; }
+    else if (b.x + r > PITCH.width) { b.x = PITCH.width - r; b.vx = -Math.abs(b.vx) * 0.85; }
+  } else {
+    const gTop = PITCH.height / 2 - PITCH.goalHalfHeight + r;
+    const gBot = PITCH.height / 2 + PITCH.goalHalfHeight - r;
+    if (b.x < 0 || b.x > PITCH.width) {
+      if (b.y < gTop) { b.y = gTop; b.vy = Math.abs(b.vy) * 0.7; }
+      else if (b.y > gBot) { b.y = gBot; b.vy = -Math.abs(b.vy) * 0.7; }
+    }
+  }
+
+  // حواجز الزوايا المائلة 45 درجة لمنع انحشار الكرة نهائياً
+  const invS2 = Math.SQRT1_2;
+  const corners = [
+    { cx: 0, cy: 0, nx: invS2, ny: invS2 },
+    { cx: PITCH.width, cy: 0, nx: -invS2, ny: invS2 },
+    { cx: 0, cy: PITCH.height, nx: invS2, ny: -invS2 },
+    { cx: PITCH.width, cy: PITCH.height, nx: -invS2, ny: -invS2 }
+  ];
+  const minSigned = PITCH.cornerBevel * invS2 + r;
+  for (const c of corners) {
+    const sd = (b.x - c.cx) * c.nx + (b.y - c.cy) * c.ny;
+    if (sd < minSigned) {
+      const push = minSigned - sd;
+      b.x += c.nx * push; b.y += c.ny * push;
+      const vn = b.vx * c.nx + b.vy * c.ny;
+      if (vn < 0) { b.vx -= 1.85 * vn * c.nx; b.vy -= 1.85 * vn * c.ny; }
+    }
+  }
+
+  // صمام أمان إضافي: إذا بقيت الكرة ساكنة في الزاوية تتحرر تلقائياً نحو منتصف الملعب
+  if (isCornerZone(b.x, b.y, 70) && Math.hypot(b.vx, b.vy) < 35) {
+    b.cornerStallTime += dt;
+    if (b.cornerStallTime > 0.75) {
+      const tx = PITCH.width / 2 - b.x, ty = PITCH.height / 2 - b.y;
+      const l = Math.hypot(tx, ty) || 1;
+      b.vx += (tx / l) * 220; b.vy += (ty / l) * 220;
+      b.cornerStallTime = 0;
+    }
+  } else {
+    b.cornerStallTime = Math.max(0, b.cornerStallTime - dt * 2);
+  }
+  return null;
+}
+
+function stepFootball(dt) {
+  if (G.phase !== 'playing') return;
+  const m = G.match;
+  if (m.goalPause > 0) {
+    m.goalPause -= dt;
+    if (m.goalPause <= 0) resetPositions();
+    return;
+  }
+
+  m.timeLeft = Math.max(0, m.timeLeft - dt);
+  if (m.timeLeft <= 0) {
+    if (m.half === 1) {
+      m.half = 2; m.timeLeft = m.halfDuration;
+      G.phase = 'halftime';
+      sfx(440, 0.35, 'triangle', 0.16);
+      broadcastState();
+      setTimeout(() => {
+        if (G.phase === 'halftime') { resetPositions(); G.phase = 'playing'; broadcastState(); }
+      }, 2200);
+      return;
+    } else {
+      // نهاية المباراة (أو وقت إضافي سريع في الكأس عند التعادل)
+      if (G.settings.mode === 'cup' && m.scoreA === m.scoreB) {
+        m.timeLeft = 15; // شوط حسم ذهبي
+        return;
+      }
+      sfx(680, 0.45, 'triangle', 0.18);
+      if (G.settings.mode === 'cup') {
+        const winId = m.scoreA >= m.scoreB ? m.teamAId : m.teamBId;
+        finishCupMatch(G.cup.currentRound, G.cup.currentMatch, winId, m.scoreA, m.scoreB);
+        G.phase = 'cupBracket';
+        broadcastState();
+        setTimeout(runNextCupMatch, 2200);
+      } else {
+        G.phase = 'matchEnd';
+        broadcastState();
+      }
+      return;
+    }
+  }
+
+  const b = m.ball;
+  // ذكاء البوتات مع نظام فك الانحشار في الزوايا 100%
+  for (const p of m.players) {
+    if (p.kickCd > 0) p.kickCd = Math.max(0, p.kickCd - dt);
+    if (!p.isBot) continue;
+
+    const sp = Math.hypot(p.vx, p.vy);
+    const dBall = Math.hypot(b.x - p.x, b.y - p.y);
+    const nearWall = p.x < 55 || p.x > PITCH.width - 55 || p.y < 55 || p.y > PITCH.height - 55;
+    if ((nearWall || isCornerZone(b.x, b.y, 80)) && sp < 26 && dBall < 78) p.stallTime += dt;
+    else p.stallTime = Math.max(0, p.stallTime - dt * 2);
+
+    if (p.stallTime > 0.45 && p.escapeTimer <= 0) {
+      p.escapeTimer = 0.55;
+      p.escapeAngle = Math.atan2(PITCH.height / 2 - p.y, PITCH.width / 2 - p.x) + (p.team === 0 ? 0.35 : -0.35);
+      p.stallTime = 0;
+    }
+
+    if (p.escapeTimer > 0) {
+      p.escapeTimer -= dt;
+      p.ix = Math.cos(p.escapeAngle); p.iy = Math.sin(p.escapeAngle);
+      if (dBall < PITCH.playerRadius + PITCH.ballRadius + 16) kickBall(p);
+      continue;
+    }
+
+    const goalX = p.team === 0 ? PITCH.width : 0, goalY = PITCH.height / 2;
+    let aimX = b.x, aimY = b.y;
+    if (isCornerZone(b.x, b.y, 85)) {
+      const inX = b.x < PITCH.width / 2 ? 1 : -1;
+      const inY = b.y < PITCH.height / 2 ? 1 : -1;
+      aimX = b.x - inX * 14; aimY = b.y + inY * 14;
+    } else {
+      const gx = goalX - b.x, gy = goalY - b.y, gl = Math.hypot(gx, gy) || 1;
+      aimX = b.x - (gx / gl) * 26; aimY = b.y - (gy / gl) * 26;
+    }
+    const dx = aimX - p.x, dy = aimY - p.y, dl = Math.hypot(dx, dy) || 1;
+    p.ix = dx / dl; p.iy = dy / dl;
+    if (dBall < PITCH.playerRadius + PITCH.ballRadius + 14 && (isCornerZone(b.x, b.y, 85) || (p.team === 0 ? b.x >= p.x - 10 : b.x <= p.x + 10))) {
+      kickBall(p);
+    }
+  }
+
+  // حركة اللاعبين
+  for (const p of m.players) {
+    const mag = Math.hypot(p.ix, p.iy);
+    if (mag > 0.05) {
+      const nx = p.ix / Math.max(1, mag), ny = p.iy / Math.max(1, mag);
+      const accel = p.sprint ? 1280 : 940;
+      p.vx += nx * accel * dt; p.vy += ny * accel * dt;
+      p.dirX = nx; p.dirY = ny;
+    }
+    p.vx *= Math.pow(0.08, dt); p.vy *= Math.pow(0.08, dt);
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    p.x = Math.max(PITCH.playerRadius, Math.min(PITCH.width - PITCH.playerRadius, p.x));
+    p.y = Math.max(PITCH.playerRadius, Math.min(PITCH.height - PITCH.playerRadius, p.y));
+  }
+
+  // تصادم اللاعبين مع بعضهم ومع الكرة
+  for (let i = 0; i < m.players.length; i++) {
+    const a = m.players[i];
+    for (let j = i + 1; j < m.players.length; j++) {
+      const c = m.players[j];
+      const dx = c.x - a.x, dy = c.y - a.y, d = Math.hypot(dx, dy), minD = PITCH.playerRadius * 2;
+      if (d > 0 && d < minD) {
+        const nx = dx / d, ny = dy / d, ov = (minD - d) * 0.5;
+        a.x -= nx * ov; a.y -= ny * ov; c.x += nx * ov; c.y += ny * ov;
+      }
+    }
+    // تصادم مع الكرة
+    const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy), minD = PITCH.playerRadius + PITCH.ballRadius;
+    if (d > 0 && d < minD) {
+      const nx = dx / d, ny = dy / d, ov = minD - d;
+      b.x += nx * ov * 0.8; b.y += ny * ov * 0.8;
+      a.x -= nx * ov * 0.2; a.y -= ny * ov * 0.2;
+      const rvx = b.vx - a.vx, rvy = b.vy - a.vy, vn = rvx * nx + rvy * ny;
+      if (vn < 0) {
+        b.vx -= 1.65 * vn * nx;
+        b.vy -= 1.65 * vn * ny;
+        sfx(210, 0.07, 'sine', 0.1);
+      }
+    }
+  }
+
+  const scored = stepBallAndWalls(dt);
+  if (scored !== null) {
+    if (scored === 0) m.scoreA++; else m.scoreB++;
+    m.lastScorer = scored === 0 ? m.teamAName : m.teamBName;
+    m.goalPause = 1.6;
+    sfx(760, 0.35, 'triangle', 0.2);
+    broadcastState();
+  }
+
+  for (let i = m.particles.length - 1; i >= 0; i--) {
+    const pt = m.particles[i]; pt.x += pt.vx * dt; pt.y += pt.vy * dt; pt.life -= dt;
+    if (pt.life <= 0) m.particles.splice(i, 1);
+  }
+}
+
+function renderTv(ctx, w, h) {
+  ctx.clearRect(0, 0, w, h);
+  // ملء شاشة التلفزيون مع الحفاظ على التناسب
+  const scale = Math.min((w - 20) / (PITCH.width + PITCH.goalDepth * 2), (h - 20) / PITCH.height);
+  const ox = (w - PITCH.width * scale) / 2, oy = (h - PITCH.height * scale) / 2;
+
+  ctx.save();
+  ctx.translate(ox, oy);
+  ctx.scale(scale, scale);
+
+  // العشب المخطط
+  const stripeW = PITCH.width / 10;
+  for (let i = 0; i < 10; i++) {
+    ctx.fillStyle = i % 2 === 0 ? '#14532d' : '#166534';
+    ctx.fillRect(i * stripeW, 0, stripeW, PITCH.height);
+  }
+
+  // حدود الملعب + زوايا مائلة واضحة
+  const bv = PITCH.cornerBevel;
+  ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(bv, 0); ctx.lineTo(PITCH.width - bv, 0);
+  ctx.lineTo(PITCH.width, bv); ctx.lineTo(PITCH.width, PITCH.height - bv);
+  ctx.lineTo(PITCH.width - bv, PITCH.height); ctx.lineTo(bv, PITCH.height);
+  ctx.lineTo(0, PITCH.height - bv); ctx.lineTo(0, bv);
+  ctx.closePath();
+  ctx.stroke();
+
+  // خط المنتصف والدائرة
+  ctx.beginPath(); ctx.moveTo(PITCH.width / 2, 0); ctx.lineTo(PITCH.width / 2, PITCH.height); ctx.stroke();
+  ctx.beginPath(); ctx.arc(PITCH.width / 2, PITCH.height / 2, 78, 0, Math.PI * 2); ctx.stroke();
+
+  // منطقتا الجزاء
+  ctx.strokeRect(0, PITCH.height / 2 - 140, 120, 280);
+  ctx.strokeRect(PITCH.width - 120, PITCH.height / 2 - 140, 120, 280);
+
+  // المرميان
+  const gy = PITCH.height / 2 - PITCH.goalHalfHeight, gh = PITCH.goalHalfHeight * 2;
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.fillRect(-PITCH.goalDepth, gy, PITCH.goalDepth, gh);
+  ctx.strokeRect(-PITCH.goalDepth, gy, PITCH.goalDepth, gh);
+  ctx.fillRect(PITCH.width, gy, PITCH.goalDepth, gh);
+  ctx.strokeRect(PITCH.width, gy, PITCH.goalDepth, gh);
+
+  // جزيئات
+  for (const pt of G.match.particles) {
+    ctx.globalAlpha = Math.max(0, pt.life * 2);
+    ctx.fillStyle = '#ffd166';
+    ctx.beginPath(); ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // اللاعبون الكرويون
+  for (const p of G.match.players) {
+    ctx.save(); ctx.translate(p.x, p.y);
+    ctx.fillStyle = 'rgba(0,0,0,0.28)';
+    ctx.beginPath(); ctx.arc(3, 5, PITCH.playerRadius, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = p.team === 0 ? '#3b82f6' : '#f97316';
+    ctx.beginPath(); ctx.arc(0, 0, PITCH.playerRadius, 0, Math.PI * 2); ctx.fill();
+    ctx.lineWidth = 3; ctx.strokeStyle = '#fff'; ctx.stroke();
+
+    // عيون اتجاهية
+    const ex = p.dirX * 7, ey = p.dirY * 7;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(ex - 4, ey - 2, 4, 0, Math.PI * 2); ctx.arc(ex + 4, ey - 2, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#111';
+    ctx.beginPath(); ctx.arc(ex - 4, ey - 2, 2, 0, Math.PI * 2); ctx.arc(ex + 4, ey - 2, 2, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Tajawal'; ctx.textAlign = 'center';
+    ctx.fillText(p.name.split(' ')[0], 0, -PITCH.playerRadius - 8);
+    ctx.restore();
+  }
+
+  // الكرة
+  const b = G.match.ball;
+  ctx.save(); ctx.translate(b.x, b.y);
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath(); ctx.arc(3, 4, PITCH.ballRadius, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath(); ctx.arc(0, 0, PITCH.ballRadius, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#111827'; ctx.lineWidth = 2.5; ctx.stroke();
+  ctx.fillStyle = '#111827';
+  ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  if (G.match.goalPause > 0) {
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(0, PITCH.height/2 - 54, PITCH.width, 108);
+    ctx.fillStyle = '#ffd166'; ctx.font = '800 44px Tajawal'; ctx.textAlign = 'center';
+    ctx.fillText('هدف لـ ' + G.match.lastScorer + '!', PITCH.width / 2, PITCH.height / 2 + 14);
+  }
+  ctx.restore();
+}
+
+function broadcastState() {
+  const m = G.match;
+  const payload = {
+    t: 'state', phase: G.phase, adminId: G.adminId, settings: G.settings,
+    match: { teamAName: m.teamAName, teamBName: m.teamBName, scoreA: m.scoreA, scoreB: m.scoreB, half: m.half, timeLeft: Math.ceil(m.timeLeft) },
+    cup: { teams: G.cup.teams, championName: G.cup.championName }
+  };
+  Object.values(embHostConns).forEach(conn => {
+    const myTeam = G.cup.teams.find(t => t.players.some(p => p.id === conn.id)) || null;
+    conn.send({ ...payload, meId: conn.id, myCupTeam: myTeam });
+  });
+}
+
+function buildTvUI() {
+  document.getElementById('root').innerHTML = `
+    <div class="tv-wrap">
+      <canvas id="cv"></canvas>
+      <div class="tv-scorebar" id="scorebar"></div>
+      <button class="mute-btn" id="muteBtn">${muted?'صامت':'الصوت'}</button>
+      <div class="tv-overlay" id="overlay"></div>
+    </div>`;
+  document.getElementById('muteBtn').onclick = () => { muted = !muted; document.getElementById('muteBtn').textContent = muted?'صامت':'الصوت'; };
+}
+
+let lastKey = '';
+function updateTvOverlay() {
+  const sb = document.getElementById('scorebar');
+  const m = G.match;
+  if (sb) {
+    const min = Math.floor(Math.ceil(m.timeLeft) / 60), sec = String(Math.ceil(m.timeLeft) % 60).padStart(2, '0');
+    sb.innerHTML = `<span style="color:#60a5fa">${m.teamAName}</span><span class="gold">${m.scoreA} - ${m.scoreB}</span><span style="color:#fb923c">${m.teamBName}</span><span style="font-size:14px;opacity:0.8">ش${m.half} · ${min}:${sec}</span>`;
+    sb.style.display = (G.phase === 'playing' || G.phase === 'halftime') ? 'flex' : 'none';
+  }
+  const ov = document.getElementById('overlay');
+  if (!ov) return;
+  if (G.phase === 'playing') { ov.style.display = 'none'; document.body.dataset.state = 'playing'; return; }
+  ov.style.display = 'flex';
+
+  if (G.phase === 'lobby') {
+    document.body.dataset.state = 'title';
+    ov.innerHTML = `<div class="card">
+      <h1 style="color:#ffd166;margin:0 0 8px">كرة القدم 2D</h1>
+      <p style="opacity:0.85">أول لاعب يدخل هو الأدمن ويحدد مدة الشوطين ونظام المباراة أو بطولة الكأس.</p>
+      <p style="margin:10px 0">${G.humans.map(h => `<span style="display:inline-block;margin:4px;padding:6px 12px;border-radius:10px;background:rgba(255,255,255,0.09)">${h.name}${h.id===G.adminId?' (الأدمن)':''}</span>`).join('') || 'بانتظار اللاعبين...'}</p>
+      ${G.quickplay ? '<div style="display:flex;gap:10px;justify-content:center;margin-top:14px"><button class="btn" data-start="true" id="qpFriendly">مباراة سريعة</button><button class="btn btn-alt" id="qpCup">تجربة بطولة الكأس</button></div>' : ''}
+    </div>`;
+    const f = document.getElementById('qpFriendly'), c = document.getElementById('qpCup');
+    if (f) f.onclick = () => { G.settings.mode = 'friendly'; startFriendlyMatch(); };
+    if (c) c.onclick = () => { G.settings.mode = 'cup'; G.settings.cupTeamCount = 4; startCupDraw(); };
+  } else if (G.phase === 'cupDraw') {
+    ov.innerHTML = `<div class="card" style="max-width:680px">
+      <h1 style="color:#ffd166;margin:0 0 10px">جاري التوزيع العشوائي للفرق...</h1>
+      <div class="bracket-grid">${G.cup.teams.map(t => `<div class="match-box"><b>${t.name}</b><div style="opacity:0.8;font-size:13px">${t.isBotTeam ? 'فريق آلي' : t.players.map(p=>p.name).join('، ')}</div></div>`).join('')}</div>
+    </div>`;
+  } else if (G.phase === 'cupNaming') {
+    ov.innerHTML = `<div class="card" style="max-width:680px">
+      <h2 style="color:#ffd166;margin:0 0 8px">تسمية الفرق من الجوالات</h2>
+      <p style="opacity:0.85">يتناقش أعضاء كل فريق، ثم يكتب القائد المرشح الاسم النهائي من جواله.</p>
+      <div class="bracket-grid">${G.cup.teams.filter(t=>!t.isBotTeam).map(t => {
+        const cap = t.players.find(p => p.id === t.captainId);
+        return `<div class="match-box"><b>${t.confirmedName ? '✓ ' + t.name : 'بانتظار التسمية'}</b><div style="font-size:13px;opacity:0.8">اللاعبون: ${t.players.map(p=>p.name).join('، ')}</div><div style="font-size:12px;color:#ffd166">القائد: ${cap?.name || ''}</div></div>`;
+      }).join('')}</div>
+    </div>`;
+  } else if (G.phase === 'cupBracket') {
+    ov.innerHTML = `<div class="card" style="max-width:780px">
+      <h2 style="color:#ffd166;margin:0 0 8px">جدول بطولة الكأس</h2>
+      <div class="bracket-grid">${G.cup.rounds.map((r, ri) => `<div><div style="font-weight:800;margin-bottom:6px">الدور ${ri+1}</div>${r.map(mt => {
+        const a = G.cup.teams.find(t=>t.id===mt.teamAId)?.name || '—';
+        const b = G.cup.teams.find(t=>t.id===mt.teamBId)?.name || '—';
+        return `<div class="match-box" style="margin-bottom:8px">${a} <b class="gold">${mt.winnerId ? mt.scoreA+'-'+mt.scoreB : 'ضد'}</b> ${b}</div>`;
+      }).join('')}</div>`).join('')}</div>
+    </div>`;
+  } else if (G.phase === 'halftime') {
+    ov.innerHTML = `<div class="card"><h1 style="color:#ffd166;margin:0">نهاية الشوط الأول</h1><p style="font-size:22px">${m.teamAName} ${m.scoreA} - ${m.scoreB} ${m.teamBName}</p></div>`;
+  } else if (G.phase === 'matchEnd' || G.phase === 'cupChampion') {
+    document.body.dataset.state = 'gameover';
+    const title = G.phase === 'cupChampion' ? `بطل الكأس: ${G.cup.championName}` : `انتهت المباراة: ${m.scoreA > m.scoreB ? m.teamAName : (m.scoreB > m.scoreA ? m.teamBName : 'تعادل')}`;
+    ov.innerHTML = `<div class="card">
+      <h1 style="color:#ffd166;margin:0 0 10px">${title}</h1>
+      ${G.phase === 'matchEnd' ? `<p style="font-size:24px;font-weight:800">${m.scoreA} - ${m.scoreB}</p>` : ''}
+      ${G.quickplay ? '<button class="btn" id="qpReplay">مباراة جديدة</button>' : '<p style="opacity:0.8">يمكن للأدمن بدء مباراة جديدة من جواله</p>'}
+    </div>`;
+    const rp = document.getElementById('qpReplay'); if (rp) rp.onclick = startFriendlyMatch;
+  }
+}
+
+function tvLoop(ts) {
+  const dt = Math.min(0.05, (ts - (G.lastTick || ts)) / 1000);
+  G.lastTick = ts;
+  stepFootball(dt);
+  const cv = document.getElementById('cv');
+  if (cv) {
+    const r = cv.getBoundingClientRect();
+    if (cv.width !== Math.floor(r.width) || cv.height !== Math.floor(r.height)) {
+      cv.width = Math.max(300, Math.floor(r.width)); cv.height = Math.max(200, Math.floor(r.height));
+    }
+    renderTv(cv.getContext('2d'), cv.width, cv.height);
+  }
+  const m = G.match;
+  const k = G.phase + '|' + m.scoreA + '-' + m.scoreB + '|' + Math.ceil(m.timeLeft) + '|' + G.humans.length + '|' + G.cup.teams.map(t=>t.name+t.confirmedName).join(',');
+  if (k !== lastKey) { lastKey = k; updateTvOverlay(); }
+  requestAnimationFrame(tvLoop);
+}
+
+function startTv() {
+  if (!verifyG4Integrity()) return;
+  buildTvUI();
+  setInterval(broadcastState, 150);
+  requestAnimationFrame(tvLoop);
+}
+
+function onHostMsg(c, data) {
+  if (!data || !data.t) return;
+  if (data.t === 'join') {
+    if (!G.humans.find(h => h.id === c.id)) {
+      G.humans.push({ id: c.id, name: (data.name || 'لاعب').slice(0, 16) });
+      if (!G.adminId) G.adminId = c.id; // أول من يدخل هو الأدمن
+    }
+    broadcastState();
+  } else if (data.t === 'move') {
+    const p = G.match.players.find(x => x.id === c.id);
+    if (p) { p.ix = Number(data.x)||0; p.iy = Number(data.y)||0; p.sprint = !!data.sprint; }
+  } else if (data.t === 'kick') {
+    const p = G.match.players.find(x => x.id === c.id);
+    if (p) kickBall(p);
+  } else if (data.t === 'cupName') {
+    const team = G.cup.teams.find(t => t.id === data.teamId);
+    if (team && team.captainId === c.id && typeof data.name === 'string' && data.name.trim()) {
+      team.name = data.name.trim().slice(0, 22);
+      team.confirmedName = true;
+      if (G.cup.teams.every(t => t.isBotTeam || t.confirmedName)) {
+        launchCupBracket();
+      } else {
+        broadcastState();
+      }
+    }
+  } else if (data.t === 'cupSuggest') {
+    const team = G.cup.teams.find(t => t.id === data.teamId);
+    if (team && typeof data.name === 'string' && data.name.trim()) {
+      team.suggestions.push(data.name.trim().slice(0, 22));
+      broadcastState();
+    }
+  } else if (data.t === 'admin' && c.id === G.adminId) {
+    if (data.action === 'config') {
+      if (data.durationMinutes) G.settings.durationMinutes = Math.max(1, Math.min(20, Number(data.durationMinutes)));
+      if (data.mode) G.settings.mode = data.mode === 'cup' ? 'cup' : 'friendly';
+      if (data.friendlyCoopVsBots !== undefined) G.settings.friendlyCoopVsBots = !!data.friendlyCoopVsBots;
+      if (data.cupTeamCount) G.settings.cupTeamCount = Math.max(2, Math.min(64, Number(data.cupTeamCount)));
+      broadcastState();
+    } else if (data.action === 'start') {
+      if (G.settings.mode === 'cup') startCupDraw();
+      else startFriendlyMatch();
+    }
+  }
+}
+
+function onPlayerLeave(id) {
+  G.humans = G.humans.filter(h => h.id !== id);
+  if (G.adminId === id) G.adminId = G.humans[0]?.id || null;
+  broadcastState();
+}
+
+// واجهة الجوال
+const PH = { sprint: false };
+function startPhone() {
+  if (!verifyG4Integrity()) return;
+  document.getElementById('root').innerHTML = `
+    <div class="ph-wrap">
+      <div class="ph-head">
+        <div><strong>${EMB?.name || 'لاعب'}</strong><div id="phRole" style="font-size:13px;opacity:0.8">متصل</div></div>
+        <div class="gold" id="phScore" style="font-weight:800">0 - 0</div>
+      </div>
+      <div id="phBody" style="flex:1;display:flex;flex-direction:column;justify-content:center"></div>
+    </div>`;
+  ctlSend({ t: 'join', name: EMB?.name || 'لاعب' });
+}
+
+let phUiMode = '';
+function onCtlMsg(data) {
+  if (!data || data.t !== 'state') return;
+  const isAdmin = data.meId && data.adminId === data.meId;
+  const role = document.getElementById('phRole'), sc = document.getElementById('phScore'), body = document.getElementById('phBody');
+  if (role) role.textContent = isAdmin ? 'أنت الأدمن' : 'لاعب';
+  if (sc) sc.textContent = `${data.match.scoreA} - ${data.match.scoreB}`;
+  if (!body) return;
+
+  if (data.phase === 'cupNaming' && data.myCupTeam && !data.myCupTeam.confirmedName) {
+    if (phUiMode !== 'naming') {
+      phUiMode = 'naming';
+      const t = data.myCupTeam;
+      const isCap = t.captainId === data.meId;
+      body.innerHTML = `<div class="card" style="margin:auto">
+        <h3 style="color:#ffd166;margin:0 0 8px">${isCap ? 'أنت مرشح الفريق لكتابة الاسم النهائي' : 'تشاوروا لاختيار اسم فريقكم'}</h3>
+        <p style="font-size:14px;opacity:0.85">أعضاء الفريق: ${t.players.map(p=>p.name).join('، ')}</p>
+        <div id="sugList" style="font-size:13px;color:#ffd166;margin-bottom:8px"></div>
+        <input class="inp" id="teamNameInp" placeholder="اكتب اسم الفريق..." style="width:100%;margin-bottom:10px"/>
+        <button class="btn" id="teamNameBtn" style="width:100%">${isCap ? 'تأكيد اسم الفريق' : 'إرسال اقتراح للقائد'}</button>
+      </div>`;
+      document.getElementById('teamNameBtn').onclick = () => {
+        const v = document.getElementById('teamNameInp').value;
+        if (isCap) ctlSend({ t: 'cupName', teamId: t.id, name: v });
+        else ctlSend({ t: 'cupSuggest', teamId: t.id, name: v });
+      };
+    }
+    const sl = document.getElementById('sugList');
+    if (sl && data.myCupTeam.suggestions?.length) sl.textContent = 'اقتراحات: ' + data.myCupTeam.suggestions.join(' · ');
+    return;
+  }
+
+  if (data.phase === 'lobby' || data.phase === 'matchEnd' || data.phase === 'cupChampion') {
+    const modeKey = 'lobby_' + (isAdmin ? 'adm' : 'usr');
+    if (phUiMode !== modeKey) {
+      phUiMode = modeKey;
+      if (isAdmin) {
+        body.innerHTML = `<div class="card" style="margin:auto">
+          <h3 style="color:#ffd166;margin:0 0 10px">قائمة الأدمن</h3>
+          <div class="field-row"><span>مدة المباراة (دقائق):</span><input class="inp" id="admDur" type="number" min="1" max="20" value="${data.settings.durationMinutes}" style="width:84px"/></div>
+          <div class="field-row"><span>النظام:</span><select class="inp" id="admMode"><option value="friendly" ${data.settings.mode==='friendly'?'selected':''}>مباراة ودية</option><option value="cup" ${data.settings.mode==='cup'?'selected':''}>بطولة كأس</option></select></div>
+          <div class="field-row" id="coopRow"><span>الفرق بالودية:</span><select class="inp" id="admCoop"><option value="1" ${data.settings.friendlyCoopVsBots?'selected':''}>معاً ضد البوتات</option><option value="0" ${!data.settings.friendlyCoopVsBots?'selected':''}>فريقين متنافسين</option></select></div>
+          <div class="field-row" id="cupRow"><span>عدد فرق الكأس:</span><input class="inp" id="admCupCount" type="number" min="2" max="64" value="${data.settings.cupTeamCount}" style="width:84px"/></div>
+          <button class="btn" id="admStartBtn" style="width:100%;margin-top:10px">ابدأ الآن</button>
+        </div>`;
+        const sendCfg = () => ctlSend({
+          t: 'admin', action: 'config',
+          durationMinutes: document.getElementById('admDur').value,
+          mode: document.getElementById('admMode').value,
+          friendlyCoopVsBots: document.getElementById('admCoop').value === '1',
+          cupTeamCount: document.getElementById('admCupCount').value
+        });
+        document.getElementById('admDur').onchange = sendCfg;
+        document.getElementById('admMode').onchange = sendCfg;
+        document.getElementById('admCoop').onchange = sendCfg;
+        document.getElementById('admCupCount').onchange = sendCfg;
+        document.getElementById('admStartBtn').onclick = () => ctlSend({ t: 'admin', action: 'start' });
+      } else {
+        body.innerHTML = `<div class="card" style="margin:auto"><h3>في انتظار الأدمن</h3><p style="opacity:0.8">شاهد التلفزيون!</p></div>`;
+      }
+    }
+    return;
+  }
+
+  if (data.phase === 'playing') {
+    if (phUiMode !== 'playing') {
+      phUiMode = 'playing';
+      body.innerHTML = `<div class="ph-pad"><div class="joy-zone" id="joyZone"><div class="joy-knob" id="joyKnob"></div></div><div class="kick-col"><button class="kick-btn" id="kickBtn">تسديد</button><button class="sprint-btn" id="sprintBtn">سرعة</button></div></div>`;
+      wireJoystick('joyZone', 'joyKnob', (x, y) => ctlSend({ t: 'move', x, y, sprint: PH.sprint }));
+      document.getElementById('kickBtn').onclick = () => ctlSend({ t: 'kick' });
+      const sb = document.getElementById('sprintBtn');
+      sb.onpointerdown = () => { PH.sprint = true; };
+      sb.onpointerup = () => { PH.sprint = false; };
+      sb.onpointercancel = () => { PH.sprint = false; };
+    }
+  } else {
+    if (phUiMode !== 'wait') {
+      phUiMode = 'wait';
+      body.innerHTML = `<div class="card" style="margin:auto"><h3>تابع الشاشة</h3></div>`;
+    }
+  }
+}
+
+function wireJoystick(zoneId, knobId, onChange) {
+  const z = document.getElementById(zoneId), k = document.getElementById(knobId);
+  if (!z || !k) return;
+  let active = false; const maxR = 52;
+  function upd(cx, cy) {
+    const r = z.getBoundingClientRect();
+    let dx = cx - (r.left + r.width/2), dy = cy - (r.top + r.height/2);
+    const d = Math.hypot(dx, dy);
+    if (d > maxR) { dx = (dx/d)*maxR; dy = (dy/d)*maxR; }
+    k.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+    onChange(dx/maxR, dy/maxR);
+  }
+  function rst() { active = false; k.style.transform = 'translate(-50%,-50%)'; onChange(0,0); }
+  z.addEventListener('pointerdown', e => { active=true; z.setPointerCapture(e.pointerId); upd(e.clientX, e.clientY); });
+  z.addEventListener('pointermove', e => { if (active) upd(e.clientX, e.clientY); });
+  z.addEventListener('pointerup', rst); z.addEventListener('pointercancel', rst);
+}
+
+function startQuickPlay() {
+  if (!verifyG4Integrity()) return;
+  embReveal();
+  G.quickplay = true;
+  G.adminId = 'qp_1';
+  G.humans = [{ id: 'qp_1', name: 'أنت' }];
+  buildTvUI();
+  startFriendlyMatch();
+
+  const qp = document.createElement('div');
+  qp.className = 'qp-controls';
+  qp.innerHTML = `<div class="joy-zone" id="qpJoy" style="width:124px;height:124px"><div class="joy-knob" id="qpKnob" style="width:46px;height:46px"></div></div><button class="kick-btn" id="qpKick" style="width:104px;height:70px;font-size:18px">تسديد</button>`;
+  document.querySelector('.tv-wrap').appendChild(qp);
+
+  const getMe = () => G.match.players.find(p => p.id === 'qp_1');
+  wireJoystick('qpJoy', 'qpKnob', (x, y) => { const me = getMe(); if (me) { me.ix = x; me.iy = y; } });
+  document.getElementById('qpKick').onclick = () => kickBall(getMe());
+  const keys = new Set();
+  function sync() {
+    const me = getMe(); if (!me) return;
+    me.ix = (keys.has('ArrowRight')||keys.has('KeyD')?1:0) - (keys.has('ArrowLeft')||keys.has('KeyA')?1:0);
+    me.iy = (keys.has('ArrowDown')||keys.has('KeyS')?1:0) - (keys.has('ArrowUp')||keys.has('KeyW')?1:0);
+    me.sprint = keys.has('ShiftLeft') || keys.has('ShiftRight');
+  }
+  window.addEventListener('keydown', e => { keys.add(e.code); sync(); if (e.code==='Space'){e.preventDefault(); kickBall(getMe());} });
+  window.addEventListener('keyup', e => { keys.delete(e.code); sync(); });
+  window.addEventListener('blur', () => { keys.clear(); sync(); });
+  requestAnimationFrame(tvLoop);
+}
+
+(function() {
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('quickplay') || qs.has('autostart')) startQuickPlay();
+  else setTimeout(() => {
+    if (!EMB) {
+      embReveal();
+      document.getElementById('root').innerHTML = `<div class="card"><h1 style="color:#ffd166;margin:0 0 10px">كرة القدم 2D</h1><p style="opacity:0.85;margin:0 0 18px">شخصيات كروية وفيزياء سلسة مع نظام كأس وفرق!</p><button class="btn" data-start="true" onclick="startQuickPlay()">تشغيل سريع</button></div>`;
+    }
+  }, 350);
+})();
+</script>
+</body>
+</html>

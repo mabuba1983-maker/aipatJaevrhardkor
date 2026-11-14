@@ -1,0 +1,13 @@
+{
+  "gameId": "04-football-2d",
+  "ownerKeyId": "OWNER-KEY-G4-FOOTBALL-3309",
+  "algorithm": "SHA-256",
+  "createdAt": "2026-11-13T00:00:00.000Z",
+  "files": {
+    "game.html": "25dec0062b02f9362b8b3e69f565dac551506aeca26190822e96dbb7f759aa55",
+    "info.json": "56228ff1e9c24b8e9017c6f057406426d3388a17fec5186ab50f3c5198ebb23e",
+    "cover.jpg": "9b9b98edaf2775852e2da9c119b10f3767dafcfda6752ada4903fae6aa69d18d"
+  },
+  "signature": "af753056821a913a8bca5f349f4570179d19d8d20ec6326fad65cc5c5ff81fb1",
+  "_signature_note": "تم تحديث هاش game.html بعد التنظيف؛ حقل signature القديم كان أصلاً غير مطابق لمحتوى الملف قبل التعديل ويتطلب إعادة توقيع من نفس أداة التوقيع الأصلية (لا تملك Claude مفتاح التوقيع)."
+}

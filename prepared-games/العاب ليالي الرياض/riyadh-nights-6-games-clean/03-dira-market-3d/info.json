@@ -1,0 +1,10 @@
+{
+  "id": "dira_market_3d",
+  "slug": "03-dira-market-3d",
+  "name": "سوق الديرة 3D",
+  "description": "محاكي إدارة سوبرماركت ثلاثي الأبعاد: استلم شحنات البضائع، رصّ الرفوف بالمنتجات، حاسب الزبائن على الكاشير بالماسح الضوئي، وطوّر متجرك.",
+  "cover": "cover.jpg",
+  "entry": "game.html",
+  "maxPlayers": 4,
+  "compatibleWith": "ليالي الرياض"
+}

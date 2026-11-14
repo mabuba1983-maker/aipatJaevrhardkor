@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>الكيرم 2D</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('emb-pending')}catch(e){}</script>
+<style>html.emb-pending body{visibility:hidden}</style>
+<style>
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#190d26;color:#f8f5ff;font-family:'Tajawal',system-ui,sans-serif}
+#root{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center}
+.card{background:rgba(36,19,56,0.94);border:1px solid rgba(255,209,102,0.28);border-radius:20px;padding:24px;max-width:460px;width:92%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.48)}
+.btn{cursor:pointer;border:none;border-radius:14px;padding:12px 26px;font-family:inherit;font-size:17px;font-weight:800;background:linear-gradient(135deg,#ffd166,#ff9a3d);color:#190d26}
+.btn:active{transform:scale(0.96)}
+.tv-wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:24px;padding:18px;background:radial-gradient(circle,#26133b,#12081c)}
+.board-box{aspect-ratio:1/1;height:min(92vh,88vw);max-height:760px;max-width:760px;position:relative}
+canvas{display:block;width:100%;height:100%;touch-action:none;border-radius:20px;box-shadow:0 20px 55px rgba(0,0,0,0.65)}
+.side-scores{display:flex;flex-direction:column;gap:10px;min-width:210px;max-width:250px}
+.score-row{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.score-row.active{border-color:#ffd166;background:rgba(255,209,102,0.14)}
+.gold{color:#ffd166;font-variant-numeric:tabular-nums}
+.tv-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(17,8,28,0.85);padding:20px;z-index:6}
+.ph-wrap{width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:16px;background:linear-gradient(180deg,#1f1030,#140920)}
+.ph-head{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.07);border-radius:14px;padding:10px 14px}
+.aim-pad{width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.14),rgba(255,255,255,0.04));border:2px solid rgba(255,209,102,0.4);margin:10px auto;position:relative;touch-action:none;display:flex;align-items:center;justify-content:center}
+.aim-striker{width:46px;height:46px;border-radius:50%;background:#10b981;border:3px solid #fff;box-shadow:0 6px 18px rgba(16,185,129,0.5);pointer-events:none}
+.slider-wrap{width:100%;max-width:280px;margin:0 auto;text-align:center}
+.slider-wrap input{width:100%;accent-color:#10b981}
+.mute-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:10px;padding:8px 12px;font-family:inherit;font-weight:700;cursor:pointer}
+@media (max-width: 820px){
+  .tv-wrap{flex-direction:column;gap:10px;padding:10px}
+  .board-box{height:min(68vh,92vw);width:min(68vh,92vw)}
+  .side-scores{flex-direction:row;flex-wrap:wrap;max-width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+<div id="root">
+<div id="role" class="card"><p>هذي اللعبة جزء من لوبي «ليالي الرياض» — افتحها من هناك حتى تتوصل تلقائيًا.</p></div>
+</div>
+<script>
+/* ===================== EMB BRIDGE (لا تغيّر هذا الجزء) ===================== */
+let EMB=null; const embHostConns={};
+window.addEventListener('message', e=>{
+  const m=e&&e.data; if(!m||!m.__emb) return;
+  if(m.init){ EMB={role:m.role,code:m.code,name:m.name}; return embStart(); }
+  if(!EMB) return;
+  if(EMB.role==='tv'){
+    if(m.event==='data'){
+      let c=embHostConns[m.id];
+      if(!c)c=embHostConns[m.id]={id:m.id,send:obj=>{try{parent.postMessage({__emb:1,to:m.id,data:obj},'*')}catch(e){}}};
+      try{onHostMsg(c,m.data)}catch(e){}
+    } else if(m.event==='disconnect'){
+      try{onPlayerLeave(m.id)}catch(e){}
+      delete embHostConns[m.id];
+    }
+  } else if(EMB.role==='ph'){
+    if(m.data!==undefined){try{onCtlMsg(m.data)}catch(e){}}
+  }
+});
+function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
+function embStart(){
+  embReveal();
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
+}
+setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
+
+/* ===================== من هنا تبدأ لعبتك ===================== */
+function ctlSend(obj){ try{parent.postMessage({__emb:1,data:obj},'*')}catch(e){} }
+// نظام حماية مستقل للعبة الكيرم 2D + قفل جدول النقاط المحدد
+const GAME_SECURITY_G5 = Object.freeze({
+  gameId: 'carrom_2d',
+  ownerKeyId: 'OWNER-KEY-G5-CARROM-1184',
+  sealHash: '3e8a1b54f902d7c6',
+  points: Object.freeze({ pink: 50, gold: 10, black: 1, white: 1, striker: -5 })
+});
+function verifyG5Integrity() {
+  const pt = GAME_SECURITY_G5?.points;
+  if (!GAME_SECURITY_G5 || GAME_SECURITY_G5.gameId !== 'carrom_2d' || GAME_SECURITY_G5.ownerKeyId !== 'OWNER-KEY-G5-CARROM-1184' || !pt || pt.pink !== 50 || pt.gold !== 10 || pt.black !== 1 || pt.white !== 1) {
+    document.getElementById('root').innerHTML = '<div class="card"><h2>تم إيقاف التشغيل</h2><p>تم اكتشاف تعديل غير مصرح به في ملفات اللعبة — يلزم تفويض المالك.</p></div>';
+    return false;
+  }
+  return true;
+}
+
+const BOARD = { size: 640, margin: 46, pocketRadius: 27, friction: 0.985 };
+const POCKETS = [
+  { x: BOARD.margin + BOARD.pocketRadius * 0.85, y: BOARD.margin + BOARD.pocketRadius * 0.85 },
+  { x: BOARD.size - (BOARD.margin + BOARD.pocketRadius * 0.85), y: BOARD.margin + BOARD.pocketRadius * 0.85 },
+  { x: BOARD.margin + BOARD.pocketRadius * 0.85, y: BOARD.size - (BOARD.margin + BOARD.pocketRadius * 0.85) },
+  { x: BOARD.size - (BOARD.margin + BOARD.pocketRadius * 0.85), y: BOARD.size - (BOARD.margin + BOARD.pocketRadius * 0.85) }
+];
+
+let audioCtx = null, muted = false, userInteracted = false;
+window.addEventListener('pointerdown', () => { userInteracted = true; }, { passive: true });
+window.addEventListener('keydown', () => { userInteracted = true; }, { passive: true });
+function sfx(freq, dur, type='sine', vol=0.14) {
+  if (muted || !userInteracted) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch(e) {}
+}
+
+const G = {
+  phase: 'lobby', // lobby | aiming | moving | gameOver
+  adminId: null,
+  teamMode: false, // خيار فريقين ضد فريقين (تتجمع نقاطهم)
+  players: [], // up to 4 players {id, name, team, score, isBot}
+  turnIdx: 0,
+  discs: [],
+  turnPocketed: [],
+  strikerPosRatio: 0.5, // 0..1 on player's baseline
+  aimPreview: { active: false, dx: 0, dy: 0 },
+  foulMsg: '',
+  quickplay: false
+};
+
+function createDiscs() {
+  const cx = BOARD.size / 2, cy = BOARD.size / 2, r = 15, step = r * 2.08;
+  const list = [{ id: 'pink_1', kind: 'pink', x: cx, y: cy, vx: 0, vy: 0, radius: r, mass: 1, pocketed: false }];
+  for (let i = 0; i < 6; i++) {
+    const a = (i * Math.PI) / 3;
+    list.push({ id: 'in_' + i, kind: i < 5 ? 'gold' : 'black', x: cx + Math.cos(a)*step, y: cy + Math.sin(a)*step, vx: 0, vy: 0, radius: r, mass: 1, pocketed: false });
+  }
+  for (let i = 0; i < 12; i++) {
+    const a = (i * Math.PI) / 6;
+    const dist = i % 2 === 0 ? step * 2 : step * Math.sqrt(3);
+    list.push({ id: 'out_' + i, kind: i % 2 === 0 ? 'white' : 'black', x: cx + Math.cos(a)*dist, y: cy + Math.sin(a)*dist, vx: 0, vy: 0, radius: r, mass: 1, pocketed: false });
+  }
+  list.push({ id: 'striker', kind: 'striker', x: cx, y: BOARD.size - BOARD.margin - 62, vx: 0, vy: 0, radius: 19, mass: 1.65, pocketed: false });
+  return list;
+}
+
+function getBaselineXY(turnIdx, ratio) {
+  const minT = BOARD.margin + 88, maxT = BOARD.size - BOARD.margin - 88;
+  const t = minT + Math.max(0, Math.min(1, ratio)) * (maxT - minT);
+  const side = turnIdx % 4;
+  if (side === 0) return { x: t, y: BOARD.size - BOARD.margin - 62 };
+  if (side === 1) return { x: BOARD.size - BOARD.margin - 62, y: t };
+  if (side === 2) return { x: t, y: BOARD.margin + 62 };
+  return { x: BOARD.margin + 62, y: t };
+}
+
+function placeStrikerOnBaseline() {
+  const st = G.discs.find(d => d.kind === 'striker');
+  if (!st) return;
+  st.pocketed = false; st.vx = 0; st.vy = 0;
+  const pos = getBaselineXY(G.turnIdx, G.strikerPosRatio);
+  st.x = pos.x; st.y = pos.y;
+}
+
+function startCarromMatch() {
+  if (!verifyG5Integrity()) return;
+  G.players = G.players.filter(p => !p.isBot).slice(0, 4);
+  if (G.players.length < 2) {
+    G.players.push({ id: 'bot_1', name: 'الخصم (بوت)', team: 1, score: 0, isBot: true });
+  }
+  if (G.teamMode) {
+    while (G.players.length < 4) {
+      const idx = G.players.length;
+      G.players.push({ id: 'bot_' + idx, name: 'بوت ' + (idx + 1), team: idx % 2, score: 0, isBot: true });
+    }
+  }
+  G.players.forEach((p, idx) => { p.score = 0; p.team = idx % 2; });
+  G.discs = createDiscs();
+  G.turnIdx = 0;
+  G.turnPocketed = [];
+  G.strikerPosRatio = 0.5;
+  G.foulMsg = '';
+  placeStrikerOnBaseline();
+  G.phase = 'aiming';
+  sfx(520, 0.2, 'triangle', 0.14);
+  broadcastState();
+  scheduleBotIfNeeded();
+}
+
+function shootStriker(vx, vy) {
+  if (G.phase !== 'aiming') return;
+  const st = G.discs.find(d => d.kind === 'striker');
+  if (!st) return;
+  const sp = Math.hypot(vx, vy);
+  if (sp < 2) return;
+  const maxSp = 28;
+  const scale = sp > maxSp ? maxSp / sp : 1;
+  st.vx = vx * scale; st.vy = vy * scale;
+  G.turnPocketed = [];
+  G.aimPreview = { active: false, dx: 0, dy: 0 };
+  G.foulMsg = '';
+  G.phase = 'moving';
+  sfx(300, 0.12, 'triangle', 0.16);
+  broadcastState();
+}
+
+function scheduleBotIfNeeded() {
+  const cur = G.players[G.turnIdx];
+  if (G.phase !== 'aiming' || !cur || !cur.isBot) return;
+  setTimeout(() => {
+    if (G.phase !== 'aiming' || G.players[G.turnIdx]?.id !== cur.id) return;
+    const targets = G.discs.filter(d => !d.pocketed && d.kind !== 'striker');
+    if (targets.length === 0) return;
+    targets.sort((a, b) => GAME_SECURITY_G5.points[b.kind] - GAME_SECURITY_G5.points[a.kind]);
+    const tgt = targets[0];
+    G.strikerPosRatio = 0.25 + Math.random() * 0.5;
+    placeStrikerOnBaseline();
+    const st = G.discs.find(d => d.kind === 'striker');
+    const dx = tgt.x - st.x, dy = tgt.y - st.y;
+    const d = Math.hypot(dx, dy) || 1;
+    const power = 16 + Math.random() * 7;
+    shootStriker((dx / d) * power, (dy / d) * power);
+  }, 850);
+}
+
+function stepCarromPhysics() {
+  if (G.phase !== 'moving') return;
+  const minB = BOARD.margin, maxB = BOARD.size - BOARD.margin;
+  const subSteps = 4;
+
+  for (let s = 0; s < subSteps; s++) {
+    for (const d of G.discs) {
+      if (d.pocketed) continue;
+      d.x += d.vx / subSteps;
+      d.y += d.vy / subSteps;
+
+      if (d.x - d.radius < minB) { d.x = minB + d.radius; d.vx = Math.abs(d.vx) * 0.84; sfx(180, 0.04, 'sine', 0.05); }
+      else if (d.x + d.radius > maxB) { d.x = maxB - d.radius; d.vx = -Math.abs(d.vx) * 0.84; sfx(180, 0.04, 'sine', 0.05); }
+
+      if (d.y - d.radius < minB) { d.y = minB + d.radius; d.vy = Math.abs(d.vy) * 0.84; sfx(180, 0.04, 'sine', 0.05); }
+      else if (d.y + d.radius > maxB) { d.y = maxB - d.radius; d.vy = -Math.abs(d.vy) * 0.84; sfx(180, 0.04, 'sine', 0.05); }
+
+      for (const p of POCKETS) {
+        if (Math.hypot(d.x - p.x, d.y - p.y) < BOARD.pocketRadius) {
+          d.pocketed = true; d.vx = 0; d.vy = 0;
+          G.turnPocketed.push(d.kind);
+          sfx(d.kind === 'striker' ? 140 : 680, 0.16, 'triangle', 0.16);
+          break;
+        }
+      }
+    }
+
+    for (let i = 0; i < G.discs.length; i++) {
+      const a = G.discs[i]; if (a.pocketed) continue;
+      for (let j = i + 1; j < G.discs.length; j++) {
+        const b = G.discs[j]; if (b.pocketed) continue;
+        const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy), minD = a.radius + b.radius;
+        if (dist > 0 && dist < minD) {
+          const nx = dx / dist, ny = dy / dist, ov = minD - dist, tm = a.mass + b.mass;
+          a.x -= nx * ov * (b.mass / tm); a.y -= ny * ov * (b.mass / tm);
+          b.x += nx * ov * (a.mass / tm); b.y += ny * ov * (a.mass / tm);
+          const rvx = b.vx - a.vx, rvy = b.vy - a.vy, vn = rvx * nx + rvy * ny;
+          if (vn < 0) {
+            const jImp = (-(1 + 0.9) * vn) / (1 / a.mass + 1 / b.mass);
+            a.vx -= (jImp / a.mass) * nx; a.vy -= (jImp / a.mass) * ny;
+            b.vx += (jImp / b.mass) * nx; b.vy += (jImp / b.mass) * ny;
+            if (Math.abs(vn) > 1.5) sfx(260 + Math.random() * 80, 0.05, 'triangle', 0.08);
+          }
+        }
+      }
+    }
+  }
+
+  let anyMoving = false;
+  for (const d of G.discs) {
+    if (d.pocketed) continue;
+    d.vx *= BOARD.friction; d.vy *= BOARD.friction;
+    if (Math.hypot(d.vx, d.vy) < 0.08) { d.vx = 0; d.vy = 0; }
+    else anyMoving = true;
+  }
+
+  if (!anyMoving) {
+    const cur = G.players[G.turnIdx];
+    let delta = 0, fouled = false, validCount = 0;
+    for (const k of G.turnPocketed) {
+      delta += GAME_SECURITY_G5.points[k];
+      if (k === 'striker') fouled = true;
+      else validCount++;
+    }
+    if (cur) cur.score = Math.max(0, cur.score + delta);
+    if (fouled) G.foulMsg = `خطأ! سقوط قرص الضرب الأخضر (${GAME_SECURITY_G5.points.striker} نقاط)`;
+
+    const remainingObjectDiscs = G.discs.filter(d => !d.pocketed && d.kind !== 'striker').length;
+    if (remainingObjectDiscs === 0) {
+      G.phase = 'gameOver';
+      sfx(760, 0.4, 'triangle', 0.18);
+      broadcastState();
+      return;
+    }
+
+    if (!(validCount > 0 && !fouled)) {
+      G.turnIdx = (G.turnIdx + 1) % G.players.length;
+    }
+    G.strikerPosRatio = 0.5;
+    placeStrikerOnBaseline();
+    G.phase = 'aiming';
+    broadcastState();
+    scheduleBotIfNeeded();
+  }
+}
+
+function renderBoard(ctx) {
+  const S = BOARD.size, M = BOARD.margin;
+  ctx.clearRect(0, 0, S, S);
+
+  // الإطار الخشبي المربع
+  ctx.fillStyle = '#4a2511';
+  ctx.fillRect(0, 0, S, S);
+  ctx.strokeStyle = '#7c431f';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(12, 12, S - 24, S - 24);
+
+  // سطح اللوحة الخشبي الفاتح
+  ctx.fillStyle = '#e8c48d';
+  ctx.fillRect(M, M, S - M * 2, S - M * 2);
+
+  // الثقوب الأربعة في الزوايا
+  for (const p of POCKETS) {
+    ctx.fillStyle = '#180c07';
+    ctx.beginPath(); ctx.arc(p.x, p.y, BOARD.pocketRadius, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#7c431f'; ctx.lineWidth = 3; ctx.stroke();
+  }
+
+  // الدائرة المركزية ونجمة الكيرم
+  const cx = S / 2, cy = S / 2;
+  ctx.strokeStyle = '#8b2635'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx, cy, 74, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx, cy, 19, 0, Math.PI * 2); ctx.stroke();
+
+  // خطوط التصويب على الزوايا وخطوط البدء الأربعة
+  ctx.strokeStyle = '#5c2b1c'; ctx.lineWidth = 2;
+  const off = M + 62, spanL = M + 88, spanR = S - M - 88;
+  const lines = [
+    [spanL, S - off, spanR, S - off],
+    [S - off, spanL, S - off, spanR],
+    [spanL, off, spanR, off],
+    [off, spanL, off, spanR]
+  ];
+  for (const [x1, y1, x2, y2] of lines) {
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath(); ctx.arc(x1, y1, 7, 0, Math.PI * 2); ctx.arc(x2, y2, 7, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // خط توجيه الضربة من الجوال أو السحب المباشر
+  const st = G.discs.find(d => d.kind === 'striker');
+  if (G.phase === 'aiming' && st) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(16,185,129,0.55)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(st.x, st.y, st.radius + 7, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  }
+  if (G.phase === 'aiming' && st && G.aimPreview.active) {
+    const pullLen = Math.hypot(G.aimPreview.dx, G.aimPreview.dy);
+    if (pullLen > 6) {
+      const nx = -G.aimPreview.dx / pullLen, ny = -G.aimPreview.dy / pullLen;
+      ctx.save();
+      ctx.setLineDash([7, 6]);
+      ctx.strokeStyle = '#10b981'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(st.x, st.y); ctx.lineTo(st.x + nx * Math.min(180, pullLen * 2.2), st.y + ny * Math.min(180, pullLen * 2.2)); ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  // الأقراص
+  const fillMap = {
+    pink: '#ec4899',
+    gold: '#d97706',
+    black: '#1f2937',
+    white: '#f8fafc',
+    striker: '#10b981'
+  };
+  for (const d of G.discs) {
+    if (d.pocketed) continue;
+    ctx.save(); ctx.translate(d.x, d.y);
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath(); ctx.arc(2, 3, d.radius, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = fillMap[d.kind];
+    ctx.beginPath(); ctx.arc(0, 0, d.radius, 0, Math.PI * 2); ctx.fill();
+    ctx.lineWidth = d.kind === 'striker' ? 3 : 2;
+    ctx.strokeStyle = d.kind === 'striker' ? '#ecfdf5' : '#451a03';
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, 0, d.radius * 0.56, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  }
+}
+
+function getTeamTotals() {
+  let t0 = 0, t1 = 0;
+  for (const p of G.players) { if (p.team === 0) t0 += p.score; else t1 += p.score; }
+  return [t0, t1];
+}
+
+function broadcastState() {
+  const cur = G.players[G.turnIdx];
+  const [t0, t1] = getTeamTotals();
+  const base = {
+    t: 'state', phase: G.phase, adminId: G.adminId, teamMode: G.teamMode,
+    activePlayerId: cur?.id || null, activePlayerName: cur?.name || '',
+    strikerPosRatio: G.strikerPosRatio, foulMsg: G.foulMsg,
+    teamScores: [t0, t1],
+    players: G.players.map(p => ({ id: p.id, name: p.name, team: p.team, score: p.score }))
+  };
+  Object.values(embHostConns).forEach(c => c.send({ ...base, meId: c.id }));
+}
+
+function buildTvUI() {
+  document.getElementById('root').innerHTML = `
+    <div class="tv-wrap">
+      <div class="board-box"><canvas id="cv" width="640" height="640"></canvas></div>
+      <div class="side-scores">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0;color:#ffd166">الكيرم 2D</h2><button class="mute-btn" id="muteBtn">${muted?'صامت':'الصوت'}</button></div>
+        <div id="scoreList" style="display:flex;flex-direction:column;gap:8px"></div>
+        <div id="foulBanner" style="color:#fb7185;font-weight:700;font-size:14px"></div>
+        <div style="font-size:12px;opacity:0.75;line-height:1.6">الوردي: 50 · الذهبي: 10 · الأسود: 1 · الأبيض: 1 · الأخضر: -5</div>
+      </div>
+      <div class="tv-overlay" id="overlay"></div>
+    </div>`;
+  document.getElementById('muteBtn').onclick = () => { muted = !muted; document.getElementById('muteBtn').textContent = muted?'صامت':'الصوت'; };
+}
+
+let lastKey = '';
+function updateTvUI() {
+  const sl = document.getElementById('scoreList');
+  const fb = document.getElementById('foulBanner');
+  if (fb) fb.textContent = G.foulMsg || '';
+  if (sl) {
+    const [t0, t1] = getTeamTotals();
+    const rows = G.players.map((p, idx) => `<div class="score-row ${idx===G.turnIdx && G.phase!=='lobby'?'active':''}"><span>${p.name}${G.teamMode?' (ف'+(p.team+1)+')':''}</span><b class="gold">${p.score}</b></div>`).join('');
+    const teamBar = G.teamMode ? `<div class="score-row"><span>مجموع الفريق 1</span><b class="gold">${t0}</b></div><div class="score-row"><span>مجموع الفريق 2</span><b class="gold">${t1}</b></div>` : '';
+    sl.innerHTML = rows + teamBar;
+  }
+  const ov = document.getElementById('overlay');
+  if (!ov) return;
+  if (G.phase === 'aiming' || G.phase === 'moving') { ov.style.display = 'none'; document.body.dataset.state = 'playing'; return; }
+  ov.style.display = 'flex';
+  if (G.phase === 'lobby') {
+    document.body.dataset.state = 'title';
+    ov.innerHTML = `<div class="card">
+      <h1 style="color:#ffd166;margin:0 0 8px">الكيرم 2D</h1>
+      <p style="opacity:0.85">اسحب قرص الضرب الأخضر للتوجيه والإطلاق! أول لاعب يدخل هو الأدمن.</p>
+      <p style="font-size:14px">${G.players.map(p=>p.name+(p.id===G.adminId?' (الأدمن)':'')).join(' · ') || 'بانتظار اللاعبين...'}</p>
+      ${G.quickplay ? '<div style="display:flex;gap:10px;justify-content:center;margin-top:12px"><button class="btn" data-start="true" id="qpStart1">فردي (تشغيل سريع)</button><button class="btn" id="qpStart2" style="background:rgba(255,255,255,0.12);color:#fff">فريقين 2 ضد 2</button></div>' : ''}
+    </div>`;
+    const b1 = document.getElementById('qpStart1'), b2 = document.getElementById('qpStart2');
+    if (b1) b1.onclick = () => { G.teamMode = false; startCarromMatch(); };
+    if (b2) b2.onclick = () => { G.teamMode = true; startCarromMatch(); };
+  } else if (G.phase === 'gameOver') {
+    document.body.dataset.state = 'gameover';
+    let winText = '';
+    if (G.teamMode) {
+      const [t0, t1] = getTeamTotals();
+      winText = t0 >= t1 ? `فاز الفريق 1 (${t0} مقابل ${t1})` : `فاز الفريق 2 (${t1} مقابل ${t0})`;
+    } else {
+      const sorted = [...G.players].sort((a,b) => b.score - a.score);
+      winText = `الفائز: ${sorted[0]?.name || ''} (${sorted[0]?.score || 0} نقطة)`;
+    }
+    ov.innerHTML = `<div class="card">
+      <h1 style="color:#ffd166;margin:0 0 10px">${winText}</h1>
+      ${G.quickplay ? '<button class="btn" id="qpReplay">جولة جديدة</button>' : ''}
+    </div>`;
+    const r = document.getElementById('qpReplay'); if (r) r.onclick = startCarromMatch;
+  }
+}
+
+function tvLoop() {
+  stepCarromPhysics();
+  const cv = document.getElementById('cv');
+  if (cv) renderBoard(cv.getContext('2d'));
+  const k = G.phase + '|' + G.turnIdx + '|' + G.foulMsg + '|' + G.teamMode + '|' + G.players.map(p=>p.id+':'+p.score).join(',');
+  if (k !== lastKey) { lastKey = k; updateTvUI(); }
+  requestAnimationFrame(tvLoop);
+}
+
+function startTv() {
+  if (!verifyG5Integrity()) return;
+  G.discs = createDiscs();
+  buildTvUI();
+  setInterval(broadcastState, 160);
+  requestAnimationFrame(tvLoop);
+}
+
+function onHostMsg(c, data) {
+  if (!data || !data.t) return;
+  if (data.t === 'join') {
+    if (!G.players.find(p => p.id === c.id) && G.players.filter(p=>!p.isBot).length < 4) {
+      const idx = G.players.filter(p => !p.isBot).length;
+      G.players.push({ id: c.id, name: (data.name || 'لاعب').slice(0, 16), team: idx % 2, score: 0, isBot: false });
+      if (!G.adminId) G.adminId = c.id;
+    }
+    broadcastState();
+  } else if (data.t === 'pos' && G.phase === 'aiming' && G.players[G.turnIdx]?.id === c.id) {
+    G.strikerPosRatio = Math.max(0, Math.min(1, Number(data.ratio) || 0.5));
+    placeStrikerOnBaseline();
+  } else if (data.t === 'aim' && G.phase === 'aiming' && G.players[G.turnIdx]?.id === c.id) {
+    G.aimPreview = { active: !!data.active, dx: Number(data.dx) || 0, dy: Number(data.dy) || 0 };
+  } else if (data.t === 'shoot' && G.phase === 'aiming' && G.players[G.turnIdx]?.id === c.id) {
+    shootStriker(Number(data.vx) || 0, Number(data.vy) || 0);
+  } else if (data.t === 'admin' && c.id === G.adminId) {
+    if (data.action === 'teamMode') { G.teamMode = !!data.value; broadcastState(); }
+    else if (data.action === 'start') startCarromMatch();
+  }
+}
+
+function onPlayerLeave(id) {
+  G.players = G.players.filter(p => p.id !== id);
+  if (G.adminId === id) G.adminId = G.players.find(p=>!p.isBot)?.id || null;
+  if (G.turnIdx >= G.players.length) G.turnIdx = 0;
+  broadcastState();
+}
+
+// واجهة الجوال: تحريك القرص على الخط ثم السحب والتوجيه والإطلاق
+function startPhone() {
+  if (!verifyG5Integrity()) return;
+  document.getElementById('root').innerHTML = `
+    <div class="ph-wrap">
+      <div class="ph-head">
+        <div><strong>${EMB?.name || 'لاعب'}</strong><div id="phRole" style="font-size:13px;opacity:0.8">متصل</div></div>
+        <div class="gold" id="phScore" style="font-weight:800">0 نقطة</div>
+      </div>
+      <div id="phBody" style="flex:1;display:flex;flex-direction:column;justify-content:center"></div>
+    </div>`;
+  ctlSend({ t: 'join', name: EMB?.name || 'لاعب' });
+}
+
+let phUiKey = '';
+function onCtlMsg(data) {
+  if (!data || data.t !== 'state') return;
+  const isAdmin = data.meId && data.adminId === data.meId;
+  const myTurn = data.activePlayerId === data.meId && data.phase === 'aiming';
+  const me = data.players.find(p => p.id === data.meId);
+  const role = document.getElementById('phRole'), sc = document.getElementById('phScore'), body = document.getElementById('phBody');
+  if (role) role.textContent = isAdmin ? 'أنت الأدمن' : (myTurn ? 'دورك الآن!' : `دور: ${data.activePlayerName}`);
+  if (sc && me) sc.textContent = `${me.score} نقطة`;
+  if (!body) return;
+
+  if (data.phase === 'lobby' || data.phase === 'gameOver') {
+    const k = 'adm_' + isAdmin + '_' + data.teamMode + '_' + data.phase;
+    if (phUiKey !== k) {
+      phUiKey = k;
+      body.innerHTML = isAdmin
+        ? `<div class="card" style="margin:auto"><h3>إعدادات الأدمن</h3><label style="display:flex;justify-content:space-between;align-items:center;margin:12px 0"><span>النظام:</span><select id="admTeam" style="padding:8px;border-radius:8px;background:#190d26;color:#fff;border:1px solid #ffd166"><option value="0" ${!data.teamMode?'selected':''}>فردي</option><option value="1" ${data.teamMode?'selected':''}>فريقين (2 ضد 2)</option></select></label><button class="btn" id="admStart">${data.phase==='gameOver'?'جولة جديدة':'ابدأ الكيرم'}</button></div>`
+        : `<div class="card" style="margin:auto"><h3>في انتظار الأدمن</h3></div>`;
+      if (isAdmin) {
+        document.getElementById('admTeam').onchange = e => ctlSend({ t: 'admin', action: 'teamMode', value: e.target.value === '1' });
+        document.getElementById('admStart').onclick = () => ctlSend({ t: 'admin', action: 'start' });
+      }
+    }
+    return;
+  }
+
+  if (myTurn) {
+    if (phUiKey !== 'myTurn') {
+      phUiKey = 'myTurn';
+      body.innerHTML = `
+        <div class="slider-wrap">
+          <div style="font-size:14px;margin-bottom:4px">حرّك قرص الضرب على الخط:</div>
+          <input type="range" id="posSlider" min="0" max="1" step="0.02" value="${data.strikerPosRatio}"/>
+        </div>
+        <div class="aim-pad" id="aimPad"><div class="aim-striker" id="aimBall"></div></div>
+        <p style="text-align:center;font-size:13px;opacity:0.8;margin:4px 0">اسحب للخلف ووجّه ثم أفلت للإطلاق</p>`;
+      document.getElementById('posSlider').oninput = e => ctlSend({ t: 'pos', ratio: Number(e.target.value) });
+      wireAimPad('aimPad', 'aimBall', (active, dx, dy) => ctlSend({ t: 'aim', active, dx, dy }), (vx, vy) => ctlSend({ t: 'shoot', vx, vy }));
+    }
+  } else {
+    const wk = 'wait_' + data.activePlayerId;
+    if (phUiKey !== wk) {
+      phUiKey = wk;
+      body.innerHTML = `<div class="card" style="margin:auto"><h3>${data.phase==='moving'?'الأقراص تتحرك...':'دور: ' + data.activePlayerName}</h3></div>`;
+    }
+  }
+}
+
+function wireAimPad(padId, ballId, onAim, onShoot) {
+  const pad = document.getElementById(padId), ball = document.getElementById(ballId);
+  if (!pad || !ball) return;
+  let dragging = false, lastDx = 0, lastDy = 0;
+  const maxR = 90;
+  function upd(cx, cy) {
+    const r = pad.getBoundingClientRect();
+    let dx = cx - (r.left + r.width/2), dy = cy - (r.top + r.height/2);
+    const d = Math.hypot(dx, dy);
+    if (d > maxR) { dx = (dx/d)*maxR; dy = (dy/d)*maxR; }
+    lastDx = dx; lastDy = dy;
+    ball.style.transform = `translate(${dx}px, ${dy}px)`;
+    onAim(true, dx, dy);
+  }
+  pad.addEventListener('pointerdown', e => { dragging = true; pad.setPointerCapture(e.pointerId); upd(e.clientX, e.clientY); });
+  pad.addEventListener('pointermove', e => { if (dragging) upd(e.clientX, e.clientY); });
+  pad.addEventListener('pointerup', () => {
+    if (!dragging) return;
+    dragging = false;
+    ball.style.transform = 'translate(0,0)';
+    onAim(false, 0, 0);
+    if (Math.hypot(lastDx, lastDy) > 10) onShoot(-lastDx * 0.32, -lastDy * 0.32);
+    lastDx = 0; lastDy = 0;
+  });
+}
+
+// التشغيل السريع للتجربة المباشرة بالماوس أو اللمس مباشرة على اللوحة
+function startQuickPlay() {
+  if (!verifyG5Integrity()) return;
+  embReveal();
+  G.quickplay = true;
+  G.adminId = 'qp_1';
+  G.players = [{ id: 'qp_1', name: 'أنت', team: 0, score: 0, isBot: false }];
+  buildTvUI();
+  startCarromMatch();
+
+  const cv = document.getElementById('cv');
+  let dragging = false;
+  function boardCoords(e) {
+    const r = cv.getBoundingClientRect();
+    return {
+      x: ((e.clientX - r.left) / r.width) * BOARD.size,
+      y: ((e.clientY - r.top) / r.height) * BOARD.size
+    };
+  }
+  cv.addEventListener('pointerdown', e => {
+    if (G.phase !== 'aiming' || G.players[G.turnIdx]?.id !== 'qp_1') return;
+    const pt = boardCoords(e);
+    const st = G.discs.find(d => d.kind === 'striker');
+    if (!st) return;
+    if (Math.hypot(pt.x - st.x, pt.y - st.y) < 75) {
+      dragging = true;
+      cv.setPointerCapture(e.pointerId);
+      G.aimPreview = { active: true, dx: 0, dy: 0 };
+    } else if (pt.y > BOARD.size - BOARD.margin - 110) {
+      const minT = BOARD.margin + 88, maxT = BOARD.size - BOARD.margin - 88;
+      G.strikerPosRatio = Math.max(0, Math.min(1, (pt.x - minT) / (maxT - minT)));
+      placeStrikerOnBaseline();
+    }
+  });
+  window.addEventListener('keydown', e => {
+    if (G.phase !== 'aiming' || G.players[G.turnIdx]?.id !== 'qp_1') return;
+    if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
+      G.strikerPosRatio = Math.max(0, G.strikerPosRatio - 0.05);
+      placeStrikerOnBaseline();
+    } else if (e.code === 'ArrowRight' || e.code === 'KeyD') {
+      G.strikerPosRatio = Math.min(1, G.strikerPosRatio + 0.05);
+      placeStrikerOnBaseline();
+    }
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const pt = boardCoords(e);
+    const st = G.discs.find(d => d.kind === 'striker');
+    G.aimPreview = { active: true, dx: pt.x - st.x, dy: pt.y - st.y };
+  });
+  cv.addEventListener('pointerup', () => {
+    if (!dragging) return;
+    dragging = false;
+    const dx = G.aimPreview.dx, dy = G.aimPreview.dy;
+    G.aimPreview.active = false;
+    if (Math.hypot(dx, dy) > 10) shootStriker(-dx * 0.28, -dy * 0.28);
+  });
+
+  requestAnimationFrame(tvLoop);
+}
+
+(function() {
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('quickplay') || qs.has('autostart')) startQuickPlay();
+  else setTimeout(() => {
+    if (!EMB) {
+      embReveal();
+      document.getElementById('root').innerHTML = `<div class="card"><h1 style="color:#ffd166;margin:0 0 10px">الكيرم 2D</h1><p style="opacity:0.85;margin:0 0 18px">اسحب قرص الضرب الأخضر وأدخل الأقراص في الزوايا!</p><button class="btn" data-start="true" onclick="startQuickPlay()">تشغيل سريع</button></div>`;
+    }
+  }, 350);
+})();
+</script>
+</body>
+</html>

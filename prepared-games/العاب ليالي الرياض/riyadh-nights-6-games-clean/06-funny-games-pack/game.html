@@ -1,0 +1,1656 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>الألعاب المضحكة</title>
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('emb-pending')}catch(e){}</script>
+<style>html.emb-pending body{visibility:hidden}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800;900&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --obsidian: #0a0810;
+    --velvet: #120e1c;
+    --panel: #191327;
+    --panel-elev: #221936;
+    --gold: #d9b468;
+    --gold-bright: #f4d898;
+    --gold-line: rgba(217, 180, 104, 0.28);
+    --ruby: #9b1c3c;
+    --ruby-soft: rgba(155, 28, 60, 0.22);
+    --sapphire: #1a3b6e;
+    --emerald: #135d49;
+    --ivory: #f7f2e7;
+    --muted: #b7adc7;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    overflow: hidden; background: var(--obsidian); color: var(--ivory);
+    font-family: 'Cairo', 'Tajawal', system-ui, -apple-system, sans-serif;
+    user-select: none;
+  }
+  body {
+    background-image:
+      radial-gradient(ellipse 80% 55% at 50% 0%, rgba(155, 28, 60, 0.14), transparent 65%),
+      radial-gradient(ellipse 65% 45% at 50% 100%, rgba(217, 180, 104, 0.08), transparent 60%),
+      linear-gradient(180deg, #0b0812 0%, #120e1d 100%);
+  }
+  #root {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px; position: relative; overflow: hidden;
+  }
+
+  /* Luxury Shell Frames */
+  .tv-shell {
+    width: 100%; height: 100%; max-width: 1380px;
+    display: flex; flex-direction: column; gap: 14px;
+    position: relative; z-index: 2;
+  }
+  .tv-topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 12px 20px; border-radius: 16px;
+    background: linear-gradient(180deg, rgba(31,24,49,0.92), rgba(20,15,32,0.96));
+    border: 1px solid var(--gold-line);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    flex-shrink: 0;
+  }
+  .brand-crest {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .jewel-emblem {
+    width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+    background: linear-gradient(135deg, #c2244c 0%, #6d0f28 100%);
+    border: 1.5px solid var(--gold);
+    box-shadow: 0 0 18px rgba(155, 28, 60, 0.45), inset 0 1px 4px rgba(255,255,255,0.28);
+    display: flex; align-items: center; justify-content: center;
+    transform: rotate(45deg);
+  }
+  .jewel-emblem > span { transform: rotate(-45deg); font-size: 15px; font-weight: 900; color: var(--gold-bright); }
+  .brand-title { font-size: 20px; font-weight: 900; color: var(--gold-bright); letter-spacing: -0.01em; }
+  .brand-sub { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+  .hud-stats {
+    display: flex; align-items: center; gap: 18px;
+    font-size: 14px; font-weight: 700; color: var(--ivory);
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-dial {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 72px; padding: 6px 14px; border-radius: 12px;
+    background: rgba(10,8,16,0.75); border: 1px solid var(--gold-line);
+    color: var(--gold-bright); font-size: 18px; font-weight: 900;
+  }
+  .timer-dial.urgent {
+    border-color: rgba(225, 62, 95, 0.7); color: #ff8fa3;
+    background: rgba(155, 28, 60, 0.28);
+  }
+
+  .tv-stage {
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 18px 22px; border-radius: 20px;
+    background: linear-gradient(180deg, rgba(24,18,38,0.88), rgba(15,11,24,0.94));
+    border: 1px solid rgba(217, 180, 104, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 20px 55px rgba(0,0,0,0.55);
+    overflow-y: auto; position: relative;
+  }
+
+  .card {
+    background: linear-gradient(180deg, rgba(31,24,49,0.95), rgba(20,15,32,0.98));
+    border: 1px solid var(--gold-line);
+    border-radius: 20px; padding: 24px 28px;
+    max-width: 560px; width: 100%; text-align: center;
+    box-shadow: 0 22px 55px rgba(0,0,0,0.55);
+  }
+
+  /* Buttons */
+  .btn {
+    border: 1px solid rgba(255,230,170,0.35); cursor: pointer; font-family: inherit; font-weight: 800;
+    border-radius: 12px; padding: 11px 22px; font-size: 15px;
+    background: linear-gradient(135deg, #e2be72 0%, #b88a38 100%);
+    color: #161020; transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), filter 160ms;
+    white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.48; cursor: not-allowed; }
+  .btn-ruby {
+    background: linear-gradient(135deg, #b82248 0%, #7c112d 100%);
+    color: var(--ivory); border-color: rgba(244, 216, 152, 0.32);
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.05); color: var(--ivory);
+    border: 1px solid rgba(217, 180, 104, 0.24);
+  }
+  .btn-ghost:hover:not(:disabled) { background: rgba(217, 180, 104, 0.14); }
+  .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 10px; }
+
+  /* Room Code Hero */
+  .room-code {
+    font-size: clamp(32px, 5vw, 52px); font-weight: 900; letter-spacing: 6px;
+    color: var(--gold-bright); font-variant-numeric: tabular-nums;
+    text-shadow: 0 2px 18px rgba(217, 180, 104, 0.25);
+  }
+
+  /* Game Mode Grid */
+  .games-grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px; width: 100%; max-width: 1120px; margin: 14px 0;
+  }
+  @media (max-width: 860px) { .games-grid { grid-template-columns: 1fr; } }
+  .mode-card {
+    background: linear-gradient(180deg, rgba(35,27,54,0.92), rgba(22,16,35,0.96));
+    border: 1px solid rgba(217, 180, 104, 0.24);
+    border-radius: 18px; padding: 20px; text-align: right;
+    cursor: pointer; transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+  }
+  .mode-card:hover { transform: translateY(-2px); border-color: var(--gold); }
+  .mode-card.active {
+    border: 1.5px solid var(--gold-bright);
+    background: linear-gradient(180deg, rgba(55, 32, 62, 0.96), rgba(26, 17, 39, 0.98));
+    box-shadow: 0 12px 32px rgba(155, 28, 60, 0.28);
+  }
+  .mode-kicker { font-size: 12px; font-weight: 700; color: var(--gold); }
+  .mode-name { font-size: 21px; font-weight: 900; color: var(--ivory); margin: 4px 0; }
+  .mode-desc { font-size: 14px; color: var(--muted); line-height: 1.55; margin: 0; }
+
+  /* Question / Prompt Monument */
+  .question-monument {
+    width: 100%; max-width: 980px; text-align: center;
+    padding: 28px 32px; border-radius: 22px;
+    background: linear-gradient(180deg, rgba(34, 25, 53, 0.95), rgba(20, 15, 33, 0.98));
+    border: 1px solid var(--gold-line);
+    box-shadow: 0 18px 46px rgba(0,0,0,0.45);
+  }
+  .monument-label {
+    font-size: 13px; font-weight: 800; color: var(--gold);
+    margin-bottom: 10px; letter-spacing: 0.02em;
+  }
+  .monument-text {
+    font-size: clamp(24px, 3.2vw, 38px); font-weight: 900;
+    line-height: 1.45; color: var(--ivory); margin: 0;
+    text-wrap: balance;
+  }
+  .monument-twist {
+    border-color: rgba(217, 180, 104, 0.65);
+    background: linear-gradient(180deg, rgba(78, 20, 40, 0.92), rgba(24, 15, 35, 0.98));
+  }
+  .speaker-line {
+    font-size: 15px; font-weight: 800; color: var(--gold-bright);
+    margin-bottom: 8px;
+  }
+
+  /* Answer Cards Reveal Grid */
+  .answers-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 14px; width: 100%; max-width: 1120px; margin-top: 16px;
+  }
+  .ans-card {
+    border-radius: 16px; padding: 16px 18px;
+    background: linear-gradient(180deg, rgba(35, 27, 56, 0.96), rgba(22, 16, 36, 0.98));
+    border: 1px solid var(--gold-line);
+    text-align: right; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+    animation: cardReveal 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+  }
+  .ans-card.winner {
+    border: 1.5px solid var(--gold-bright);
+    background: linear-gradient(180deg, rgba(75, 26, 48, 0.95), rgba(30, 19, 44, 0.98));
+  }
+  @keyframes cardReveal {
+    from { opacity: 0; transform: translateY(10px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .ans-author { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 800; color: var(--gold); }
+  .ans-body { font-size: 19px; font-weight: 800; color: var(--ivory); line-height: 1.5; word-break: break-word; }
+  .ans-votes { font-size: 13px; font-weight: 700; color: var(--gold-bright); border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px; }
+
+  /* Dor Makhraj Head-to-Head Duels */
+  .duel-arena {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px;
+    width: 100%; max-width: 1060px; align-items: stretch; margin-top: 16px;
+  }
+  @media (max-width: 820px) { .duel-arena { grid-template-columns: 1fr; } }
+  .duel-card {
+    border-radius: 20px; padding: 24px;
+    background: linear-gradient(180deg, rgba(35, 27, 56, 0.96), rgba(21, 16, 35, 0.98));
+    border: 1.5px solid var(--gold-line);
+    display: flex; flex-direction: column; justify-content: space-between; gap: 14px;
+    text-align: center; box-shadow: 0 14px 36px rgba(0,0,0,0.42);
+  }
+  .duel-card.revealed-win {
+    border-color: var(--gold-bright);
+    background: linear-gradient(180deg, rgba(84, 24, 48, 0.96), rgba(26, 17, 39, 0.98));
+  }
+  .duel-slot-tag { font-size: 13px; font-weight: 800; color: var(--gold); }
+  .duel-answer-txt { font-size: clamp(20px, 2.4vw, 27px); font-weight: 900; color: var(--ivory); line-height: 1.45; }
+  .duel-vs {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 900; color: var(--gold-bright); padding: 6px;
+  }
+
+  /* Players & Leaderboard */
+  .players-roster {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 960px;
+  }
+  .player-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: 12px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(217, 180, 104, 0.22);
+    font-size: 14px; font-weight: 700;
+  }
+  .player-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .standings-list {
+    width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 8px; margin-top: 12px;
+  }
+  .standing-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px; border-radius: 14px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(217, 180, 104, 0.18);
+    font-size: 16px; font-weight: 800;
+  }
+  .standing-row.first {
+    border-color: var(--gold-bright);
+    background: linear-gradient(90deg, rgba(155, 28, 60, 0.28), rgba(217, 180, 104, 0.16));
+  }
+
+  /* Admin Bar & Settings */
+  .settings-strip {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px;
+    padding: 12px 16px; border-radius: 14px; width: 100%; max-width: 960px;
+    background: rgba(10, 8, 16, 0.55); border: 1px solid rgba(217, 180, 104, 0.18);
+  }
+  .seg-group { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .seg-label { font-size: 13px; color: var(--muted); font-weight: 700; margin-left: 4px; }
+  .seg-btn {
+    border: 1px solid rgba(217, 180, 104, 0.22); background: rgba(255,255,255,0.04);
+    color: var(--ivory); padding: 6px 12px; border-radius: 9px; font-family: inherit;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .seg-btn.on { background: var(--gold); color: #161020; border-color: var(--gold-bright); }
+
+  /* QuickPlay Dock & Phone UI */
+  .qp-dock {
+    width: 100%; max-width: 1380px;
+    padding: 10px 16px; border-radius: 14px;
+    background: rgba(16, 12, 26, 0.96); border: 1px solid var(--gold-line);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .txt-input {
+    flex: 1; min-width: 220px; padding: 11px 14px; border-radius: 11px;
+    border: 1px solid var(--gold-line); background: #0c0914; color: var(--ivory);
+    font-family: inherit; font-size: 15px; font-weight: 700; outline: none;
+  }
+  .txt-input:focus { border-color: var(--gold-bright); }
+
+  /* Phone View */
+  .ph-wrap {
+    width: 100%; height: 100%; max-width: 480px;
+    display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding: 4px 0;
+  }
+  .ph-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-radius: 14px;
+    background: var(--panel); border: 1px solid var(--gold-line);
+    flex-shrink: 0;
+  }
+  .ph-card {
+    background: linear-gradient(180deg, rgba(31,24,49,0.95), rgba(19,14,31,0.98));
+    border: 1px solid var(--gold-line); border-radius: 18px;
+    padding: 20px; display: flex; flex-direction: column; gap: 14px; text-align: center;
+  }
+  .vote-btn {
+    width: 100%; padding: 14px 16px; border-radius: 13px; text-align: right;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--gold-line);
+    color: var(--ivory); font-family: inherit; font-size: 15px; font-weight: 800;
+    cursor: pointer; transition: border-color 140ms, background 140ms;
+  }
+  .vote-btn:hover { background: rgba(217, 180, 104, 0.16); border-color: var(--gold-bright); }
+  .fake-box {
+    padding: 18px; border-radius: 16px;
+    background: rgba(155, 28, 60, 0.18); border: 1px dashed rgba(244, 216, 152, 0.45);
+  }
+</style>
+</head>
+<body>
+<div id="root">
+  <div id="role" class="card"><p>هذي اللعبة جزء من لوبي «ليالي الرياض» — افتحها من هناك حتى تتوصل تلقائيًا.</p></div>
+</div>
+<script>
+const __q = [];
+function _defer(name) {
+  return function(...args) {
+    if (window.__FUNNY_PACK && window.__FUNNY_PACK[name]) return window.__FUNNY_PACK[name](...args);
+    __q.push([name, args]);
+  };
+}
+const startTv = _defer('startTv');
+const startPhone = _defer('startPhone');
+const onHostMsg = _defer('onHostMsg');
+const onPlayerLeave = _defer('onPlayerLeave');
+const onCtlMsg = _defer('onCtlMsg');
+const startQuickPlay = _defer('startQuickPlay');
+
+/* ===================== EMB BRIDGE (لا تغيّر هذا الجزء) ===================== */
+let EMB=null; const embHostConns={};
+window.addEventListener('message', e=>{
+  const m=e&&e.data; if(!m||!m.__emb) return;
+  if(m.init){ EMB={role:m.role,code:m.code,name:m.name}; return embStart(); }
+  if(!EMB) return;
+  if(EMB.role==='tv'){
+    if(m.event==='data'){
+      let c=embHostConns[m.id];
+      if(!c)c=embHostConns[m.id]={id:m.id,send:obj=>{try{parent.postMessage({__emb:1,to:m.id,data:obj},'*')}catch(e){}}};
+      try{onHostMsg(c,m.data)}catch(e){}
+    } else if(m.event==='disconnect'){
+      try{onPlayerLeave(m.id)}catch(e){}
+      delete embHostConns[m.id];
+    }
+  } else if(EMB.role==='ph'){
+    if(m.data!==undefined){try{onCtlMsg(m.data)}catch(e){}}
+  }
+});
+function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
+function embStart(){
+  embReveal();
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
+}
+setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
+function ctlSend(obj){ try{parent.postMessage({__emb:1,data:obj},'*')}catch(e){} }
+
+/* ===================== 1. حماية اللعبة المستقلة ===================== */
+const GAME_SECURITY_FUNNY = {
+  gameId: '06-funny-games-pack',
+  ownerKeyId: 'OWNER-KEY-G6-FUNNY-7720',
+  allowedHosts: ['', 'localhost', '127.0.0.1']
+};
+function verifyFunnyIntegrity() {
+  try {
+    if (window.location.protocol === 'file:' || window.location.protocol === 'data:' || window.location.protocol === 'blob:') return true;
+    const host = (window.location.hostname || '').toLowerCase();
+    return GAME_SECURITY_FUNNY.allowedHosts.includes(host) || host.endsWith('.run.app') || host.endsWith('.web.app') || host.endsWith('.firebaseapp.com') || window.self !== window.top;
+  } catch { return true; }
+}
+
+/* ===================== 2. بنك الأسئلة (>1320 عادي + >1320 معكوس متطابق النطاق) ===================== */
+const DOMAIN_BLUEPRINTS = [
+  {
+    domain: 'COLOR',
+    normalStems: ['وش أكثر لون تفضله في {S}؟','لو بتختار لون جديد لـ {S}، وش تختار؟','وش اللون المثالي لـ {S} من وجهة نظرك؟','أي لون يلفت انتباهك أول ما تشتري {S}؟','وش اللون اللي تحسه يعبر عن ذوقك في {S}؟','في العادة، وش لون {S} المفضل عندك؟'],
+    normalSubjects: ['ملابسك اليومية','سيارتك','ديكور الصالة','جوالك','كوب القهوة','ساعتك اليدوية','شنطة السفر','دفتر ملاحظاتك','غرفة نومك','الحذاء الرياضي'],
+    invertedStems: ['وش لون وجهك أول ما تتذكر إنك {C}؟','وش اللون اللي يطلع لك في الثلاجة إذا {C}؟','وش لون البطاقة اللي تستاهلها إذا {C}؟','لو مشاعرك عند {C} لها لون، وش بيكون؟','وش أكثر لون تكرهه لما {C}؟','وش لون الإنذار اللي يولع براسك وقت ما {C}؟'],
+    invertedContexts: ['نسيت جوالك مفتوح بالصالة','أكلت آخر قطعة كيك مخباة','جتك الفاتورة بمبلغ دبل','دخلت مجلس غلط وما عرفت أحد','نمت عن دوامك ساعتين','قفطوك وأنت تسوي نفسك مشغول','قابلت واحد وسلمت عليه ونسيت اسمه','اكتشفت إن المايك مفتوح بالاجتماع','فتحت قروب العائلة بعد غيبة أسبوع','لبست شرابين مختلفين بالعيد']
+  },
+  {
+    domain: 'FOOD_DISH',
+    normalStems: ['وش أكثر أكلة تحب تطلبها {S}؟','لو عزمت شخص غالي {S}، وش تقدم له؟','وش وجبتك الأساسية اللي ما تمل منها {S}؟','وش أول طبق يخطر ببالك لما تجوع {S}؟','أي أكلة تعتبرها خيارك المضمون {S}؟','وش الطبق اللي يعطي جو حلو {S}؟'],
+    normalSubjects: ['في فطور الجمعة','في ليالي الشتاء','وقت السفر','بعد يوم عمل طويل','مع العائلة بالويكند','في طلعة البر','عند مشاهدة المباراة','أول يوم بعد الراتب','في العشاء الخفيف','وقت العزيمة الكبيرة'],
+    invertedStems: ['وش الشيء اللي لقيته طايح تحت مقعد السيارة لما {C}؟','وش الشيء اللي ممكن تتهاوش مع خويك عشانه وأنت {C}؟','وش أغرب شيء نسيته في جيب ثوبك يومين بعد ما {C}؟','وش الشيء اللي لو قالوا لك تدهن سيارتك فيه وقت ما {C} بتوافق؟','وش الشيء اللي تبكي إذا تذكرت إنك أكلته وأنت {C}؟','وش الحاجة اللي تخبيها بالدولاب إذا {C}؟'],
+    invertedContexts: ['تنظف غرفتك من سنة','سهران الساعة ٣ الفجر','راجع من عزيمة ميت جوع','تبي تقهر أخوك الصغير','معصب وما نمت زين','مستعجل للدوام','ما معك إلا خمس ريال','البيت كله نايم','تسمع صوت المطبخ يفتح','متحمس وتصور سناب']
+  },
+  {
+    domain: 'DRINK',
+    normalStems: ['وش مشروبك المفضل اللي تطلبه {S}؟','وش المشروب اللي يروق مزاجك {S}؟','لو جلست بمجلس هادي {S}، وش تشرب؟','وش أول مشروب تطلبه من المقهى {S}؟','أي مشروب تحسه ضروري {S}؟','وش أكثر مشروب متعود عليه {S}؟'],
+    normalSubjects: ['أول الصباح','بعد وجبة الغداء','في أمسيات الشتاء','وقت المذاكرة والتركيز','في طريق السفر','مع الأصدقاء بالاستراحة','في حر الصيف','بعد التمرين الرياضي','في جلسة المغرب','وقت الاسترخاء بالبيت'],
+    invertedStems: ['وش السائل اللي تشك إنه يمشي في عروقك بدال الدم لما {C}؟','وش الشيء اللي كبيته بالغلط على أوراق الشغل وأنت {C}؟','وش المشروب اللي سقيت فيه نبتة الصالة وأنت سرحان بعد ما {C}؟','وش الشيء اللي حطيته برديتر السيارة بالغلط يوم {C}؟','وش الشيء اللي تشربه عشان تنسى إنك {C}؟','وش السائل اللي بترميه من الشباك إذا {C}؟'],
+    invertedContexts: ['مواصل يومين بدون نوم','دخلت تتحمم ونسيت المنشفة','ضاعت مفاتيحك','خسرت تحدي مع ربعك','تذكرت امتحان بكرة','تبي تصحصح قبل الاجتماع','مرتبك قدام الضيوف','تحاول تركز بالخط السريع','نمت على المكتب','مفلس نهاية الشهر']
+  },
+  {
+    domain: 'PERSON_KIN',
+    normalStems: ['مين أكثر شخص تثق برأيه {S}؟','مين أول شخص تتصل عليه {S}؟','مين الشخص اللي تستشيره {S}؟','مين أفضل رفيق تختاره {S}؟','مين الشخص اللي ترتاح لوجوده {S}؟','مين قدوتك أو مرجعك الأساسي {S}؟'],
+    normalSubjects: ['في قراراتك المهمة','عند شراء سيارة جديدة','في التخطيط للسفر','أيام الأعياد والمناسبات','إذا احتجت نصيحة صادقة','في ترتيب الرحلات','عند اختيار مشروع جديد','في مشاركة لحظات الفرح','عند تنظيم عزيمة كبيرة','في النقاشات الهادئة'],
+    invertedStems: ['مين أول شخص تشك إنه سارق شاحنك وينكر إذا {C}؟','مين الشخص اللي إذا دق عليك ٣ الفجر تعرف إن فيه {C}؟','مين أكثر شخص يهرب من الطاولة أول ما {C}؟','مين اللي يتفلسف بقروب العائلة كأنه خبير حتى لو {C}؟','مين الشخص اللي مستحيل تعطيه سر إذا {C}؟','مين اللي بيفضحك قدام المعازيم أول ما {C}؟'],
+    invertedContexts: ['نزل شاحن أصلي جديد','طلعت مصيبة في السيارة','جا الجرسون بالفاتورة','سأل واحد عن الطبخ','الكل ساكت ومجتمعين','صارت زحمة بالمواقف','ضاع ريموت التلفزيون','نزل المطر فجأة','انقطع الواي فاي بالبيت','توزعت الحلاوة']
+  },
+  {
+    domain: 'ANIMAL',
+    normalStems: ['وش أكثر حيوان تحب تشوفه {S}؟','وش الحيوان اللي تحسه يرمز للقوة {S}؟','لو بتربي حيوان أليف {S}، وش تختار؟','وش الحيوان اللي يثير إعجابك {S}؟','وش المخلوق اللي تحب تتابع أفلامه الوثائقية {S}؟','أي حيوان تعتبره الأجمل مظهرًا {S}؟'],
+    normalSubjects: ['في رحلات البر','في حديقة الحيوانات','في الطبيعة الواسعة','عند المزارع الهادئة','في البحار والمحيطات','في الصحراء العربية','في الغابات الخضراء','كشخصية مرسومة','في التراث العربي','في البيت والحديقة'],
+    invertedStems: ['وش المخلوق اللي يشبه شكلك بالمراية وأنت {C}؟','وش الحيوان اللي يطلع نفس صوتك إذا {C}؟','وش المخلوق اللي تحسه أذكى منك لما {C}؟','لو تحولت لكائن أول ما {C}، وش بتكون؟','وش الحيوان اللي يطالعك بنفس نظرة أبوك لما {C}؟','وش الكائن اللي يمثل مشيتك وأنت {C}؟'],
+    invertedContexts: ['توك صاحي قبل القهوة','متأخر وتجري بالملحق','جوعان في منتصف الليل','تغني بالحمام وصوتك واصل للشارع','تدور نظارتك وهي على راسك','خايف من فاتورة الكهرباء','طالع من المسبح بشعرك المبلول','نايم بالسيارة والجو حار','مفجوع من صوت المنبه','تحاول ترقص بعرس']
+  },
+  {
+    domain: 'PLACE',
+    normalStems: ['وش أحلى مكان تحب تروح له {S}؟','لو حصلت إجازة طويلة {S}، وين تسافر؟','وش أفضل مكان تحس فيه بالراحة {S}؟','وين تفضل تقضي وقتك {S}؟','وش الوجهة اللي تنصح الكل يزورها {S}؟','وش أكثر مكان يرتبط بذكريات جميلة {S}؟'],
+    normalSubjects: ['في إجازة الشتاء','في عطلة الصيف','وقت الغروب الهادئ','في رحلة عائلية','للاستجمام والهدوء','مع الأصدقاء المقربين','في أيام العيد','للقراءة والتأمل','في نهاية الأسبوع','بأول يوم إجازة'],
+    invertedStems: ['وين تتخبى أول ما تسمع أهلك ينادونك عشان {C}؟','وش المكان اللي طردوك منه بأدب لأنك {C}؟','وين ضعت ساعتين وأنت مسوي فيها حافظ الطريق و{C}؟','وش المكان اللي لو حطوا كاميرتك فيه بتتفضح إنك {C}؟','وين رحت تهرب يوم {C}؟','وش المكان اللي تحلف ما تدخله مرة ثانية بعد ما {C}؟'],
+    invertedContexts: ['تغسل الصحون وتنظف المجلس','تصور سيلفي بنص الزحمة','ما عرفت تشغل الخرايط','تاكل بصوت عالي','تتهرب من دفع الفاتورة','طحت قدام الناس كلهم','سحبت على العزيمة','دخلت بدون ما تعزم نفسك','نسيت محفظتك بالبيت','خربت المكيف عندهم']
+  },
+  {
+    domain: 'ITEM_OBJECT',
+    normalStems: ['وش أهم غرض تحرص عليه {S}؟','وش الغرض اللي ما تقدر تستغني عنه {S}؟','وش أول شيء تجهزه بشنطتك {S}؟','وش الأداة المفيدة اللي دايم معك {S}؟','وش الغرض العملي اللي تنصح به {S}؟','وش أكثر قطعة تستخدمها يوميًا {S}؟'],
+    normalSubjects: ['في السفر بالطيارة','في مكتب العمل','في درج السيارة','في حقيبة النادي','في رحلة التخييم','على طاولة غرفتك','أثناء المشي الطويل','في الجامعة أو المدرسة','في جيبك اليومي','قبل النوم كل ليلة'],
+    invertedStems: ['وش أغرب شيء بنلقاه مرمي تحت سريرك لو فتشنا وأنت {C}؟','وش السلاح اللي بتمسكه وتدافع فيه عن نفسك لو {C}؟','وش الشيء اللي مستحيل تعترف إنك أخذته من الفندق يوم {C}؟','وش الغرض اللي طاح منك بنص العزيمة وأنت {C}؟','وش الشيء اللي لو ضاع منك بتنهار كأنك {C}؟','وش الحاجة اللي ناوي تهديها لعدوك عشان {C}؟'],
+    invertedContexts: ['طالع مستعجل','سمعت صوت بالمطبخ نص الليل','خلصت إجازتك','تسلم على الضيوف','مضيع مستقبلك','ترفع ضغطه','ماكل مقلب محترم','تتظاهر إنك أنيق','مستلف أغراض غيرك','تنظف مكتبك من عامين']
+  },
+  {
+    domain: 'NUMBER_SMALL',
+    normalStems: ['كم تقريبًا العدد المناسب لـ {S}؟','كم مرة في الأسبوع تفضل {S}؟','بشكل طبيعي، كم عدد {S}؟','كم العدد المثالي بالنسبة لك في {S}؟','عادةً، كم رقم {S} عندك؟','كم الحد المعقول لـ {S} برأيك؟'],
+    normalSubjects: ['ساعات النوم المريح','أكواب الماء باليوم','الأصدقاء في رحلة برية','فناجيل القهوة بالجلسة','مرات ممارسة الرياضة','أيام السفر السريع','صفحات القراءة اليومية','ساعات الجلوس مع العائلة','الحصص الغذائية باليوم','دقائق المشي الصباحي'],
+    invertedStems: ['كم مرة في الشهر تسوي نفسك نايم عشان ما {C}؟','كم كذبة سريعة تطلعها بالأسبوع لما {C}؟','كم مرة طردوك من قروب الواتساب ورجعت بعد ما {C}؟','كم ساعة تضيعها قدام الثلاجة المفتوحة وأنت {C}؟','كم مرة سلمت على واحد بحرارة وأنت ناسي اسمه يوم {C}؟','كم مرة صكيت الباب على إصبعك وقعدت تتألم وأنت {C}؟'],
+    invertedContexts: ['تودي أهلك السوق','تتهرب من دفع القطة','أرسلت مقطع غلط','تدور أكل بنص الليل','تقابل الناس بالعيد','مستعجل للطلعة','تحلف كذب بمقلب','تحاول تشغل المكيف','تدور شاحنك','تناظر الجوال بالشارع']
+  },
+  {
+    domain: 'MONEY_AMOUNT',
+    normalStems: ['كم الميزانية المعقولة لـ {S}؟','تقريبًا كم تخصص عادةً لـ {S}؟','كم السعر العادل في نظرك لـ {S}؟','لو بتدفع قيمة {S}، كم المبلغ المناسب؟','كم يكلفك تقريبًا {S} الجيد؟','وش المبلغ المنطقي اللي تحطه في {S}؟'],
+    normalSubjects: ['عشاء فاخر لشخصين','هدية نجاح لصديق','مصروف القهوة الأسبوعي','تذكرة سفر داخلية','عطر يومي أصلي','حذاء رياضي مريح','تنظيف وتلميع السيارة','شراء كتابين جديدين','نزهة عائلية بالويكند','اشتراك نادي شهري'],
+    invertedStems: ['كم تدفع الحين عشان تمسح رسالة {C}؟','كم أقل مبلغ تقبل فيه تمشي بالمجمع {C}؟','كم تتوقع الفاتورة اللي بتجيك إذا {C}؟','كم رشوة أخوك الصغير عشان ما يعلم أهلك إنك {C}؟','كم تدفع عشان ترجع الزمن ٥ دقايق قبل ما {C}؟','كم تخسر إذا راهنت على إنك {C}؟'],
+    invertedContexts: ['رسلتها لقروب الدوام بالغلط','بنعالين مختلفين','عزمت ربعك وهم جيعانين','كسرت تحفة أمك المفضلة','طقيت جوالك بالرخام','أكلت مقلب قدام الكل','دخلت محل فخم بالغلط','شربت قهوة ونسيت المحفظة','طاحت عليك الشماغ','غلطت باسم صديقك']
+  },
+  {
+    domain: 'DURATION',
+    normalStems: ['كم المدة المثالية لـ {S}؟','عادةً كم تستغرق في {S}؟','وش المدة المريحة عندك لـ {S}؟','كم الوقت الكافي لـ {S}؟','قد إيش تحتاج وقت عشان {S}؟','كم أطول مدة مناسبة لـ {S}؟'],
+    normalSubjects: ['قيلولة الظهر','استراحة القهوة','التجهيز للسفر','جلسة القراءة','التمشية على الكورنيش','تحضير فطور متكامل','تنظيف السيارة','إنهاء مكالمة عمل','استراحة بين التمارين','رحلة نهاية الأسبوع'],
+    invertedStems: ['كم تجلس تطالع الجرسون قبل ما {C}؟','كم تاخذ وقت عشان تعترف إنك غلطان بعد ما {C}؟','كم تطول وأنت جالس بالحمام بس عشان {C}؟','كم مدة الخصام مع نفسك إذا {C}؟','كم تقدر تصمد بدون جوال لو {C}؟','كم تاخذ وقت تتأمل السقف وأنت {C}؟'],
+    invertedContexts: ['تطلب كاتشب زيادة','تسببت في كسر الكوب','تتصفح مقاطع قصيرة','نمت قبل العشاء المهم','انقطعت الشبكة بالبر','تفكر بحياتك الساعة ٤ الفجر','تحاول تنفخ بالونة','تنتظر الراتب ينزل','تشرح لواحد عنيد','تحاول تفتح علبة مخلل']
+  },
+  {
+    domain: 'CLOTHING',
+    normalStems: ['وش أريح قطعة ملابس تلبسها {S}؟','وش أكثر لبس يجمع بين الأناقة والراحة {S}؟','وش القطعة الأساسية بخزانتك {S}؟','وش اللبس المفضل عندك {S}؟','وش أكثر شيء تحب تشتريه من الملابس {S}؟','أي قطعة لبس تعتبرها ضرورية {S}؟'],
+    normalSubjects: ['في ليالي الشتاء','وقت الجلوس بالبيت','في السفر الطويل','في الصباح للعمل','عند المشي والرياضة','في طلعات البر','في مناسبات العيد','أيام الحر الشديد','في استقبال الضيوف','في الويكند السريع'],
+    invertedStems: ['وش القطعة اللي لو لبستها في قاعة عرس بيحسبونك {C}؟','وش اللبس اللي من خمس سنين ما غسلته وتقول {C}؟','وش الشيء اللي نسيته طالع من الشنطة قدام الموظفين لما {C}؟','وش اللبس اللي يمنعونك تدخل المول فيه لأنك {C}؟','وش القطعة اللي انشقت عليك بنص العزيمة واضطريت {C}؟','وش الشيء اللي تلبسه بس عشان ما {C}؟'],
+    invertedContexts: ['ساقي القهوة','لونه كذا أصلاً','فتحت شنطة التفتيش','طالع كأنك هارب من مستشفى','تجلس زاوية الكنب ولا تتحرك','يبين كرشك قدام الناس','تتخفى عن جيرانك','تطلع للبقالة','تحضر مكالمة فيديو','تركض بالشارع']
+  },
+  {
+    domain: 'EXCUSE',
+    normalStems: ['وش أكثر سبب منطقي يخليك {S}؟','وش السبب اللي تقبله من غيرك إذا {S}؟','عادةً، وش أكبر سبب يجعلك {S}؟','وش السبب الرئيسي اللي يضطرك {S}؟','من واقع تجربتك، ليش ممكن الشخص {S}؟','وش العامل الأكبر اللي يخليك {S}؟'],
+    normalSubjects: ['تتأخر عن موعدك الصباحي','تغير خطتك للويكند','تكنسل رحلة سفر','تتوقف عن شراء شيء','تؤجل اجتماع عمل','تروح للمستشفى فجأة','تنقل من بيت لبيت','تغير سيارتك الحالية','تاخذ إجازة طويلة','ترجع بدري من العزيمة'],
+    invertedStems: ['وش الكذبة المحترمة اللي تقولها لمديرك إذا {C}؟','وش التصريفة اللي تحفظها جاهزة إذا {C}؟','وش العذر اللي ما يصدقه حتى طفل عمره ٤ سنين لما {C}؟','وش الجملة اللي تقولها عشان تنفذ بجلدك يوم {C}؟','وش العذر اللي تقوله لأمك كل ما {C}؟','وش التبرير العجيب اللي طلعته أول ما {C}؟'],
+    invertedContexts: ['صحيت الظهر وداومك ٨ الصبح','سحبت على عزيمة صديقك','لقوك نايم بالمصلى وقت الشغل','كشفتك الكاميرا مسرع','نسيت تجيب الأغراض اللي وصوك عليها','انكسر الصحن الغالي بالمطبخ','خلص رصيدك وما رديت','أكلت حصة أخوك','ضيعت مفتاح البيت','رسبت باختبار السواقة']
+  },
+  {
+    domain: 'EMOTION',
+    normalStems: ['وش الشعور اللي تحسه أول ما {S}؟','صف لي حالتك النفسية لما {S}؟','وش أكثر إحساس يغلب عليك إذا {S}؟','وش المزاج اللي يجيك عادةً وقت ما {S}؟','بصراحة، كيف تكون مشاعرك لما {S}؟','وش الإحساس الطبيعي اللي يعيشه الشخص إذا {S}؟'],
+    normalSubjects: ['تبدأ إجازتك السنوية','تخلص مشروع صعب بنجاح','تنزل أول قطرة مطر','تجتمع العائلة يوم العيد','تسمع خبر ترقية أو نجاح','تشرب أول قهوة بالصباح','توصل مكة أو المدينة','تنظم غرفتك وترتبها','تساعد شخص محتاج','ترجع من سفر طويل للبيت'],
+    invertedStems: ['وش حالتك النفسية أول ما تسمع صوت أبوك يناديك باسمك الثلاثي لما {C}؟','وش شعورك لما تطيح لقمة الشاورما على ثوبك الأبيض قبل {C}؟','وش إحساسك لما يطيح جوالك بالرخام بدون جراب وأنت {C}؟','وش مزاجك أول ما يوقفك شرطي وأنت ناسي الرخصة يوم {C}؟','وش وضعك النفسي إذا أرسلت سكرين شوت لـ {C}؟','وش شعورك أول ما تكتشف إن الكاميرا مفتوحة باجتماع أونلاين وأنت {C}؟'],
+    invertedContexts: ['تسوي نفسك ما تدري','العرس بخمس دقايق','تستعرض قدام الربع','رايح تجيب فطور','نفس الشخص اللي تتكلم عليه','تاكل اندومي بالبيجامة','تخلص البطارية ١٪','ينكب القهوة على اللابتوب','تفوز ويفصل النت','يطلع راتبك بساعة ويطير بيوم']
+  },
+  {
+    domain: 'JOB_ROLE',
+    normalStems: ['وش كانت مهنة أحلامك {S}؟','وش أكثر وظيفة تحترم دورها {S}؟','لو اخترت مجال عمل جديد {S}، وش تختار؟','وش المهنة اللي تشوفها مناسبة للشخصية الهادئة {S}؟','أي وظيفة تتطلب إبداع عالي {S}؟','وش العمل التطوعي أو المهني اللي تتمنى تجربه {S}؟'],
+    normalSubjects: ['وأنت طفل صغير','في خدمة المجتمع','في قطاع التقنية','في مجال السفر والسياحة','في عالم الطهي والضيافة','في هندسة المستقبل','في التعليم والتدريب','في الإعلام والصوتيات','في الطبيعة والبيئة','في تصميم المنتجات'],
+    invertedStems: ['وش الوظيفة اللي لو استلمتها بتفلس الشركة في أسبوع بسبب {C}؟','وش المهنة اللي يصلحون لها ربعك لو {C}؟','وش الشغلة اللي مستحيل يوظفونك فيها لو شافوك {C}؟','لو فتحت مكتب للأمور الطارئة وأنت {C}، وش بتشتغل؟','وش اللقب الوظيفي اللي يكتبونه على باب غرفتك لأنك {C}؟','وش المهنة اللي تتظاهر فيها إذا {C}؟'],
+    invertedContexts: ['كثرة نومك وكسلك','سافرتوا مع بعض بدون خطة','تاكل بالاجتماع','تدور أكل بنص الليل','نايم ٢٤ ساعة','تضيع الطريق','تتصور سنابات كشخة','ما تعرف ترد على التلفون','تطبخ وتنسى الملح','تتكلم بدون نقطة']
+  },
+  {
+    domain: 'WEATHER_SEASON',
+    normalStems: ['وش أحلى جو تفضل تطلع فيه {S}؟','وش الفصل أو الطقس المثالي {S}؟','أي حالة جوية تحسن مزاجك {S}؟','وش الجو المناسب لـ {S}؟','عادةً متى يكون الطقس أجمل {S}؟','وش الفصل اللي تحب تسافر فيه {S}؟'],
+    normalSubjects: ['لطلعات البر والقهوة','للمشي في الحديقة','للجلوس في البلكونة','لتصوير الطبيعة','للرياضة الخارجية','للرحلات العائلية','للقراءة عند النافذة','للسفر بالسيارة','لتناول المشروبات الساخنة','لزيارة المناطق الجبلية'],
+    invertedStems: ['وش الجو اللي يمثل مزاجك أول ما تصحى يوم الأحد وتفتكر {C}؟','وش الطقس اللي يصير بالصالة أول ما {C}؟','وش الحالة الجوية اللي توصف وجه مديرك لما {C}؟','وش الفصل اللي تصير فيه أعصابك على طرف خشمك وأنت {C}؟','وش الجو اللي يتغير فجأة لما {C}؟','وش الوصف الجوي لحياتك يوم {C}؟'],
+    invertedContexts: ['باقي أسبوع على الإجازة','تسوق سيارتك بالزحمة','توصل متأخر نص ساعة','تنقطع الكهرباء وقت المباراة','تطيح من الكرسي','تنسى المحفظة عند الكاشير','ينطفي الواي فاي','يتعطل المكيف بالصيف','ينكب الشاهي','تخسر بالتحدي']
+  },
+  {
+    domain: 'BODY_PART',
+    normalStems: ['وش أكثر جزء في الجسم يستفيد من {S}؟','عادةً أي عضو يتأثر أكثر أثناء {S}؟','وش الجزء اللي لازم تهتم بسلامته خلال {S}؟','أي جزء تحسه يعمل أكثر شيء وقت {S}؟','وش العضو اللي يحتاج راحة بعد {S}؟','في التمارين الصحية، أي منطقة تركز عليها لـ {S}؟'],
+    normalSubjects: ['المشي لمسافات طويلة','الجلوس أمام الكمبيوتر','قيادة السيارة للسفر','تمارين الإطالة الصباحية','حمل الأغراض الثقيلة','القراءة لساعات طويلة','اللعب والنشاط البدني','الوقوف لفترات طويلة','السباحة واللياقة','النوم الصحي السليم'],
+    invertedStems: ['وش العضو اللي دايم يفضحك عند الناس لما {C}؟','وش المكان اللي تصدمه بطرف الطاولة وتصارخ لما {C}؟','وش الجزء اللي يعلق معك أول ما {C}؟','وش العضو اللي تبيه يتكلم بدالك لو {C}؟','وش أكثر مكان يورم عندك إذا {C}؟','وش الشيء اللي يطقطق في جسمك كأنه باب قديم لما {C}؟'],
+    invertedContexts: ['تكذب قدام الكل','تتمشى بالظلام للمطبخ','تجلس مع ناس رسميين','تنحرج قدام الضيوف','تضحك بدون صوت','تصحى الفجر','تأكل أكل حار','تركض عشان تلحق المصعد','تسوي نفسك فاهم','ترقص بحماس']
+  },
+  {
+    domain: 'HOBBY_ACTIVITY',
+    normalStems: ['وش أكثر هواية أو نشاط تحب تمارسه {S}؟','وش النشاط المفيد اللي تقضي فيه وقتك {S}؟','لو عندك ساعة فاضية {S}، وش تسوي؟','وش الهواية اللي تريح بالك {S}؟','وش النشاط الجماعي اللي يناسب العائلة {S}؟','أي هواية تتمنى تتعلمها أكثر {S}؟'],
+    normalSubjects: ['في إجازة نهاية الأسبوع','بعد يوم عمل متعب','في أمسيات رمضان','في رحلة بحرية هادئة','في ليالي الشتاء بالبيت','لتحسين التركيز','لزيادة اللياقة البدنية','لتطوير مهاراتك الشخصية','مع الأطفال بالمنزل','في وقت الصباح الباكر'],
+    invertedStems: ['وش الشغلة التافهة اللي تضيع فيها ٥ ساعات بدال ما {C}؟','وش الموهبة الغريبة اللي ما حد طلب يشوفها بس تصر تسويها لما {C}؟','وش النشاط اللي تنطرد بسببه لو سويته بنص الشارع وأنت {C}؟','وش الهواية اللي تخليك تطلع غريب أطوار قدام الجيران لو شافوك {C}؟','وش الحركة اللي تسويها بالخفاء أول ما تتأكد إن {C}؟','وش التصرف اللي تسويه لا إراديًا عشان {C}؟'],
+    invertedContexts: ['تخلص شغلك المتراكم','تجتمع بالناس','معصب وزعلان','في السطح لحالك','الكل طلع من البيت','تسلي نفسك','تنتظر الأكل ينطبخ','تشوف مباراة','تشحن جوالك','تذاكر قبل الفجر']
+  },
+  {
+    domain: 'SMELL_SCENT',
+    normalStems: ['وش أطيب رائحة تحب تشمها {S}؟','وش العطر أو الرائحة المفضلة عندك {S}؟','أي رائحة طبيعية تفتح نفسك {S}؟','لو بتعطر مكان {S}، وش تختار؟','وش الرائحة اللي تعطيك طاقة إيجابية {S}؟','أي نوع من الروائح يهدئ أعصابك {S}؟'],
+    normalSubjects: ['في صالة البيت','داخل السيارة','أول الصباح','في استقبال الضيوف','بعد التنظيف والترتيب','في مناسبات الأعياد','عند دخول المقهى','في الحدائق المفتوحة','بعد هطول المطر','قبل النوم المريح'],
+    invertedStems: ['وش الريحة اللي تطلع من مطبخك كل ما جربت تطبخ وأنت {C}؟','وش الريحة اللي إذا شميتها بسيارتك تعرف إن أخوك {C}؟','وش الريحة اللي لو طلعت من شنطتك بالمطار بيوقفونك لأنهم يحسبون {C}؟','وش الريحة اللي تجيب الصداع لأهلك إذا {C}؟','وش الشيء اللي يطلع ريحته من دولاب الجزم يوم {C}؟','وش الريحة اللي تفضح إنك {C}؟'],
+    invertedContexts: ['تقلد شيف بالتلفزيون','أكل فيها من وراك','فيها شيء مشبوه','فتحت شباك غرفتك','ترجع من النادي','توك قايم وتدعي إنك متروش','حرقت البيض بالزيت','نسيت اللحم برا','مسوي خلطة عجيبة','متعطر عشر بخات بالحر']
+  },
+  {
+    domain: 'GIFT',
+    normalStems: ['وش أجمل هدية تقدمها {S}؟','لو تبي تفاجئ شخص غالي بهدية {S}، وش تجيب له؟','وش الهدية العملية والمحبوبة {S}؟','وش أول خيار يخطر ببالك كهدية {S}؟','أي هدية تعتبرها أنيقة ومناسبة {S}؟','وش الهدية اللي تفرح قلب أي شخص {S}؟'],
+    normalSubjects: ['بمناسبة التخرج','للوالدين في يوم مميز','لصديق انتقل لبيت جديد','للزواج والمناسبات السعيدة','في يوم العيد','لشخص يحب القراءة والسفر','لزميل العمل عند الترقية','لمريض في الزيارة','لمولود جديد','بدون مناسبة للتقدير'],
+    invertedStems: ['وش الهدية اللي تجيك وتبتسم كذب وبعدين ترميها بالمخزن لأنك {C}؟','وش أسوأ هدية تجيبها لأحد عشان تفهمه إنك {C}؟','وش الهدية الرخيصة اللي تغلفها بفخامة عشان تسد فيها دين وأنت {C}؟','وش الشيء اللي لو هدوك إياه بيوم ميلادك بتبكي من القهر لأنك {C}؟','وش الهدية اللي تعيد تغليفها وتعطيها غيرك أول ما {C}؟','وش الهدية اللي تجي مع كرت مكتوب عليه {C}؟'],
+    invertedContexts: ['تكره شكلها','ما ودك تكلمه أبد','مفلس آخر الشهر','تتمنى جوال','يجي زواج ثاني','آسف بس هذا الموجود','تخاف تجرح مشاعره','تغار من هديته','ناسي المناسبة لأمس','متكسل تروح السوق']
+  },
+  {
+    domain: 'SHOP_STORE',
+    normalStems: ['وش أكثر محل أو مكان تتسوق منه {S}؟','وش أفضل متجر تزوره {S}؟','أي نوع محلات تحب تقضي فيه وقت {S}؟','وش الوجهة التجارية المفضلة عندك {S}؟','من وين تشتري احتياجاتك عادةً {S}؟','وش المحل اللي تروح له أول شيء {S}؟'],
+    normalSubjects: ['في تجهيزات العيد','قبل السفر بيوم','لتسوق البيت الأسبوعي','لشراء الهدايا السريعة','في الويكند','لتجهيز القهوة والضيافة','للإلكترونيات والكتب','للملابس الرياضية','للمستلزمات اليومية','في التنزيلات الموسمية'],
+    invertedStems: ['وش المحل اللي تدخله بنية تاخذ غرض بـ١٠ ريال وتطلع {C}؟','وش المكان اللي الكاشير حافظ اسمك فيه من كثر ما {C}؟','وش المحل اللي تستحي تقول لربعك إنك {C}؟','وش المكان اللي تضيع فيه فلوس الراتب بأول ثلاث ساعات وأنت {C}؟','وش المحل اللي يقفلون بابه أول ما يشوفونك لأنك {C}؟','وش المكان اللي رحت له ببيجامتك تحسب {C}؟'],
+    invertedContexts: ['دافع ٦٠٠ ريال','ترجع الأغراض','تقعد فيه ساعتين تتفرج بدون فلوس','تقول بس أتفرج','تسوي زحمة عند الكاشير','ما حد بيشوفك','تاكل العينات المجانية بس','تكاسر بريالين','تصور الأسعار وتمشي','تحاسب بالهلل']
+  },
+  {
+    domain: 'TRANSPORT',
+    normalStems: ['وش وسيلة التنقل المفضلة عندك {S}؟','وش أريح وسيلة مواصلات تختارها {S}؟','لو بتروح مشوار {S}، كيف تفضل تروح؟','وش الوسيلة الأسرع والأفضل {S}؟','أي طريقة تنقل تستمتع فيها {S}؟','وش الوسيلة العملية أكثر {S}؟'],
+    normalSubjects: ['في السفر بين المدن','في الرحلات السياحية','داخل الأحياء القريبة','للذهاب للعمل يوميًا','في الجو المعتدل','لتجنب زحمة الطرق','في الرحلات البحرية','مع المجموعة الكبيرة','في الرياضة الصباحية','للوصول للمطار'],
+    invertedStems: ['وش الوسيلة اللي بتهرب فيها من الشباك إذا {C}؟','وش اللي لو سقته بوسط شارع عام بتتصدر الترند لأنك {C}؟','وش الوسيلة اللي تتوقع توصلك في عرس وأنت {C}؟','وش الشيء اللي لو ركبته وأنت {C} بتطيح أول ٣ ثواني؟','وش المواصلات اللي تستاهلها بعد ما {C}؟','وش الوسيلة اللي تعاند أهلك وتصر تركبها حتى لو {C}؟'],
+    invertedContexts: ['دخلت عزيمة مملة','تغني بصوت عالي','متأخر نص ساعة','ما تعرف تتوازن','خربت سيارتك بسببك','تمطر برد وحر','تبي تهرب من الفاتورة','لصقوك بمقلب','طارت فلوسك','ترجع من السفرة زعلان']
+  },
+  {
+    domain: 'DEVICE_APP',
+    normalStems: ['وش أكثر جهاز أو تطبيق مفيد لك {S}؟','وش الأداة التقنية اللي تعتمد عليها {S}؟','وش أول برنامج أو جهاز تفتحه {S}؟','أي تطبيق أو جهاز تفضله {S}؟','وش التقنية اللي تسهل يومك {S}؟','وش أهم شيء رقمي تستخدمه {S}؟'],
+    normalSubjects: ['في ترتيب المواعيد','أثناء السفر والخرائط','في العمل والدراسة','للتواصل مع العائلة','في سماع الصوتيات','لتصوير اللحظات الجميلة','في متابعة الأخبار','لتعلم مهارات جديدة','في التسوق الإلكتروني','لضبط الرياضة والخطوات'],
+    invertedStems: ['وش الشيء اللي لو أهلك فتحوه ١٠ ثواني بتغير اسمك وتسافر لأنك {C}؟','وش التطبيق اللي تاخذ منه قرارات حياتك وأنت متفشل تقول إنك {C}؟','وش الجهاز اللي تكلمه وتسبه لما {C}؟','وش الشيء اللي بطاريته ١٪ دايم ويجيك انهيار بسببه يوم {C}؟','وش البرنامج اللي تقضي فيه ٤ ساعات وأنت تحلف للناس إنك {C}؟','وش الجهاز اللي لو شافوه في غرفتك بتقول {C}؟'],
+    invertedContexts: ['مخبي أسرار الدنيا','تصدقه بكل شيء','يعلق عليك بنص الشغل','تضيع بالزحمة','ما تفتحه أبد','هذا حق أخوي والله','تنصدم من الوقت','تنسى تحفظ الملف','تكتب فيه مذكراتك العجيبة','تراقب فيه الناس بصمت']
+  }
+];
+
+const BANK_BY_DOMAIN = {};
+let TOTAL_NORMAL_COUNT = 0;
+let TOTAL_INVERTED_COUNT = 0;
+(function initBanks() {
+  for (const bp of DOMAIN_BLUEPRINTS) {
+    const nList = [], iList = [];
+    let ni = 0, ii = 0;
+    for (const s of bp.normalStems) for (const sub of bp.normalSubjects) nList.push({ id: `N_${bp.domain}_${++ni}`, text: s.replace('{S}', sub) });
+    for (const s of bp.invertedStems) for (const ctx of bp.invertedContexts) iList.push({ id: `I_${bp.domain}_${++ii}`, text: s.replace('{C}', ctx) });
+    BANK_BY_DOMAIN[bp.domain] = { normal: nList, inverted: iList };
+    TOTAL_NORMAL_COUNT += nList.length;
+    TOTAL_INVERTED_COUNT += iList.length;
+  }
+})();
+
+// إجابات آلية مطابقة تماماً لكل نطاق (تُستخدم فقط مع البوتات في اللعب الفردي أو القليل)
+const DOMAIN_BOT_ANSWERS = {
+  COLOR: ['الأحمر الفاقع', 'الأزرق الكحلي', 'الأخضر الزيتوني', 'الأسود الملكي', 'الأصفر الفسفوري'],
+  FOOD_DISH: ['كبسة لحم', 'شاورما عربي', 'بيتزا مارجريتا', 'مندي دجاج', 'معصوب ملكي'],
+  DRINK: ['قهوة سعودية', 'شاي بالنعناع', 'كرك بالهيل', 'عصير مانجو', 'آيس أمريكانو'],
+  PERSON_KIN: ['خالي أبو فهد', 'أخوي الكبير', 'مديري بالدوام', 'خويي سعد', 'ولد عمي'],
+  ANIMAL: ['صقر حر', 'بطريق نعسان', 'سلحفاة مسرعة', 'جمل شارد', 'قطو مستعجل'],
+  PLACE: ['أبها البهية', 'مطبخنا الساعة ٣ الفجر', 'محطة القطار', 'سوق الحراج', 'البلكونة'],
+  ITEM_OBJECT: ['مفتاح السيارة', 'شاحن أصلي', 'نعال الحمام', 'مقلاة التيفال', 'سماعة مكسورة'],
+  NUMBER_SMALL: ['٧ مرات', '٣ أرقام', '١٢ مرة بالراحة', 'صفر مكعب', '٥ على الحافة'],
+  MONEY_AMOUNT: ['٥٠ ريال', '٢٠٠ ريال كاش', '١٥ ريال وشاورما', '٥٠٠ ريال سلف', '١٢٠ ريال'],
+  DURATION: ['١٠ دقايق بالكثير', '٣ ساعات متواصلة', 'يومين بدون نوم', '٥ ثواني بالضبط', 'نصف ساعة'],
+  CLOTHING: ['بجامة مقلمة', 'ثوب النوم', 'شماغ مقلوب', 'جاكيت شتوي ثقيل', 'شراب مخروم'],
+  EXCUSE: ['الشوارع مقفلة اليوم', 'نسيت المنبه صامت', 'الجوال طفى فجأة', 'القطوة أكلت المفتاح', 'دخلت غفوة ٥ دقايق صارت ٤ ساعات'],
+  EMOTION: ['مرتبك وبنفس الوقت واثق', 'مبسوط على الآخر', 'متوتر ودي أهرب', 'رايق وما علي من أحد', 'مفجوع ومستغرب'],
+  JOB_ROLE: ['طيار حربي', 'شيف حلويات', 'معلق مباريات', 'محلل اقتصادي فجأة', 'مهندس نوم'],
+  WEATHER_SEASON: ['مطر غزير وبرد', 'غبار مع هواء حار', 'غيم لطيف', 'شتاء قارس', 'صيف يشوي'],
+  BODY_PART: ['الإصبع الصغير بالرجل', 'الحاجب الأيمن', 'الركبة اليسرى', 'الأذن', 'الكوع'],
+  HOBBY_ACTIVITY: ['ترتيب الثلاجة', 'تأمل المروحة', 'تنظيف المكيف', 'السباحة والغوص', 'الطبخ بدون مقادير'],
+  SMELL_SCENT: ['عود فاخر', 'قهوة محمصة', 'بيض محروق', 'مسك أبيض', 'نعناع طازج'],
+  GIFT: ['ساعة ذهبية', 'علبة تمر سكري', 'باقة ورد صناعي', 'شاحن متنقل', 'قسيمة مغسلة سيارات'],
+  SHOP_STORE: ['سوبرماركت الحارة', 'بقالة أبو صالح', 'محل العطور', 'أبو خمسة ريال', 'المخبز'],
+  TRANSPORT: ['سيكل أبو ثلاث عجلات', 'سيارة فخمة', 'سكوتر كهربائي', 'القطار السريع', 'الجري الحافي'],
+  DEVICE_APP: ['تطبيق الملاحظات', 'تطبيق الخرائط', 'المنبه الصباحي', 'الواتساب', 'ساعة اليد']
+};
+
+const FILL_SENTENCES = [
+  { id: 'F01', template: 'دخلت المجلس بكل هيبة لكن ______ قدام كل الحضور!' },
+  { id: 'F02', template: 'أكثر شيء يخليني أصحصح بنص الليل فجأة هو ______' },
+  { id: 'F03', template: 'رحت أشتري خبز ورجعت للبيت ومعي ______ بدون ما أحس.' },
+  { id: 'F04', template: 'الشيء الوحيد اللي يجمع عائلتنا في ثانية وحدة هو ______' },
+  { id: 'F05', template: 'قال لي المدير ممتاز شغلك، بس لو تخفف من ______ أثناء الاجتماع.' },
+  { id: 'F06', template: 'لو سيارتي تقدر تتكلم كان أول شيء بتقوله لي: ______' },
+  { id: 'F07', template: 'فتحت الثلاجة الساعة ٣ الفجر ولقيت ______ يناظرني بهدوء.' },
+  { id: 'F08', template: 'حاولت أسوي نفسي فاهم بالموضوع، لكن يوم سألوني قلت: ______ وطلعت!' },
+  { id: 'F09', template: 'عشان تنجح بأي عزيمة لازم تتأكد إن ______ مو موجود جنب الصحون.' },
+  { id: 'F10', template: 'أغرب نصيحة سمعتها من جدي كانت: يا ولدي انتبه من ______' },
+  { id: 'F11', template: 'في الإجازة خططت أسافر باريس، لكن انتهى بي المطاف في ______ مع كيس فصفص.' },
+  { id: 'F12', template: 'كل ما أقول خلاص ببدا حياة صحية، يطلع لي ______ يخرب الخطة.' },
+  { id: 'F13', template: 'كنت ناوي أرد رد فخم ومؤدب، بس بالغلط كتبت ______ وضغطت إرسال!' },
+  { id: 'F14', template: 'تحذير مكتوب على باب غرفتي من برا: ممنوع الدخول إلا ومعك ______' },
+  { id: 'F15', template: 'أول ما شافني الكاشير ابتسم وقال: اليوم عروضنا الخاصة على ______ عشانك!' },
+  { id: 'F16', template: 'سويت ريجيم قاسي لمدة ساعة كاملة، وبعدها كافأت نفسي بـ ______.' },
+  { id: 'F17', template: 'ركبت السيارة ومشيت ٢٠ كيلو قبل ما أكتشف إني ناسي ______ على الرصيف.' },
+  { id: 'F18', template: 'رد الميكانيكي يوم شاف صوت سيارتي الغريب: والله يا طويل العمر هذا صوت ______!' },
+  { id: 'F19', template: 'صحيت متأخر ولبست أول شيء قدامي، وطلعت بالشارع كأني ______.' },
+  { id: 'F20', template: 'لو ببيع أسراري على مزاد علني، أغلى سر بيكون عن ______' }
+];
+const BOT_FILLS = ['صينية كنافة كاملة', 'الريموت مفقود للأبد', 'أسوي نفسي نايم', 'ثلاجة فاضية إلا من ليمونة يابسة', 'شراب أزرق وشراب أحمر', 'منديل معطر بيد وحدة', 'أقول إن الطريق مقفل'];
+
+const MAKHRAJ_SCENARIOS = [
+  { id: 'M01', speaker: 'جارك في المصعد', situation: 'يا هلا بالجار! سمعت إنكم مسافرين بكره الطائف، جهزت شنطتي وبمشي معكم بالسيارة، الساعة كم نتحرك؟' },
+  { id: 'M02', speaker: 'خويك المقرّب', situation: 'دخل المطبخ وشافك تمسح فمك وآخر قطعة كيك مخبيها اختفت، وقال: بالله ما شفت كيكي اللي كان هنا؟' },
+  { id: 'M03', speaker: 'شخص قابلك بالمجمع', situation: 'ضمك بحرارة وقال: عاش من شافك! شخبار خالك أبو صالح والعيال؟ وأنت بحياتك ما شفت وجهه!' },
+  { id: 'M04', speaker: 'مديرك في العمل', situation: 'وقف فوق راسك وأنت فاتح لعبة بالدوام وقال: ما شاء الله، هذا التقرير السنوي اللي كنت شغال عليه؟' },
+  { id: 'M05', speaker: 'عمّك في المجلس', situation: 'قدام ٢٠ ضيف قال: اسمعوا يا جماعة، ولدنا ما شاء الله حافظ القصيدة الطويلة وبيقولها لنا الحين!' },
+  { id: 'M06', speaker: 'الجرسون في المطعم الفاخر', situation: 'حط الفاتورة ٩٥٠ ريال وربعك كلهم يطالعون جوالاتهم فجأة، وقال لك: الدفع كاش ولا شبكة طال عمرك؟' },
+  { id: 'M07', speaker: 'الوالد في الصالة', situation: 'شاف الفازة الغالية مكسورة ومغراة بشطرطون شفاف، وقال: مين البطل اللي سوّا هذا الاختراع العلمي؟' },
+  { id: 'M08', speaker: 'قريبك اللي يتسلف', situation: 'أرسل لك: يا الغالي، عندي مشروع مضمون ١٠٠٪ ومحتاج منك ٥٠٠٠ ريال لأسبوعين بس، أرسلت لك الآيبان!' },
+  { id: 'M09', speaker: 'موظف استقبال الفندق', situation: 'أخذت كل شوكولاتة البوفيه بجيبك وهو يطالعك، وقال: تحب أجهز لك كيس إضافي للغرفة يا فندم؟' },
+  { id: 'M10', speaker: 'صديقك اللي سلفك سيارته', situation: 'رجعت له السيارة وبها صوت صفير غريب وصدام ملمع بالغلط، وقال: عسى ما جاها شي؟ أحسها متغيرة!' },
+  { id: 'M11', speaker: 'أحد الحضور في الزواج', situation: 'شافك تعبي صحن الحلى الثالث وقال: ما شاء الله، شكلك من أهل المعرس ولا المشرف على البوفيه؟' },
+  { id: 'M12', speaker: 'بائع العطور الفخم', situation: 'رش لك ٦ أنواع على يدك وقال: أي واحد بتاخذ؟ كلهم نادرين وبسعر ١٢٠٠ ريال فقط!' }
+];
+const BOT_MAKHRAJS = [
+  'السيارة صارت فجأة تستوعب راكب واحد بس، الباقي صار خزان وقود!',
+  'والله الكيكة انتقلت لمرحلة روحية أعلى ما نقدر نوصفها الآن!',
+  'خالي أبو صالح يسلم عليك ويقول لك لا عاد تسأل عن أخبارنا إلا بكرت دعوة!',
+  'هذا يا طويل العمر اختبار محاكاة لمؤشرات الضغط العصبي بالمشروع!',
+  'الشبكة يا جرسون انقطعت عن العالم قبل ٣ ثواني، سجلها على حساب التاريخ!',
+  'هذي الفازة يا طويل العمر موديل حديث ينفك لقطع عشان التنظيف الذاتي!'
+];
+
+/* ===================== 3. الصوت الفخم (Web Audio Chimes) ===================== */
+let aCtx = null;
+function playChime(freq = 520, dur = 0.16, type = 'triangle', vol = 0.09) {
+  try {
+    if (!aCtx) aCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (aCtx.state === 'suspended') aCtx.resume();
+    const o = aCtx.createOscillator(), g = aCtx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, aCtx.currentTime);
+    g.gain.setValueAtTime(vol, aCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, aCtx.currentTime + dur);
+    o.connect(g); g.connect(aCtx.destination);
+    o.start(); o.stop(aCtx.currentTime + dur);
+  } catch {}
+}
+
+/* ===================== 4. حالة الباقة والمحرك ===================== */
+const PLAYER_COLORS = ['#d9b468', '#c83e63', '#56a3e6', '#46b98b', '#c78df2', '#ea8f4e', '#76d4dc', '#e5c158'];
+const BOT_PROFILES = [
+  { name: 'سعد' }, { name: 'نورة' }, { name: 'فهد' }, { name: 'ريم' }, { name: 'تركي' }
+];
+
+const GAME_MODES = {
+  at7adak: { title: 'أتحداك تجاوب صح', kicker: 'اللعبة الأولى · المعكوس المتطابق', desc: 'يظهر السؤال في التلفزيون، يجيب الجميع من جوالاتهم، ثم ينعكس السؤال وتُكشف البطاقات بالتدريج.' },
+  akmil:   { title: 'أكمل الجملة',      kicker: 'اللعبة الثانية · إبداع الصياغة', desc: 'تظهر الجملة بنقص في الوسط أو النهاية على التلفزيون والجوالات، وتُكشف الجمل الكاملة للتصويت.' },
+  makhraj: { title: 'دور مخرج',         kicker: 'اللعبة الثالثة · مواجهات التصرّف', desc: 'موقف محرج تحتاج فيه لأذكى مخرج، ثم مواجهات ثنائية سرية مع حماية «سو نفسك تصوت» وترتيب عام.' }
+};
+
+const G = {
+  quickplay: false,
+  code: 'RYD6',
+  adminId: '',
+  phase: 'lobby', // lobby | answering | twist_reveal | cards_reveal | voting | duel_vote | duel_reveal | round_scores | podium
+  gameMode: 'at7adak',
+  roundTimeSec: 35,
+  totalRounds: 4,
+  round: 1,
+  botFillCount: 5, // في التشغيل السريع يضمن 6 لاعبين (3 مواجهات كاملة في دور مخرج)
+  players: [], // { id, name, color, score, isBot }
+  usedNormalIds: new Set(),
+  usedInvertedIds: new Set(),
+  usedFillIds: new Set(),
+  usedMakhrajIds: new Set(),
+  currentPair: null,
+  currentFill: null,
+  currentMakhraj: null,
+  answers: {}, // { playerId: string }
+  revealOrder: [],
+  revealedCount: 0,
+  votes: {}, // { voterId: targetId } for at7adak/akmil
+  duels: [], // for makhraj
+  duelIdx: 0,
+  timeLeft: 0,
+  timerHandle: null,
+  revealHandle: null,
+  botTimers: [],
+  qpInputDraft: '',
+  qpFakeNotice: ''
+};
+
+function makeBot(idx) {
+  const prof = BOT_PROFILES[idx % BOT_PROFILES.length];
+  return {
+    id: 'bot_' + (idx + 1),
+    name: prof.name,
+    color: PLAYER_COLORS[(idx + 1) % PLAYER_COLORS.length],
+    score: 0,
+    isBot: true
+  };
+}
+
+function syncBots() {
+  const humans = G.players.filter(p => !p.isBot);
+  const targetTotal = Math.max(humans.length, G.botFillCount > 0 ? Math.min(8, Math.max(humans.length, 1 + G.botFillCount)) : humans.length);
+  const needBots = Math.max(0, targetTotal - humans.length);
+  const existingBots = G.players.filter(p => p.isBot);
+  const keptBots = existingBots.slice(0, needBots);
+  while (keptBots.length < needBots) {
+    keptBots.push(makeBot(keptBots.length));
+  }
+  G.players = [...humans, ...keptBots];
+}
+
+function pickAt7adakPair() {
+  const domains = DOMAIN_BLUEPRINTS.map(b => b.domain).filter(d =>
+    BANK_BY_DOMAIN[d].normal.some(q => !G.usedNormalIds.has(q.id)) &&
+    BANK_BY_DOMAIN[d].inverted.some(q => !G.usedInvertedIds.has(q.id))
+  );
+  if (!domains.length) { G.usedNormalIds.clear(); G.usedInvertedIds.clear(); }
+  const poolDomains = domains.length ? domains : DOMAIN_BLUEPRINTS.map(b => b.domain);
+  const d = poolDomains[Math.floor(Math.random() * poolDomains.length)];
+  const nList = BANK_BY_DOMAIN[d].normal.filter(q => !G.usedNormalIds.has(q.id));
+  const iList = BANK_BY_DOMAIN[d].inverted.filter(q => !G.usedInvertedIds.has(q.id));
+  const nQ = nList[Math.floor(Math.random() * nList.length)] || BANK_BY_DOMAIN[d].normal[0];
+  const iQ = iList[Math.floor(Math.random() * iList.length)] || BANK_BY_DOMAIN[d].inverted[0];
+  G.usedNormalIds.add(nQ.id); G.usedInvertedIds.add(iQ.id);
+  return { domain: d, normalText: nQ.text, invertedText: iQ.text };
+}
+
+function pickFillPrompt() {
+  let pool = FILL_SENTENCES.filter(f => !G.usedFillIds.has(f.id));
+  if (!pool.length) { G.usedFillIds.clear(); pool = FILL_SENTENCES; }
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  G.usedFillIds.add(pick.id);
+  return pick;
+}
+
+function pickMakhrajScenario() {
+  let pool = MAKHRAJ_SCENARIOS.filter(m => !G.usedMakhrajIds.has(m.id));
+  if (!pool.length) { G.usedMakhrajIds.clear(); pool = MAKHRAJ_SCENARIOS; }
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  G.usedMakhrajIds.add(pick.id);
+  return pick;
+}
+
+function spliceSentence(template, fill) {
+  const clean = (fill || '').trim() || 'صمت مفاجئ';
+  return template.includes('______') ? template.replace('______', clean) : `${template} ${clean}`;
+}
+
+function clearTimers() {
+  if (G.timerHandle) { clearInterval(G.timerHandle); G.timerHandle = null; }
+  if (G.revealHandle) { clearInterval(G.revealHandle); G.revealHandle = null; }
+  while (G.botTimers.length) clearTimeout(G.botTimers.pop());
+}
+
+function startGameSession(mode) {
+  if (mode && GAME_MODES[mode]) G.gameMode = mode;
+  syncBots();
+  if (G.players.length < 2) {
+    G.botFillCount = 5;
+    syncBots();
+  }
+  G.players.forEach(p => { p.score = 0; });
+  G.round = 1;
+  beginRound();
+}
+
+function beginRound() {
+  clearTimers();
+  G.answers = {};
+  G.votes = {};
+  G.revealedCount = 0;
+  G.duels = [];
+  G.duelIdx = 0;
+  G.qpInputDraft = '';
+  G.qpFakeNotice = '';
+
+  if (G.gameMode === 'at7adak') {
+    G.currentPair = pickAt7adakPair();
+    G.currentFill = null; G.currentMakhraj = null;
+  } else if (G.gameMode === 'akmil') {
+    G.currentFill = pickFillPrompt();
+    G.currentPair = null; G.currentMakhraj = null;
+  } else {
+    G.currentMakhraj = pickMakhrajScenario();
+    G.currentPair = null; G.currentFill = null;
+  }
+
+  G.phase = 'answering';
+  G.timeLeft = G.roundTimeSec;
+  playChime(587, 0.2, 'triangle', 0.12);
+
+  // إجابات البوتات بتأخير طبيعي
+  G.players.filter(p => p.isBot).forEach((bot, idx) => {
+    const delay = 900 + idx * 450 + Math.random() * 500;
+    const h = setTimeout(() => {
+      if (G.phase !== 'answering' || G.answers[bot.id]) return;
+      if (G.gameMode === 'at7adak') {
+        const list = DOMAIN_BOT_ANSWERS[G.currentPair.domain] || ['ما أدري والله'];
+        G.answers[bot.id] = list[Math.floor(Math.random() * list.length)];
+      } else if (G.gameMode === 'akmil') {
+        G.answers[bot.id] = BOT_FILLS[Math.floor(Math.random() * BOT_FILLS.length)];
+      } else {
+        G.answers[bot.id] = BOT_MAKHRAJS[Math.floor(Math.random() * BOT_MAKHRAJS.length)];
+      }
+      checkAllAnswered();
+      renderTv(); broadcastState();
+    }, delay);
+    G.botTimers.push(h);
+  });
+
+  G.timerHandle = setInterval(() => {
+    if (G.phase !== 'answering') return;
+    G.timeLeft = Math.max(0, G.timeLeft - 1);
+    if (G.timeLeft <= 0) finalizeAnsweringPhase();
+    else { renderTv(); broadcastState(); }
+  }, 1000);
+
+  renderTv();
+  broadcastState();
+}
+
+function submitPlayerAnswer(playerId, rawText) {
+  if (G.phase !== 'answering') return;
+  const txt = String(rawText || '').trim().slice(0, 120);
+  if (!txt) return;
+  G.answers[playerId] = txt;
+  playChime(660, 0.1, 'sine', 0.08);
+  checkAllAnswered();
+  renderTv();
+  broadcastState();
+}
+
+function checkAllAnswered() {
+  if (G.phase !== 'answering') return;
+  const allDone = G.players.every(p => !!G.answers[p.id]);
+  if (allDone) finalizeAnsweringPhase();
+}
+
+function finalizeAnsweringPhase() {
+  clearTimers();
+  G.players.forEach((p, idx) => {
+    if (!G.answers[p.id]) {
+      if (p.isBot) {
+        if (G.gameMode === 'at7adak') {
+          const list = DOMAIN_BOT_ANSWERS[G.currentPair?.domain] || ['ما أدري'];
+          G.answers[p.id] = list[idx % list.length];
+        } else if (G.gameMode === 'akmil') {
+          G.answers[p.id] = BOT_FILLS[idx % BOT_FILLS.length];
+        } else {
+          G.answers[p.id] = BOT_MAKHRAJS[idx % BOT_MAKHRAJS.length];
+        }
+      } else {
+        G.answers[p.id] = G.gameMode === 'makhraj' ? 'والله نسيت السالفة كلها!' : 'بدون تعليق';
+      }
+    }
+  });
+
+  if (G.gameMode === 'at7adak') {
+    // أولاً كشف السؤال المعكوس ثم تطلع البطاقات بالتدريج!
+    G.phase = 'twist_reveal';
+    playChime(440, 0.25, 'sawtooth', 0.09);
+    setTimeout(() => { if (G.phase === 'twist_reveal') playChime(659, 0.26, 'triangle', 0.11); }, 160);
+    renderTv(); broadcastState();
+    const h = setTimeout(() => { if (G.phase === 'twist_reveal') startGradualCardsReveal(); }, 2800);
+    G.botTimers.push(h);
+  } else if (G.gameMode === 'akmil') {
+    startGradualCardsReveal();
+  } else {
+    // دور مخرج: بناء مواجهات ثنائية بدون أسماء وبالتسلسل
+    buildDorMakhrajDuels();
+  }
+}
+
+function startGradualCardsReveal() {
+  clearTimers();
+  G.phase = 'cards_reveal';
+  G.revealOrder = G.players.map(p => p.id);
+  for (let i = G.revealOrder.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [G.revealOrder[i], G.revealOrder[j]] = [G.revealOrder[j], G.revealOrder[i]];
+  }
+  G.revealedCount = 1;
+  playChime(740, 0.14, 'triangle', 0.1);
+  renderTv(); broadcastState();
+
+  G.revealHandle = setInterval(() => {
+    if (G.phase !== 'cards_reveal') { clearInterval(G.revealHandle); return; }
+    if (G.revealedCount < G.revealOrder.length) {
+      G.revealedCount++;
+      playChime(620 + G.revealedCount * 45, 0.12, 'triangle', 0.09);
+      renderTv(); broadcastState();
+    } else {
+      clearInterval(G.revealHandle); G.revealHandle = null;
+      const h = setTimeout(() => { if (G.phase === 'cards_reveal') enterVotingPhase(); }, 1600);
+      G.botTimers.push(h);
+    }
+  }, 1900);
+}
+
+function stepRevealOrNext() {
+  if (G.phase === 'twist_reveal') { startGradualCardsReveal(); return; }
+  if (G.phase === 'cards_reveal') {
+    if (G.revealedCount < G.revealOrder.length) {
+      G.revealedCount++;
+      playChime(700, 0.12, 'triangle', 0.09);
+      renderTv(); broadcastState();
+    } else {
+      enterVotingPhase();
+    }
+    return;
+  }
+  if (G.phase === 'voting') { tallyStandardVotes(); return; }
+  if (G.phase === 'duel_vote') { resolveCurrentDuel(); return; }
+  if (G.phase === 'duel_reveal') { advanceAfterDuel(); return; }
+  if (G.phase === 'round_scores') {
+    if (G.round < G.totalRounds) { G.round++; beginRound(); }
+    else { G.phase = 'podium'; playChime(880, 0.3, 'triangle', 0.14); renderTv(); broadcastState(); }
+  }
+}
+
+function enterVotingPhase() {
+  clearTimers();
+  G.phase = 'voting';
+  G.votes = {};
+  G.timeLeft = 22;
+  renderTv(); broadcastState();
+
+  G.players.filter(p => p.isBot).forEach((bot, idx) => {
+    const h = setTimeout(() => {
+      if (G.phase !== 'voting' || G.votes[bot.id]) return;
+      const others = G.players.filter(p => p.id !== bot.id);
+      if (others.length) {
+        G.votes[bot.id] = others[Math.floor(Math.random() * others.length)].id;
+        checkAllVotedStandard();
+        renderTv(); broadcastState();
+      }
+    }, 900 + idx * 400);
+    G.botTimers.push(h);
+  });
+
+  G.timerHandle = setInterval(() => {
+    if (G.phase !== 'voting') return;
+    G.timeLeft = Math.max(0, G.timeLeft - 1);
+    if (G.timeLeft <= 0) tallyStandardVotes();
+    else { renderTv(); broadcastState(); }
+  }, 1000);
+}
+
+function submitStandardVote(voterId, targetId) {
+  if (G.phase !== 'voting' || voterId === targetId) return;
+  if (!G.players.find(p => p.id === targetId)) return;
+  G.votes[voterId] = targetId;
+  playChime(780, 0.1, 'sine', 0.08);
+  checkAllVotedStandard();
+  renderTv(); broadcastState();
+}
+
+function checkAllVotedStandard() {
+  if (G.players.every(p => !!G.votes[p.id])) tallyStandardVotes();
+}
+
+function tallyStandardVotes() {
+  clearTimers();
+  const counts = {};
+  Object.values(G.votes).forEach(tid => { counts[tid] = (counts[tid] || 0) + 1; });
+  let maxV = 0;
+  Object.values(counts).forEach(c => { if (c > maxV) maxV = c; });
+  G.players.forEach(p => {
+    const v = counts[p.id] || 0;
+    p.score += v * 120 + (maxV > 0 && v === maxV ? 100 : 0);
+  });
+  G.lastCounts = counts;
+  G.phase = 'round_scores';
+  playChime(880, 0.24, 'triangle', 0.12);
+  renderTv(); broadcastState();
+}
+
+// ======================= DOR MAKHRAJ DUELS =======================
+function buildDorMakhrajDuels() {
+  const ids = G.players.map(p => p.id);
+  const fixed = ids[0];
+  const rest = ids.slice(1);
+  const shift = (G.round - 1) % Math.max(1, rest.length);
+  const ordered = [fixed, ...rest.slice(shift), ...rest.slice(0, shift)];
+  const duels = [];
+  for (let i = 0; i + 1 < ordered.length; i += 2) {
+    const aId = ordered[i], bId = ordered[i + 1];
+    duels.push({
+      duelNum: duels.length + 1,
+      aId, bId,
+      ansA: G.answers[aId],
+      ansB: G.answers[bId],
+      votesA: 0, votesB: 0,
+      votedIds: [],
+      revealed: false
+    });
+  }
+  if (ordered.length % 2 === 1 && ordered.length >= 3) {
+    const lastId = ordered[ordered.length - 1];
+    const oppId = ordered[0];
+    duels.push({
+      duelNum: duels.length + 1,
+      aId: lastId, bId: oppId,
+      ansA: G.answers[lastId],
+      ansB: G.answers[oppId],
+      votesA: 0, votesB: 0,
+      votedIds: [],
+      revealed: false
+    });
+  }
+  G.duels = duels;
+  G.duelIdx = 0;
+  startCurrentDuel();
+}
+
+function startCurrentDuel() {
+  clearTimers();
+  const d = G.duels[G.duelIdx];
+  if (!d) { G.phase = 'round_scores'; renderTv(); broadcastState(); return; }
+  G.phase = 'duel_vote';
+  G.timeLeft = 20;
+  G.qpFakeNotice = '';
+  playChime(540, 0.18, 'triangle', 0.1);
+  renderTv(); broadcastState();
+
+  // البوتات غير المشاركة في هذه المواجهة تصوّت تلقائيًا
+  G.players.filter(p => p.isBot && p.id !== d.aId && p.id !== d.bId).forEach((bot, idx) => {
+    const h = setTimeout(() => {
+      if (G.phase !== 'duel_vote') return;
+      const pick = Math.random() < 0.5 ? 'A' : 'B';
+      castDuelVote(bot.id, pick);
+    }, 900 + idx * 450);
+    G.botTimers.push(h);
+  });
+
+  G.timerHandle = setInterval(() => {
+    if (G.phase !== 'duel_vote') return;
+    G.timeLeft = Math.max(0, G.timeLeft - 1);
+    if (G.timeLeft <= 0) resolveCurrentDuel();
+    else { renderTv(); broadcastState(); }
+  }, 1000);
+}
+
+function castDuelVote(voterId, side) {
+  if (G.phase !== 'duel_vote') return;
+  const d = G.duels[G.duelIdx];
+  if (!d || d.revealed) return;
+  // أطراف المواجهة ممنوع تصويتهم (تطلع لهم شاشة "سو نفسك تصوت")
+  if (voterId === d.aId || voterId === d.bId) return;
+  if (d.votedIds.includes(voterId)) return;
+  d.votedIds.push(voterId);
+  if (side === 'A') d.votesA++; else if (side === 'B') d.votesB++;
+  playChime(760, 0.1, 'sine', 0.08);
+
+  const eligibleVoters = G.players.filter(p => p.id !== d.aId && p.id !== d.bId).length;
+  if (d.votedIds.length >= eligibleVoters) resolveCurrentDuel();
+  else { renderTv(); broadcastState(); }
+}
+
+function resolveCurrentDuel() {
+  clearTimers();
+  const d = G.duels[G.duelIdx];
+  if (!d) return;
+  d.revealed = true;
+  const pA = G.players.find(p => p.id === d.aId);
+  const pB = G.players.find(p => p.id === d.bId);
+  if (pA) pA.score += d.votesA * 110 + (d.votesA > d.votesB ? 150 : (d.votesA === d.votesB ? 60 : 0));
+  if (pB) pB.score += d.votesB * 110 + (d.votesB > d.votesA ? 150 : (d.votesA === d.votesB ? 60 : 0));
+  G.phase = 'duel_reveal';
+  playChime(880, 0.22, 'triangle', 0.12);
+  renderTv(); broadcastState();
+
+  const h = setTimeout(() => { if (G.phase === 'duel_reveal') advanceAfterDuel(); }, 4200);
+  G.botTimers.push(h);
+}
+
+function advanceAfterDuel() {
+  clearTimers();
+  if (G.duelIdx + 1 < G.duels.length) {
+    G.duelIdx++;
+    startCurrentDuel();
+  } else {
+    G.phase = 'round_scores';
+    playChime(920, 0.25, 'triangle', 0.12);
+    renderTv(); broadcastState();
+  }
+}
+
+/* ===================== 5. البث والحالة ===================== */
+function makeSnapshot() {
+  const curDuel = G.duels[G.duelIdx] || null;
+  const sorted = [...G.players].sort((a, b) => b.score - a.score);
+  return {
+    code: G.code,
+    adminId: G.adminId,
+    phase: G.phase,
+    gameMode: G.gameMode,
+    roundTimeSec: G.roundTimeSec,
+    totalRounds: G.totalRounds,
+    round: G.round,
+    botFillCount: G.botFillCount,
+    timeLeft: G.timeLeft,
+    players: sorted.map(p => ({ id: p.id, name: p.name, color: p.color, score: p.score, isBot: p.isBot })),
+    answeredIds: Object.keys(G.answers),
+    promptFill: G.currentFill ? G.currentFill.template : '',
+    makhraj: G.currentMakhraj,
+    revealedAnswers: G.revealOrder.slice(0, G.revealedCount).map(pid => {
+      const p = G.players.find(x => x.id === pid);
+      return { id: pid, name: p?.name || '', color: p?.color || '#d9b468', text: G.answers[pid] || '' };
+    }),
+    duel: curDuel ? {
+      duelNum: curDuel.duelNum, totalDuels: G.duels.length,
+      aId: curDuel.aId, bId: curDuel.bId,
+      ansA: curDuel.ansA, ansB: curDuel.ansB,
+      votesA: curDuel.votesA, votesB: curDuel.votesB,
+      votedIds: curDuel.votedIds, revealed: curDuel.revealed
+    } : null
+  };
+}
+
+function broadcastState() {
+  const snap = makeSnapshot();
+  Object.values(embHostConns).forEach(c => {
+    try { c.send(snap); } catch {}
+  });
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ===================== 6. واجهة التلفزيون الفاخرة ===================== */
+function renderTv() {
+  const root = document.getElementById('root');
+  if (!root) return;
+  const sorted = [...G.players].sort((a, b) => b.score - a.score);
+  const gm = GAME_MODES[G.gameMode];
+  const roundLabel = G.phase === 'lobby' ? `بنك الأسئلة: ${TOTAL_NORMAL_COUNT}+ سؤال` : `الجولة ${G.round} / ${G.totalRounds}`;
+
+  let stageHtml = '';
+
+  if (G.phase === 'lobby') {
+    stageHtml = `
+      <div style="text-align:center;margin-bottom:8px">
+        <div class="monument-label">غرفة ليالي الرياض الملكية · أدخل الرمز من جوالك</div>
+        <div class="room-code">${esc(G.code)}</div>
+      </div>
+
+      <div class="games-grid">
+        ${Object.entries(GAME_MODES).map(([key, info]) => `
+          <div class="mode-card ${G.gameMode === key ? 'active' : ''}" data-mode="${key}" onclick="window.__FUNNY_PACK.selectMode('${key}')">
+            <div>
+              <div class="mode-kicker">${info.kicker}</div>
+              <div class="mode-name">${info.title}</div>
+              <p class="mode-desc">${info.desc}</p>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+              <span style="font-size:12px;color:var(--gold-bright);font-weight:800">${G.gameMode === key ? 'المختارة حاليًا ✓' : 'اضغط للاختيار'}</span>
+              <button class="btn btn-sm" onclick="event.stopPropagation();window.__FUNNY_PACK.startGame('${key}')">ابدأ هذه اللعبة</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="settings-strip">
+        <div class="seg-group">
+          <span class="seg-label">وقت الجولة:</span>
+          ${[20, 35, 45, 60].map(sec => `<button class="seg-btn ${G.roundTimeSec===sec?'on':''}" onclick="window.__FUNNY_PACK.setTimer(${sec})">${sec} ث</button>`).join('')}
+        </div>
+        <div class="seg-group">
+          <span class="seg-label">الجولات:</span>
+          ${[3, 4, 6].map(r => `<button class="seg-btn ${G.totalRounds===r?'on':''}" onclick="window.__FUNNY_PACK.setRounds(${r})">${r} جولات</button>`).join('')}
+        </div>
+        <div class="seg-group">
+          <span class="seg-label">إكمال مقاعد:</span>
+          ${[{v:0,l:'بدون'},{v:3,l:'+3'},{v:5,l:'6 لاعبين'}].map(b => `<button class="seg-btn ${G.botFillCount===b.v?'on':''}" onclick="window.__FUNNY_PACK.setBots(${b.v})">${b.l}</button>`).join('')}
+        </div>
+      </div>
+
+      <div style="margin-top:12px;width:100%;max-width:960px;text-align:center">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">اللاعبون المتصلون (${G.players.length}) — أول لاعب يدخل هو الأدمن المتحكم بالإعدادات</div>
+        <div class="players-roster">
+          ${G.players.map(p => `
+            <div class="player-chip">
+              <span class="player-dot" style="background:${p.color}"></span>
+              <span>${esc(p.name)}</span>
+              ${p.id === G.adminId ? '<span style="font-size:11px;color:var(--gold-bright)">(الأدمن)</span>' : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } else if (G.phase === 'answering') {
+    let promptTitle = 'السؤال المطروح';
+    let promptBody = '';
+    if (G.gameMode === 'at7adak') {
+      promptTitle = 'السؤال';
+      promptBody = G.currentPair?.normalText || '';
+    } else if (G.gameMode === 'akmil') {
+      promptTitle = 'أكمل الجملة التالية من جوالك';
+      promptBody = G.currentFill?.template || '';
+    } else {
+      promptTitle = `موقف — ${G.currentMakhraj?.speaker || ''}`;
+      promptBody = G.currentMakhraj?.situation || '';
+    }
+
+    stageHtml = `
+      <div class="question-monument">
+        <div class="monument-label">${esc(promptTitle)}</div>
+        <h2 class="monument-text">${esc(promptBody)}</h2>
+      </div>
+      <div style="margin-top:18px;text-align:center">
+        <div style="font-size:14px;color:var(--muted);margin-bottom:10px">تم استلام ${Object.keys(G.answers).length} من ${G.players.length} إجابات</div>
+        <div class="players-roster">
+          ${G.players.map(p => {
+            const done = !!G.answers[p.id];
+            return `<div class="player-chip" style="border-color:${done ? 'rgba(70,185,139,0.55)' : 'rgba(217,180,104,0.18)'}">
+              <span class="player-dot" style="background:${done ? '#46b98b' : p.color}"></span>
+              <span>${esc(p.name)}</span>
+              <span style="font-size:12px;color:${done ? '#7be3b5' : 'var(--muted)'}">${done ? 'أجاب ✓' : 'يكتب...'}</span>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  } else if (G.phase === 'twist_reveal') {
+    stageHtml = `
+      <div class="question-monument monument-twist">
+        <div class="monument-label" style="font-size:15px">لكن السؤال الحقيقي كان:</div>
+        <h2 class="monument-text" style="color:var(--gold-bright)">${esc(G.currentPair?.invertedText || '')}</h2>
+        <p style="margin:12px 0 0;font-size:15px;color:var(--ivory);opacity:0.86">السؤال الأول كان: «${esc(G.currentPair?.normalText || '')}»</p>
+      </div>
+      <div style="margin-top:18px"><button class="btn" onclick="window.__FUNNY_PACK.stepNext()">اعرض بطاقات الإجابات بالتدريج</button></div>
+    `;
+  } else if (G.phase === 'cards_reveal' || G.phase === 'voting') {
+    const headerPrompt = G.gameMode === 'at7adak'
+      ? (G.currentPair?.invertedText || '')
+      : (G.currentFill?.template || '');
+    const cards = G.revealOrder.slice(0, G.revealedCount).map(pid => {
+      const p = G.players.find(x => x.id === pid);
+      if (!p) return '';
+      const displayAns = G.gameMode === 'akmil'
+        ? spliceSentence(G.currentFill.template, G.answers[pid])
+        : (G.answers[pid] || '');
+      const voteCount = Object.values(G.votes).filter(v => v === pid).length;
+      return `
+        <div class="ans-card">
+          <div class="ans-author">
+            <span style="display:flex;align-items:center;gap:6px"><span class="player-dot" style="background:${p.color}"></span>${esc(p.name)}</span>
+            ${G.phase === 'voting' ? `<span style="color:var(--gold-bright)">أصوات: ${voteCount}</span>` : ''}
+          </div>
+          <div class="ans-body">${esc(displayAns)}</div>
+        </div>
+      `;
+    }).join('');
+
+    stageHtml = `
+      <div class="question-monument" style="padding:18px 24px">
+        <div class="monument-label">${G.phase === 'voting' ? 'صوّت لأطرف إجابة من جوالك الآن!' : `كشف البطاقات بالتدريج (${G.revealedCount} / ${G.revealOrder.length})`}</div>
+        <h2 class="monument-text" style="font-size:clamp(20px,2.5vw,30px)">${esc(headerPrompt)}</h2>
+      </div>
+      <div class="answers-grid">${cards}</div>
+    `;
+  } else if (G.phase === 'duel_vote' || G.phase === 'duel_reveal') {
+    const d = G.duels[G.duelIdx];
+    const pA = G.players.find(p => p.id === d?.aId);
+    const pB = G.players.find(p => p.id === d?.bId);
+    const totalV = (d?.votesA || 0) + (d?.votesB || 0);
+    stageHtml = `
+      <div class="question-monument" style="padding:18px 24px">
+        <div class="monument-label">المواجهة ${d.duelNum} من ${G.duels.length} · الجولة ${G.round} من ${G.totalRounds}</div>
+        <div class="speaker-line">${esc(G.currentMakhraj?.speaker || '')}:</div>
+        <h2 class="monument-text" style="font-size:clamp(19px,2.2vw,27px)">«${esc(G.currentMakhraj?.situation || '')}»</h2>
+      </div>
+
+      <div class="duel-arena">
+        <div class="duel-card ${d.revealed && d.votesA >= d.votesB ? 'revealed-win' : ''}">
+          <div class="duel-slot-tag">الرد الأول ${d.revealed ? `— هذا كان: ${esc(pA?.name || '')}` : '(مجهول الاسم حتى ينتهي التصويت)'}</div>
+          <div class="duel-answer-txt">«${esc(d.ansA)}»</div>
+          <div style="font-size:15px;font-weight:900;color:var(--gold-bright)">
+            ${d.revealed ? `${d.votesA} أصوات` : 'بانتظار أصوات غير المشاركين بالمواجهة'}
+          </div>
+        </div>
+
+        <div class="duel-vs">VS</div>
+
+        <div class="duel-card ${d.revealed && d.votesB >= d.votesA ? 'revealed-win' : ''}">
+          <div class="duel-slot-tag">الرد الثاني ${d.revealed ? `— هذا كان: ${esc(pB?.name || '')}` : '(مجهول الاسم حتى ينتهي التصويت)'}</div>
+          <div class="duel-answer-txt">«${esc(d.ansB)}»</div>
+          <div style="font-size:15px;font-weight:900;color:var(--gold-bright)">
+            ${d.revealed ? `${d.votesB} أصوات` : `تم التصويت: ${totalV}`}
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+        ملاحظة النظام: أطراف المواجهة الحالية تظهر لهم شاشة «سو نفسك تصوّت» لمنع كشف أصحاب الردود.
+      </div>
+    `;
+  } else if (G.phase === 'round_scores' || G.phase === 'podium') {
+    const isFinal = G.phase === 'podium';
+    stageHtml = `
+      <div style="text-align:center;margin-bottom:8px">
+        <div class="monument-label">${isFinal ? 'التتويج الختامي الملكي' : `الترتيب العام بعد الجولة ${G.round} من ${G.totalRounds}`}</div>
+        <h2 style="margin:4px 0;font-size:32px;font-weight:900;color:var(--gold-bright)">${isFinal ? `الفائز: ${esc(sorted[0]?.name || '')}` : 'لوحة الترتيب العام'}</h2>
+      </div>
+      <div class="standings-list">
+        ${sorted.map((p, idx) => `
+          <div class="standing-row ${idx === 0 ? 'first' : ''}">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="color:var(--gold-bright);width:26px">#${idx + 1}</span>
+              <span class="player-dot" style="background:${p.color}"></span>
+              <span>${esc(p.name)}</span>
+            </div>
+            <span style="color:var(--gold-bright);font-variant-numeric:tabular-nums">${p.score} نقطة</span>
+          </div>
+        `).join('')}
+      </div>
+      <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:center">
+        ${isFinal
+          ? `<button class="btn" onclick="window.__FUNNY_PACK.startGame()">جولة جديدة بنفس اللعبة</button>
+             <button class="btn btn-ruby" onclick="window.__FUNNY_PACK.backToLobby()">العودة لقائمة الألعاب الثلاث</button>`
+          : `<button class="btn" onclick="window.__FUNNY_PACK.stepNext()">${G.round < G.totalRounds ? 'الجولة التالية' : 'إعلان البطل النهائي'}</button>`
+        }
+      </div>
+    `;
+  }
+
+  // QuickPlay Interactive Control Dock (allows testing answering, voting, fake-vote shield, and Admin flow directly)
+  let qpDockHtml = '';
+  if (G.quickplay) {
+    const me = G.players.find(p => p.id === 'qp_1');
+    let qpContent = '';
+    if (G.phase === 'lobby') {
+      qpContent = `<span style="font-size:13px;color:var(--muted)">أنت الأدمن في وضع التجربة السريعة — اختر اللعبة واضبط الوقت ثم ابدأ:</span>
+        <button class="btn btn-sm" data-start="true" onclick="window.__FUNNY_PACK.startGame()">ابدأ ${esc(gm.title)}</button>`;
+    } else if (G.phase === 'answering') {
+      const answered = me && G.answers[me.id];
+      if (!answered) {
+        qpContent = `
+          <input id="qpInput" class="txt-input" type="text" placeholder="${G.gameMode==='makhraj'?'اكتب أقوى مخرج للرد على الموقف...':G.gameMode==='akmil'?'اكتب تكملة الجملة...':'اكتب إجابتك الصريحة...'}" value="${esc(G.qpInputDraft)}">
+          <button class="btn btn-sm" id="qpSubmitBtn">إرسال الإجابة</button>
+        `;
+      } else {
+        qpContent = `<span style="color:#7be3b5;font-weight:800">تم إرسال إجابتك ✓ — بانتظار باقي اللاعبين</span>
+          <button class="btn btn-ghost btn-sm" onclick="window.__FUNNY_PACK.forceEndAnswering()">إنهاء الوقت الآن</button>`;
+      }
+    } else if (G.phase === 'twist_reveal' || G.phase === 'cards_reveal') {
+      qpContent = `<span style="color:var(--gold-bright);font-weight:700">${G.phase==='twist_reveal'?'انكشف المعكوس!':'كشف البطاقات...'}</span>
+        <button class="btn btn-sm" onclick="window.__FUNNY_PACK.stepNext()">الخطوة التالية</button>`;
+    } else if (G.phase === 'voting') {
+      const voted = me && G.votes[me.id];
+      qpContent = voted
+        ? `<span style="color:#7be3b5;font-weight:800">تم تسجيل صوتك ✓</span><button class="btn btn-sm" onclick="window.__FUNNY_PACK.stepNext()">فرز النتائج</button>`
+        : `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span style="font-size:13px;color:var(--gold)">صوّت لإجابة:</span>
+            ${G.players.filter(p => p.id !== 'qp_1').map(p => `<button class="btn btn-ghost btn-sm" onclick="window.__FUNNY_PACK.castStdVote('qp_1','${p.id}')">${esc(p.name)}</button>`).join('')}
+          </div>`;
+    } else if (G.phase === 'duel_vote') {
+      const d = G.duels[G.duelIdx];
+      const inDuel = d && (d.aId === 'qp_1' || d.bId === 'qp_1');
+      if (inDuel) {
+        qpContent = `
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span style="color:#ff9bb3;font-weight:800">أنت طرف في هذه المواجهة — سو نفسك تصوّت! 🤫</span>
+            <button class="btn btn-ruby btn-sm" onclick="window.__FUNNY_PACK.fakeTap()">تظاهر بالتصويت 👀</button>
+            <button class="btn btn-ghost btn-sm" onclick="window.__FUNNY_PACK.stepNext()">إنهاء فرز المواجهة</button>
+            ${G.qpFakeNotice ? `<span style="font-size:12px;color:var(--gold-bright)">${esc(G.qpFakeNotice)}</span>` : ''}
+          </div>
+        `;
+      } else if (d && !d.votedIds.includes('qp_1')) {
+        qpContent = `
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-size:13px;color:var(--gold)">اختر أطرف مخرج:</span>
+            <button class="btn btn-sm" onclick="window.__FUNNY_PACK.castDuel('qp_1','A')">صوّت للرد الأول</button>
+            <button class="btn btn-sm" onclick="window.__FUNNY_PACK.castDuel('qp_1','B')">صوّت للرد الثاني</button>
+          </div>
+        `;
+      } else {
+        qpContent = `<span style="color:#7be3b5;font-weight:800">تم التصويت للمواجهة ✓</span><button class="btn btn-sm" onclick="window.__FUNNY_PACK.stepNext()">كشف الأسماء</button>`;
+      }
+    } else if (G.phase === 'duel_reveal') {
+      qpContent = `<span style="color:var(--gold-bright);font-weight:800">تم كشف أصحاب الردود!</span><button class="btn btn-sm" onclick="window.__FUNNY_PACK.stepNext()">المتابعة</button>`;
+    } else {
+      qpContent = `<button class="btn btn-ghost btn-sm" onclick="window.__FUNNY_PACK.backToLobby()">تغيير اللعبة</button>`;
+    }
+    qpDockHtml = `<div class="qp-dock">${qpContent}</div>`;
+  }
+
+  root.innerHTML = `
+    <div class="tv-shell">
+      <header class="tv-topbar">
+        <div class="brand-crest">
+          <div class="jewel-emblem"><span>✦</span></div>
+          <div>
+            <div class="brand-title">الألعاب المضحكة · ${esc(gm.title)}</div>
+            <div class="brand-sub">${esc(roundLabel)}</div>
+          </div>
+        </div>
+        <div class="hud-stats">
+          ${G.phase !== 'lobby' ? `<button class="btn btn-ghost btn-sm" onclick="window.__FUNNY_PACK.backToLobby()">الألعاب الثلاث</button>` : ''}
+          ${(G.phase === 'answering' || G.phase === 'voting' || G.phase === 'duel_vote')
+            ? `<div class="timer-dial ${G.timeLeft <= 6 ? 'urgent' : ''}">${G.timeLeft} ث</div>`
+            : `<div class="timer-dial">${G.players.length} لاعبين</div>`}
+        </div>
+      </header>
+      <main class="tv-stage">${stageHtml}</main>
+      ${qpDockHtml}
+    </div>
+  `;
+
+  const qpInput = document.getElementById('qpInput');
+  const qpBtn = document.getElementById('qpSubmitBtn');
+  if (qpInput && qpBtn) {
+    qpInput.focus();
+    qpInput.addEventListener('input', () => { G.qpInputDraft = qpInput.value; });
+    const send = () => { if (qpInput.value.trim()) submitPlayerAnswer('qp_1', qpInput.value); };
+    qpBtn.onclick = send;
+    qpInput.onkeydown = e => { if (e.key === 'Enter') send(); };
+  }
+}
+
+/* ===================== 7. واجهة الجوال الفاخرة (EMB Phone) ===================== */
+let phState = null;
+let phMyId = '';
+let phLastKey = '';
+let phLocalFakeHint = '';
+
+function renderPhone() {
+  const root = document.getElementById('root');
+  if (!root) return;
+  if (!phState) {
+    root.innerHTML = `<div class="card"><h3>جارٍ الاتصال بغرفة الألعاب المضحكة...</h3><p style="color:var(--muted)">الرمز: ${esc(EMB?.code || '')}</p></div>`;
+    return;
+  }
+  const s = phState;
+  const isAdmin = s.adminId && phMyId === s.adminId;
+  const key = [s.phase, s.gameMode, s.round, s.duel?.duelNum, s.duel?.revealed, isAdmin, s.answeredIds.includes(phMyId), s.duel?.votedIds?.includes(phMyId), phLocalFakeHint].join('|');
+  if (key === phLastKey) return;
+  phLastKey = key;
+
+  let bodyHtml = '';
+  const adminBar = isAdmin ? `
+    <div style="border-bottom:1px solid rgba(217,180,104,0.2);padding-bottom:12px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:12px;color:var(--gold-bright);font-weight:800">صلاحيات الأدمن</div>
+      ${s.phase === 'lobby' ? `
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">
+          ${Object.entries(GAME_MODES).map(([k, info]) => `<button class="seg-btn ${s.gameMode===k?'on':''}" onclick="ctlSend({t:'admin',action:'mode',mode:'${k}'})">${info.title}</button>`).join('')}
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">
+          ${[20,35,45,60].map(sec => `<button class="seg-btn ${s.roundTimeSec===sec?'on':''}" onclick="ctlSend({t:'admin',action:'timer',sec:${sec}})">${sec} ث</button>`).join('')}
+          ${[3,4,6].map(r => `<button class="seg-btn ${s.totalRounds===r?'on':''}" onclick="ctlSend({t:'admin',action:'rounds',rounds:${r}})">${r} جولات</button>`).join('')}
+        </div>
+        <button class="btn" onclick="ctlSend({t:'admin',action:'start'})">ابدأ اللعبة الآن</button>
+      ` : `
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-sm" onclick="ctlSend({t:'admin',action:'next'})">الخطوة التالية</button>
+          <button class="btn btn-ghost btn-sm" onclick="ctlSend({t:'admin',action:'lobby'})">تغيير اللعبة</button>
+        </div>
+      `}
+    </div>
+  ` : '';
+
+  if (s.phase === 'lobby') {
+    bodyHtml = `<div class="ph-card">${adminBar}<h3 style="margin:0;color:var(--gold-bright)">طالع التلفزيون</h3><p style="margin:0;color:var(--muted)">${isAdmin ? 'اختر اللعبة واضبط الوقت ثم اضغط ابدأ.' : 'الأدمن يضبط إعدادات الجولة الآن...'}</p></div>`;
+  } else if (s.phase === 'answering') {
+    const already = s.answeredIds.includes(phMyId);
+    if (already) {
+      bodyHtml = `<div class="ph-card">${adminBar}<h3 style="margin:0;color:#7be3b5">تم استلام إجابتك ✓</h3><p style="margin:0;color:var(--muted)">طالع التلفزيون حتى يكمل الجميع.</p></div>`;
+    } else {
+      const promptBox = s.gameMode === 'akmil'
+        ? `<p style="font-size:16px;font-weight:800;color:var(--gold-bright);margin:0">${esc(s.promptFill)}</p>`
+        : s.gameMode === 'makhraj'
+        ? `<p style="font-size:15px;font-weight:700;color:var(--gold-bright);margin:0">${esc(s.makhraj?.speaker || '')}: ${esc(s.makhraj?.situation || '')}</p>`
+        : `<p style="font-size:15px;font-weight:700;color:var(--muted);margin:0">طالع السؤال المعروض على التلفزيون وأجب بسرعة</p>`;
+
+      bodyHtml = `
+        <div class="ph-card">
+          ${adminBar}
+          ${promptBox}
+          <input id="phAnsInput" class="txt-input" type="text" placeholder="اكتب إجابتك هنا..." maxlength="110">
+          <button class="btn" id="phAnsSend">إرسال الإجابة</button>
+        </div>
+      `;
+    }
+  } else if (s.phase === 'twist_reveal' || s.phase === 'cards_reveal') {
+    bodyHtml = `<div class="ph-card">${adminBar}<h3 style="margin:0;color:var(--gold-bright)">طالع التلفزيون!</h3><p style="margin:0;color:var(--muted)">تُكشف البطاقات الآن على الشاشة الكبيرة...</p></div>`;
+  } else if (s.phase === 'voting') {
+    const others = (s.revealedAnswers || []).filter(a => a.id !== phMyId);
+    bodyHtml = `
+      <div class="ph-card">
+        ${adminBar}
+        <h3 style="margin:0;color:var(--gold-bright)">صوّت لأطرف إجابة</h3>
+        ${others.map(a => `<button class="vote-btn" onclick="ctlSend({t:'vote',target:'${a.id}'})">${esc(a.text)}</button>`).join('')}
+      </div>
+    `;
+  } else if (s.phase === 'duel_vote') {
+    const d = s.duel;
+    const inDuel = d && (d.aId === phMyId || d.bId === phMyId);
+    if (inDuel) {
+      bodyHtml = `
+        <div class="ph-card">
+          ${adminBar}
+          <div class="fake-box">
+            <h3 style="margin:0 0 8px;color:var(--gold-bright)">أنت في هذه المواجهة! 🤫</h3>
+            <p style="margin:0 0 14px;font-size:14px;color:var(--ivory)">ما يمديك تصوت لأن ردك معروض الحين — <strong>سو نفسك تصوّت</strong> ولا تبين للباقين!</p>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="vote-btn" style="text-align:center" onclick="window.__FUNNY_PACK.phFakeTap()">تظاهر بالتصويت للرد الأول 👀</button>
+              <button class="vote-btn" style="text-align:center" onclick="window.__FUNNY_PACK.phFakeTap()">تظاهر بالتصويت للرد الثاني 👀</button>
+            </div>
+            ${phLocalFakeHint ? `<div style="margin-top:10px;font-size:12px;color:var(--gold)">${esc(phLocalFakeHint)}</div>` : ''}
+          </div>
+        </div>
+      `;
+    } else if (d && d.votedIds.includes(phMyId)) {
+      bodyHtml = `<div class="ph-card">${adminBar}<h3 style="margin:0;color:#7be3b5">تم تسجيل صوتك ✓</h3><p style="margin:0;color:var(--muted)">شاهد كشف الأسماء على التلفزيون.</p></div>`;
+    } else {
+      bodyHtml = `
+        <div class="ph-card">
+          ${adminBar}
+          <h3 style="margin:0;color:var(--gold-bright)">اختر المخرج الأذكى (بدون أسماء)</h3>
+          <button class="vote-btn" onclick="ctlSend({t:'duelVote',side:'A'})">١) ${esc(d?.ansA || '')}</button>
+          <button class="vote-btn" onclick="ctlSend({t:'duelVote',side:'B'})">٢) ${esc(d?.ansB || '')}</button>
+        </div>
+      `;
+    }
+  } else {
+    bodyHtml = `<div class="ph-card">${adminBar}<h3 style="margin:0;color:var(--gold-bright)">طالع الترتيب على التلفزيون</h3><p style="margin:0;color:var(--muted)">تحديث النقاط على الشاشة الرئيسية.</p></div>`;
+  }
+
+  root.innerHTML = `
+    <div class="ph-wrap">
+      <div class="ph-head">
+        <span style="font-weight:900;color:var(--gold-bright)">${esc(EMB?.name || 'لاعب')}</span>
+        <span style="font-size:13px;color:var(--muted)">الغرفة ${esc(s.code)}</span>
+      </div>
+      ${bodyHtml}
+    </div>
+  `;
+
+  const inp = document.getElementById('phAnsInput');
+  const snd = document.getElementById('phAnsSend');
+  if (inp && snd) {
+    snd.onclick = () => {
+      if (!inp.value.trim()) return;
+      ctlSend({ t: 'answer', text: inp.value.trim() });
+    };
+  }
+}
+
+/* ===================== 8. ربط دوال EMB والبدء ===================== */
+window.__FUNNY_PACK = {
+  startTv() {
+    if (!verifyFunnyIntegrity()) return;
+    G.code = EMB?.code || 'RYD6';
+    G.quickplay = false;
+    G.botFillCount = 0; // في البث الجماعي الحقيقي تبدأ بالمتصلين الفعليين (ويمكن للأدمن إكمال المقاعد)
+    setInterval(broadcastState, 220);
+    renderTv();
+  },
+  startPhone() {
+    if (!verifyFunnyIntegrity()) return;
+    ctlSend({ t: 'join', name: EMB?.name || 'لاعب' });
+    renderPhone();
+  },
+  onHostMsg(c, data) {
+    if (!data || !data.t) return;
+    if (data.t === 'join') {
+      if (!G.players.find(p => p.id === c.id)) {
+        const humans = G.players.filter(p => !p.isBot);
+        if (!G.adminId) G.adminId = c.id; // أول من يدخل هو الأدمن
+        G.players.push({
+          id: c.id,
+          name: String(data.name || EMB?.name || 'لاعب').slice(0, 18),
+          color: PLAYER_COLORS[humans.length % PLAYER_COLORS.length],
+          score: 0,
+          isBot: false
+        });
+        syncBots();
+      }
+      c.send({ t: 'welcome', id: c.id });
+      renderTv(); broadcastState();
+    } else if (data.t === 'admin' && c.id === G.adminId) {
+      if (data.action === 'mode' && GAME_MODES[data.mode]) G.gameMode = data.mode;
+      else if (data.action === 'timer') G.roundTimeSec = Math.max(15, Math.min(120, Number(data.sec) || 35));
+      else if (data.action === 'rounds') G.totalRounds = Math.max(1, Math.min(10, Number(data.rounds) || 4));
+      else if (data.action === 'bots') { G.botFillCount = Math.max(0, Math.min(6, Number(data.count) || 0)); syncBots(); }
+      else if (data.action === 'start') { startGameSession(data.mode || G.gameMode); return; }
+      else if (data.action === 'next') { stepRevealOrNext(); return; }
+      else if (data.action === 'lobby') { clearTimers(); G.phase = 'lobby'; }
+      renderTv(); broadcastState();
+    } else if (data.t === 'answer') {
+      submitPlayerAnswer(c.id, data.text);
+    } else if (data.t === 'vote') {
+      submitStandardVote(c.id, data.target);
+    } else if (data.t === 'duelVote') {
+      castDuelVote(c.id, data.side);
+    }
+  },
+  onPlayerLeave(id) {
+    G.players = G.players.filter(p => p.id !== id);
+    if (G.adminId === id) {
+      const nextHuman = G.players.find(p => !p.isBot);
+      G.adminId = nextHuman ? nextHuman.id : '';
+    }
+    renderTv(); broadcastState();
+  },
+  onCtlMsg(data) {
+    if (!data) return;
+    if (data.t === 'welcome') { phMyId = data.id; phLastKey = ''; renderPhone(); return; }
+    phState = data;
+    renderPhone();
+  },
+  startQuickPlay(modeOverride) {
+    if (!verifyFunnyIntegrity()) return;
+    embReveal();
+    G.quickplay = true;
+    G.code = 'RYD6';
+    G.adminId = 'qp_1';
+    G.botFillCount = 5;
+    G.players = [{ id: 'qp_1', name: 'أنت', color: PLAYER_COLORS[0], score: 0, isBot: false }];
+    syncBots();
+    G.phase = 'lobby';
+    if (modeOverride && GAME_MODES[modeOverride]) startGameSession(modeOverride);
+    else renderTv();
+  },
+  selectMode(m) { if (GAME_MODES[m]) { G.gameMode = m; renderTv(); broadcastState(); } },
+  setTimer(s) { G.roundTimeSec = s; renderTv(); broadcastState(); },
+  setRounds(r) { G.totalRounds = r; renderTv(); broadcastState(); },
+  setBots(b) { G.botFillCount = b; syncBots(); renderTv(); broadcastState(); },
+  startGame(m) { startGameSession(m || G.gameMode); },
+  forceEndAnswering() { if (G.phase === 'answering') finalizeAnsweringPhase(); },
+  stepNext() { stepRevealOrNext(); },
+  backToLobby() { clearTimers(); G.phase = 'lobby'; renderTv(); broadcastState(); },
+  castStdVote(v, t) { submitStandardVote(v, t); },
+  castDuel(v, s) { castDuelVote(v, s); },
+  fakeTap() { G.qpFakeNotice = 'ممتاز! واصل التظاهر بالتصويت دون كشف ردك 👀'; renderTv(); },
+  phFakeTap() { phLocalFakeHint = 'تم التمويه بصمت ✓ واصل التظاهر أمام الجميع'; phLastKey = ''; renderPhone(); }
+};
+
+while (__q.length) {
+  const [fn, args] = __q.shift();
+  if (window.__FUNNY_PACK[fn]) window.__FUNNY_PACK[fn](...args);
+}
+
+(function() {
+  const qs = new URLSearchParams(location.search);
+  const direct = qs.get('game');
+  if (qs.has('quickplay') || qs.has('autostart')) {
+    window.__FUNNY_PACK.startQuickPlay(direct);
+  } else setTimeout(() => {
+    if (!EMB) {
+      embReveal();
+      document.getElementById('root').innerHTML = `<div class="card"><div style="font-size:13px;color:var(--gold);font-weight:800;margin-bottom:6px">باقة الألعاب المضحكة</div><h1 style="color:var(--gold-bright);margin:0 0 10px">أتحداك تجاوب صح · أكمل الجملة · دور مخرج</h1><p style="color:var(--muted);margin:0 0 18px">أكثر من ${TOTAL_NORMAL_COUNT} سؤالاً عاديًا ومثلها معكوسًا، مع نظام المواجهات السرية والترتيب العام.</p><button class="btn" data-start="true" onclick="startQuickPlay()">تشغيل سريع</button></div>`;
+    }
+  }, 350);
+})();
+</script>
+</body>
+</html>

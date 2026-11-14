@@ -1,0 +1,10 @@
+{
+  "id": "cargo_empire_3d",
+  "slug": "02-cargo-empire-3d",
+  "name": "ناقلة القوافل 3D",
+  "description": "محاكي قيادة شاحنات ثقيلة ونقل بضائع ثلاثي الأبعاد عبر طرق صحراوية وجبلية مع إدارة الوقود وتوازن الحمولة وعقود التوصيل.",
+  "cover": "cover.jpg",
+  "entry": "game.html",
+  "maxPlayers": 4,
+  "compatibleWith": "ليالي الرياض"
+}
