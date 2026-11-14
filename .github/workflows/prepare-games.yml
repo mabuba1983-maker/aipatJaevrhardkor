@@ -96,13 +96,18 @@ jobs:
           PY
 
 
-      - name: Validate JavaScript syntax in updated libraries and game pages
+      - name: Validate embedded game HTML and JavaScript syntax
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re, subprocess, tempfile
+          import base64, re, subprocess, tempfile
 
+          expected_ids = [
+              "captainBean", "rocketSoccer3D", "highwayRace",
+              "challenges_pack", "cargo_empire_3d", "dira_market_3d",
+              "football_2d", "carrom_2d", "funny_games_pack"
+          ]
           targets = [
               Path("مكتبة_الألعاب-1.html"),
               Path("app/src/main/assets/مكتبة_الألعاب-1.html"),
@@ -111,28 +116,43 @@ jobs:
               Path("highway-race-1.html"),
           ]
           targets += list(Path("prepared-games").rglob("*.html"))
+          virtual_pages = []
+          for library in targets[:2]:
+              source = library.read_text(encoding="utf-8", errors="replace")
+              for game_id in expected_ids:
+                  pattern = r'"id"\\s*:\\s*"' + re.escape(game_id) + r'"[\\s\\S]*?"b64"\\s*:\\s*"([^"]*)"'
+                  match = re.search(pattern, source)
+                  if not match or not match.group(1):
+                      raise SystemExit(f"Missing embedded HTML base64 for {game_id} in {library}")
+                  try:
+                      decoded = base64.b64decode(match.group(1), validate=True).decode("utf-8")
+                  except Exception as exc:
+                      raise SystemExit(f"Invalid base64/UTF-8 for {game_id} in {library}: {exc}")
+                  if "<html" not in decoded.lower() or "<title" not in decoded.lower():
+                      raise SystemExit(f"Decoded game HTML looks incomplete: {game_id} in {library}")
+                  virtual_pages.append((f"{library} -> {game_id}", decoded))
+
           checked = 0
           with tempfile.TemporaryDirectory() as tmp:
-              for page in targets:
-                  if not page.is_file():
-                      continue
-                  source = page.read_text(encoding="utf-8", errors="replace")
-                  for index, match in enumerate(re.finditer(r"<script\b([^>]*)>([\s\S]*?)</script\s*>", source, re.I)):
+              pages = [(str(p), p.read_text(encoding="utf-8", errors="replace")) for p in targets if p.is_file()]
+              pages += virtual_pages
+              for label, source in pages:
+                  for index, match in enumerate(re.finditer(r"<script\\b([^>]*)>([\\s\\S]*?)</script\\s*>", source, re.I)):
                       attrs, code = match.group(1), match.group(2)
-                      if re.search(r"\bsrc\s*=", attrs, re.I) or not code.strip():
+                      if re.search(r"\\bsrc\\s*=", attrs, re.I) or not code.strip():
                           continue
-                      typ = re.search(r"""\btype\s*=\s*["']([^"']+)["']""", attrs, re.I)
+                      typ = re.search(r"""\\btype\\s*=\\s*["']([^"']+)["']""", attrs, re.I)
                       if typ and typ.group(1).lower() not in ("text/javascript", "application/javascript", "module"):
                           continue
                       script = Path(tmp) / f"check_{checked}.js"
                       script.write_text(code, encoding="utf-8")
                       result = subprocess.run(["node", "--check", str(script)], capture_output=True, text=True)
                       if result.returncode:
-                          print(f"SYNTAX ERROR: {page} inline script #{index + 1}")
+                          print(f"SYNTAX ERROR: {label} inline script #{index + 1}")
                           print(result.stderr)
                           raise SystemExit(result.returncode)
                       checked += 1
-          print(f"JavaScript syntax checks passed: {checked} inline scripts across updated files.")
+          print(f"Embedded HTML checks passed: {len(virtual_pages)} game copies decoded; JavaScript syntax checks passed: {checked} inline scripts.")
           PY
 
       - name: Upload fully extracted files for inspection
