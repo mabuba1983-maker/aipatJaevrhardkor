@@ -1,18 +1,7 @@
-name: Build Layali Riyadh APK
+name: PAUSED - Layali Riyadh APK (Manual Only)
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/build-apk.yml'
-      - '*.html'
-      - 'app/src/main/**'
-      - 'app/build.gradle'
-      - 'build.gradle'
-      - 'settings.gradle'
-      - 'gradle.properties'
 
 permissions:
   contents: read
