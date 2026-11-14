@@ -1,4 +1,4 @@
-name: Layali Riyadh APK + AAB
+name: Layali Riyadh APK
 
 on:
   workflow_dispatch:
@@ -244,7 +244,7 @@ jobs:
           node /tmp/game-smoke-test.cjs
 
       - name: Build installable debug APK and release AAB
-        run: gradle --no-daemon assembleDebug bundleRelease
+        run: gradle --no-daemon assembleDebug
 
       - name: Verify requested games are inside the APK byte-for-byte
         shell: bash
@@ -275,12 +275,11 @@ jobs:
           print(f"APK verified: {apk} ({apk.stat().st_size} bytes)")
           PY
 
-      - name: Upload APK and AAB
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Layali-Riyadh-APK-and-AAB
+          name: Layali-Riyadh-APK
           path: |
             app/build/outputs/apk/debug/*.apk
-            app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
           retention-days: 14
