@@ -66,6 +66,8 @@ jobs:
           library = assets / "مكتبة_الألعاب-1.html"
           if not library.is_file() or library.stat().st_size < 1000:
               raise SystemExit("The app-specific game library asset is missing or incomplete.")
+          # Android's asset path is ASCII to avoid filename/encoding edge cases in APK packaging.
+          copy2(library, assets / "game-library.html")
 
           # Copy root HTML games only when the app does not already have an app-specific copy.
           # The library is intentionally preserved because its Android asset copy contains the
@@ -126,6 +128,7 @@ jobs:
 
           for name in (
               "مكتبة_الألعاب-1.html",
+              "game-library.html",
               "tahadi_al_ashara (1).html",
               "captain-bean-layali-riyadh (1).html",
               "captain-bean-layali-riyadh.html",
@@ -252,7 +255,7 @@ jobs:
               ("tahadi_al_ashara (1).html", Path("tahadi_al_ashara (1).html")),
               ("captain-bean-layali-riyadh (1).html", Path("captain-bean-layali-riyadh (1).html")),
               ("captain-bean-layali-riyadh.html", Path("captain-bean-layali-riyadh (1).html")),
-              ("مكتبة_الألعاب-1.html", Path("app/src/main/assets/مكتبة_الألعاب-1.html")),
+              ("game-library.html", Path("app/src/main/assets/مكتبة_الألعاب-1.html")),
           ]
           with ZipFile(apk) as z:
               names = set(z.namelist())
