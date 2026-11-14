@@ -8,7 +8,6 @@ on:
       - '.github/workflows/prepare-games.yml'
       - 'مكتبة_الألعاب-1.html'
       - 'app/src/main/assets/مكتبة_الألعاب-1.html'
-      - 'captain-bean-layali-riyadh.html'
       - 'Rocket_Soccer-4.html'
       - 'highway-race-1.html'
 
@@ -104,15 +103,14 @@ jobs:
           import base64, re, subprocess, tempfile
 
           expected_ids = [
-              "captainBean", "rocketSoccer3D", "highwayRace",
+              "rocketSoccer3D", "highwayRace",
               "challenges_pack", "cargo_empire_3d", "dira_market_3d",
               "football_2d", "carrom_2d", "funny_games_pack"
           ]
           targets = [
               Path("مكتبة_الألعاب-1.html"),
               Path("app/src/main/assets/مكتبة_الألعاب-1.html"),
-              Path("captain-bean-layali-riyadh.html"),
-              Path("Rocket_Soccer-4.html"),
+                            Path("Rocket_Soccer-4.html"),
               Path("highway-race-1.html"),
           ]
           targets += list(Path("prepared-games").rglob("*.html"))
