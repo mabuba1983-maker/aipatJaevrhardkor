@@ -12,13 +12,13 @@ permissions:
 
 jobs:
   prepare-games:
-    name: Extract and inspect game archive (NO APK BUILD)
+    name: Extract and inspect game archives (NO APK BUILD)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract ZIP safely and create manifest
+      - name: Extract outer and nested ZIP files and create full manifest
         shell: bash
         run: |
           python3 - <<'PY'
@@ -26,54 +26,66 @@ jobs:
           from zipfile import ZipFile
           import json
 
-          archive = Path("العاب ليالي الرياض.zip")
-          output = Path("prepared-games")
-          output.mkdir(exist_ok=True)
+          root = Path("prepared-games")
+          root.mkdir(exist_ok=True)
+          outer = Path("العاب ليالي الرياض.zip")
+          if not outer.is_file():
+              raise SystemExit("ERROR: outer archive missing")
 
-          if not archive.is_file():
-              raise SystemExit("ERROR: العاب ليالي الرياض.zip was not found.")
+          records = []
+          def safe_target(base, member):
+              name = member.replace("\\\\", "/")
+              rel = PurePosixPath(name)
+              if rel.is_absolute() or ".." in rel.parts:
+                  raise SystemExit(f"Unsafe archive path rejected: {name}")
+              return base.joinpath(*rel.parts), name
 
-          extracted = []
-          with ZipFile(archive) as zf:
-              for info in zf.infolist():
-                  name = info.filename.replace("\\\\", "/")
-                  rel = PurePosixPath(name)
-                  if rel.is_absolute() or ".." in rel.parts:
-                      raise SystemExit(f"Unsafe ZIP path rejected: {name}")
-                  if info.is_dir():
-                      continue
-                  target = output.joinpath(*rel.parts)
-                  target.parent.mkdir(parents=True, exist_ok=True)
-                  with zf.open(info) as src, target.open("wb") as dst:
-                      dst.write(src.read())
-                  extracted.append({
-                      "path": str(target),
-                      "archive_path": name,
-                      "size_bytes": target.stat().st_size,
-                      "is_html": target.suffix.lower() in (".html", ".htm")
-                  })
+          def unpack(archive_path, destination, depth=0):
+              if depth > 4:
+                  raise SystemExit("Nested ZIP depth exceeded safety limit")
+              with ZipFile(archive_path) as zf:
+                  for info in zf.infolist():
+                      if info.is_dir():
+                          continue
+                      target, member = safe_target(destination, info.filename)
+                      target.parent.mkdir(parents=True, exist_ok=True)
+                      with zf.open(info) as src, target.open("wb") as dst:
+                          dst.write(src.read())
+                      records.append({
+                          "path": str(target),
+                          "archive_member": member,
+                          "size_bytes": target.stat().st_size,
+                          "type": target.suffix.lower() or "(no extension)",
+                          "nested_level": depth
+                      })
+                      if target.suffix.lower() == ".zip":
+                          nested_dir = target.with_suffix("")
+                          nested_dir.mkdir(exist_ok=True)
+                          unpack(target, nested_dir, depth + 1)
 
+          unpack(outer, root)
           manifest = {
-              "archive": archive.name,
-              "extracted_file_count": len(extracted),
-              "html_file_count": sum(item["is_html"] for item in extracted),
-              "files": extracted
+              "source_archive": outer.name,
+              "total_extracted_files_including_nested": len(records),
+              "html_files": [r for r in records if r["type"] in (".html", ".htm")],
+              "zip_files": [r for r in records if r["type"] == ".zip"],
+              "all_files": records
           }
-          (output / "manifest.json").write_text(
+          (root / "manifest.json").write_text(
               json.dumps(manifest, ensure_ascii=False, indent=2),
               encoding="utf-8"
           )
-
-          print(f"Extracted files: {len(extracted)}")
-          print(f"HTML files: {manifest['html_file_count']}")
-          for item in extracted:
-              print(f"- {item['archive_path']} ({item['size_bytes']} bytes)")
+          print(f"Total files including nested archives: {len(records)}")
+          print(f"HTML files: {len(manifest['html_files'])}")
+          print(f"Nested ZIP files: {len(manifest['zip_files'])}")
+          for item in records:
+              print(f"- {item['path']} | {item['size_bytes']} bytes | {item['type']}")
           PY
 
-      - name: Upload extracted games for inspection
+      - name: Upload fully extracted files for inspection
         uses: actions/upload-artifact@v4
         with:
-          name: Layali-Riyadh-Extracted-Games
+          name: Layali-Riyadh-Fully-Extracted-Games
           path: prepared-games/
           if-no-files-found: error
           retention-days: 14
