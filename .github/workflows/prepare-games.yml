@@ -173,5 +173,6 @@ jobs:
             echo "No extracted-file changes to commit."
           else
             git commit -m "Stage extracted Layali Riyadh game sources for review"
+            git pull --rebase origin main
             git push
           fi
