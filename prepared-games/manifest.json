@@ -1,6 +1,6 @@
 {
-  "source_archive": "العاب ليالي الرياض.zip",
-  "total_extracted_files_including_nested": 34,
+  "source_archive": "العاب ليالي الرياض (١).zip",
+  "total_extracted_files_including_nested": 32,
   "html_files": [
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/01-challenges-pack/game.html",
@@ -12,56 +12,42 @@
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/02-cargo-empire-3d/game.html",
       "archive_member": "02-cargo-empire-3d/game.html",
-      "size_bytes": 40805,
+      "size_bytes": 41013,
       "type": ".html",
       "nested_level": 1
     },
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/03-dira-market-3d/game.html",
       "archive_member": "03-dira-market-3d/game.html",
-      "size_bytes": 38933,
+      "size_bytes": 39141,
       "type": ".html",
       "nested_level": 1
     },
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/04-football-2d/game.html",
       "archive_member": "04-football-2d/game.html",
-      "size_bytes": 46805,
+      "size_bytes": 47013,
       "type": ".html",
       "nested_level": 1
     },
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/05-carrom-2d/game.html",
       "archive_member": "05-carrom-2d/game.html",
-      "size_bytes": 31977,
+      "size_bytes": 32185,
       "type": ".html",
       "nested_level": 1
     },
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/06-funny-games-pack/game.html",
       "archive_member": "06-funny-games-pack/game.html",
-      "size_bytes": 112005,
+      "size_bytes": 119377,
       "type": ".html",
       "nested_level": 1
     },
     {
-      "path": "prepared-games/العاب ليالي الرياض/captain-bean-layali-riyadh.html",
-      "archive_member": "العاب ليالي الرياض/captain-bean-layali-riyadh.html",
-      "size_bytes": 29506,
-      "type": ".html",
-      "nested_level": 0
-    },
-    {
       "path": "prepared-games/العاب ليالي الرياض/Rocket_Soccer-4.html",
       "archive_member": "العاب ليالي الرياض/Rocket_Soccer-4.html",
-      "size_bytes": 86331,
-      "type": ".html",
-      "nested_level": 0
-    },
-    {
-      "path": "prepared-games/العاب ليالي الرياض/highway-race-1.html",
-      "archive_member": "العاب ليالي الرياض/highway-race-1.html",
-      "size_bytes": 79744,
+      "size_bytes": 86332,
       "type": ".html",
       "nested_level": 0
     }
@@ -70,7 +56,7 @@
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean.zip",
       "archive_member": "العاب ليالي الرياض/riyadh-nights-6-games-clean.zip",
-      "size_bytes": 1961556,
+      "size_bytes": 1966672,
       "type": ".zip",
       "nested_level": 0
     }
@@ -79,7 +65,7 @@
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean.zip",
       "archive_member": "العاب ليالي الرياض/riyadh-nights-6-games-clean.zip",
-      "size_bytes": 1961556,
+      "size_bytes": 1966672,
       "type": ".zip",
       "nested_level": 0
     },
@@ -128,14 +114,14 @@
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/02-cargo-empire-3d/riyadh-nights-entry.js",
       "archive_member": "02-cargo-empire-3d/riyadh-nights-entry.js",
-      "size_bytes": 233108,
+      "size_bytes": 233384,
       "type": ".js",
       "nested_level": 1
     },
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/02-cargo-empire-3d/game.html",
       "archive_member": "02-cargo-empire-3d/game.html",
-      "size_bytes": 40805,
+      "size_bytes": 41013,
       "type": ".html",
       "nested_level": 1
     },
@@ -163,14 +149,14 @@
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/03-dira-market-3d/riyadh-nights-entry.js",
       "archive_member": "03-dira-market-3d/riyadh-nights-entry.js",
-      "size_bytes": 272146,
+      "size_bytes": 272422,
       "type": ".js",
       "nested_level": 1
     },
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/03-dira-market-3d/game.html",
       "archive_member": "03-dira-market-3d/game.html",
-      "size_bytes": 38933,
+      "size_bytes": 39141,
       "type": ".html",
       "nested_level": 1
     },
@@ -198,14 +184,14 @@
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/04-football-2d/riyadh-nights-entry.js",
       "archive_member": "04-football-2d/riyadh-nights-entry.js",
-      "size_bytes": 216464,
+      "size_bytes": 216740,
       "type": ".js",
       "nested_level": 1
     },
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/04-football-2d/game.html",
       "archive_member": "04-football-2d/game.html",
-      "size_bytes": 46805,
+      "size_bytes": 47013,
       "type": ".html",
       "nested_level": 1
     },
@@ -233,14 +219,14 @@
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/05-carrom-2d/riyadh-nights-entry.js",
       "archive_member": "05-carrom-2d/riyadh-nights-entry.js",
-      "size_bytes": 189945,
+      "size_bytes": 190225,
       "type": ".js",
       "nested_level": 1
     },
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/05-carrom-2d/game.html",
       "archive_member": "05-carrom-2d/game.html",
-      "size_bytes": 31977,
+      "size_bytes": 32185,
       "type": ".html",
       "nested_level": 1
     },
@@ -268,21 +254,21 @@
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/06-funny-games-pack/riyadh-nights-entry.js",
       "archive_member": "06-funny-games-pack/riyadh-nights-entry.js",
-      "size_bytes": 277279,
+      "size_bytes": 287120,
       "type": ".js",
       "nested_level": 1
     },
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/06-funny-games-pack/game.html",
       "archive_member": "06-funny-games-pack/game.html",
-      "size_bytes": 112005,
+      "size_bytes": 119377,
       "type": ".html",
       "nested_level": 1
     },
     {
       "path": "prepared-games/العاب ليالي الرياض/riyadh-nights-6-games-clean/06-funny-games-pack/info.json",
       "archive_member": "06-funny-games-pack/info.json",
-      "size_bytes": 585,
+      "size_bytes": 594,
       "type": ".json",
       "nested_level": 1
     },
@@ -294,23 +280,9 @@
       "nested_level": 1
     },
     {
-      "path": "prepared-games/العاب ليالي الرياض/captain-bean-layali-riyadh.html",
-      "archive_member": "العاب ليالي الرياض/captain-bean-layali-riyadh.html",
-      "size_bytes": 29506,
-      "type": ".html",
-      "nested_level": 0
-    },
-    {
       "path": "prepared-games/العاب ليالي الرياض/Rocket_Soccer-4.html",
       "archive_member": "العاب ليالي الرياض/Rocket_Soccer-4.html",
-      "size_bytes": 86331,
-      "type": ".html",
-      "nested_level": 0
-    },
-    {
-      "path": "prepared-games/العاب ليالي الرياض/highway-race-1.html",
-      "archive_member": "العاب ليالي الرياض/highway-race-1.html",
-      "size_bytes": 79744,
+      "size_bytes": 86332,
       "type": ".html",
       "nested_level": 0
     }

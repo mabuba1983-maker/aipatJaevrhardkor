@@ -4,8 +4,8 @@
   "algorithm": "SHA-256",
   "createdAt": "2026-11-13T00:00:00.000Z",
   "files": {
-    "game.html": "114bc7e7734278f8fc302d7249e69e6513b98d5e78051e8c262ba715378d35aa",
-    "info.json": "9628007311a3979b943daabe1d91541b5fc7d072bc130e4aff70fb31c5a0e0e6",
+    "game.html": "66ca21739e6f0c7140158c0e81e7f307f3b9df3ad4105056f8de1c203cf6ef01",
+    "info.json": "d0754d223e8a5c0bcc4876b3db189145c3df38b453c6ce18ec85b24a3a1f8b7f",
     "cover.jpg": "dcb335c6194215ce480861c7fc05b8f9359f5774ff58fccf8208d25a6f185477"
   },
   "signature": "088ddc97dbebb9289a8a2af3007f40b84fc7de9cbd6774e860dc783fa816c09c",

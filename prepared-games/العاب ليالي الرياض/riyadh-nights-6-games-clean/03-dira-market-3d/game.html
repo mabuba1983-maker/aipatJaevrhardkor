@@ -633,6 +633,7 @@ function updateOverlay() {
     const humans = G.players.filter(p => !p.isBot);
     ov.innerHTML = `<div class="card">
       <h1 style="color:#ffd166;margin:0 0 8px">سوق الديرة 3D</h1>
+      ${EMB?.code ? '<p style="font-size:15px;margin:0 0 10px;color:#ffd166">رمز غرفة ليالي الرياض: <b class="gold" style="font-size:22px;letter-spacing:4px">' + EMB.code + '</b></p>' : ''}
       <p style="opacity:0.86;margin:0 0 12px">محاكي إدارة السوبرماركت ثلاثي الأبعاد: استلم الصناديق من منطقة التوصيل، رصّ الرفوف، وامسح المشتريات على الكاشير!</p>
       <div style="margin:10px 0;color:#34d399;font-weight:700">${humans.length ? 'طاقم العمل المتصل: ' + humans.map(h=>h.name).join(' · ') : 'بانتظار دخول الموظفين من ليالي الرياض...'}</div>
       <button class="btn" data-start="true" onclick="startStoreDay()">افتح السوبرماركت</button>

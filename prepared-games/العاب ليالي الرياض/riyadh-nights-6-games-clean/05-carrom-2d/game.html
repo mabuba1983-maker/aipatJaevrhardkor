@@ -448,6 +448,7 @@ function updateTvUI() {
     document.body.dataset.state = 'title';
     ov.innerHTML = `<div class="card">
       <h1 style="color:#ffd166;margin:0 0 8px">الكيرم 2D</h1>
+      ${EMB?.code ? '<p style="font-size:15px;margin:0 0 10px;color:#ffd166">رمز غرفة ليالي الرياض: <b class="gold" style="font-size:22px;letter-spacing:4px">' + EMB.code + '</b></p>' : ''}
       <p style="opacity:0.85">اسحب قرص الضرب الأخضر للتوجيه والإطلاق! أول لاعب يدخل هو الأدمن.</p>
       <p style="font-size:14px">${G.players.map(p=>p.name+(p.id===G.adminId?' (الأدمن)':'')).join(' · ') || 'بانتظار اللاعبين...'}</p>
       ${G.quickplay ? '<div style="display:flex;gap:10px;justify-content:center;margin-top:12px"><button class="btn" data-start="true" id="qpStart1">فردي (تشغيل سريع)</button><button class="btn" id="qpStart2" style="background:rgba(255,255,255,0.12);color:#fff">فريقين 2 ضد 2</button></div>' : ''}

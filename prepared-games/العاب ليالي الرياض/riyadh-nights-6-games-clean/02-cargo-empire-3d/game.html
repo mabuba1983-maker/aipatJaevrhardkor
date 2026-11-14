@@ -590,6 +590,7 @@ function updateOverlay() {
     const humans = G.players.filter(p => !p.isBot);
     ov.innerHTML = `<div class="card">
       <h1 style="color:#ffd166;margin:0 0 8px">ناقلة القوافل 3D</h1>
+      ${EMB?.code ? '<p style="font-size:15px;margin:0 0 10px;color:#ffd166">رمز غرفة ليالي الرياض: <b class="gold" style="font-size:22px;letter-spacing:4px">' + EMB.code + '</b></p>' : ''}
       <p style="opacity:0.86;margin:0 0 12px">محاكي شاحنات نقل ثقيلة ثلاثي الأبعاد: حمّل البضائع من المستودعات والموانئ، راقب الوقود وتوازن المقطورة، واربح عقود التوصيل!</p>
       <div style="margin:10px 0;color:#4ade80;font-weight:700">${humans.length ? 'السائقون المتصلون: ' + humans.map(h=>h.name).join(' · ') : 'بانتظار دخول السائقين من ليالي الرياض...'}</div>
       <button class="btn" data-start="true" onclick="startShift()">ابدأ رحلة التوصيل</button>

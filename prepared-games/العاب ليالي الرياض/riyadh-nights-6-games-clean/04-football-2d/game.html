@@ -720,6 +720,7 @@ function updateTvOverlay() {
     document.body.dataset.state = 'title';
     ov.innerHTML = `<div class="card">
       <h1 style="color:#ffd166;margin:0 0 8px">كرة القدم 2D</h1>
+      ${EMB?.code ? '<p style="font-size:15px;margin:0 0 10px;color:#ffd166">رمز غرفة ليالي الرياض: <b class="gold" style="font-size:22px;letter-spacing:4px">' + EMB.code + '</b></p>' : ''}
       <p style="opacity:0.85">أول لاعب يدخل هو الأدمن ويحدد مدة الشوطين ونظام المباراة أو بطولة الكأس.</p>
       <p style="margin:10px 0">${G.humans.map(h => `<span style="display:inline-block;margin:4px;padding:6px 12px;border-radius:10px;background:rgba(255,255,255,0.09)">${h.name}${h.id===G.adminId?' (الأدمن)':''}</span>`).join('') || 'بانتظار اللاعبين...'}</p>
       ${G.quickplay ? '<div style="display:flex;gap:10px;justify-content:center;margin-top:14px"><button class="btn" data-start="true" id="qpFriendly">مباراة سريعة</button><button class="btn btn-alt" id="qpCup">تجربة بطولة الكأس</button></div>' : ''}
