@@ -102,7 +102,7 @@ jobs:
               parser.feed(game.read_text(encoding="utf-8", errors="replace"))
               source_text = game.read_text(encoding="utf-8", errors="replace")
               refs = list(parser.refs)
-              refs += re.findall(r"url\\(\\s*['\"]?([^'\"\\)]+)", source_text, re.I)
+              refs += re.findall(r"url\(\s*['\"]?([^'\")]+)", source_text, re.I)
               for ref in refs:
                   ref = ref.strip()
                   parts = urlsplit(ref)
