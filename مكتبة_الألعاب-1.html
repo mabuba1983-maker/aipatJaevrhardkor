@@ -31,6 +31,8 @@ p.hint{opacity:.7;font-size:12.5px;padding:0 18px;line-height:1.8}
 .card::before{left:-9px}.card::after{right:-9px}
 .cover,.shIc{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,hsl(var(--h) 85% 55%/.55),transparent 62%),linear-gradient(160deg,hsl(var(--h) 65% 32%),hsl(calc(var(--h) + 50) 70% 15%))}
 .cover{height:118px;position:relative;font-size:54px}
+.coverArt{display:block;width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.cover .tag{z-index:2}
 .cover span.em{filter:drop-shadow(0 6px 10px #0007)}
 .tag{position:absolute;top:10px;left:10px;font-size:11.5px;font-weight:900;border-radius:99px;padding:4px 10px}
 .tag.fr{background:#1f9e52}.tag.pd{background:linear-gradient(90deg,var(--gold),var(--gold2));color:#2a1200}.tag.un{background:#7b4fd6}
@@ -488,6 +490,21 @@ let filter='all';
 function setFilter(f){ filter=f; document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',c.dataset.f===f)); renderGames(); }
 function gameName(g){return currentLanguage==='en'?(g.nameEn||g.name||g.id):(g.name||g.id);}
 function gameDesc(g){return currentLanguage==='en'?(g.descEn||g.desc||'A multiplayer game for TV and phones.'):(g.desc||'لعبة جماعية للتلفزيون');}
+function gameCoverArt(g){
+  const palettes={
+    rocketSoccer3D:['#102c54','#17b9d4','#ffbd45'],
+    secret_detective:['#15243d','#6b8fc9','#e6c56d'],
+    cube_city:['#182b50','#55c9d7','#b9e5ff'],
+    bean_war:['#402044','#e36a48','#ffc36c'],
+    nogoom_almalaab_2d:['#0d4b38','#24bd78','#f4d35e']
+  };
+  const p=palettes[g.id]||['#25133d','#8c65d8','#ffd166'];
+  const esc=v=>String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const title=esc(gameName(g)||g.id);
+  const icon=esc(g.icon||'🎮');
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+p[0]+'"/><stop offset="1" stop-color="'+p[1]+'"/></linearGradient><radialGradient id="r"><stop stop-color="'+p[2]+'" stop-opacity=".55"/><stop offset="1" stop-color="'+p[2]+'" stop-opacity="0"/></radialGradient></defs><rect width="640" height="360" fill="url(#g)"/><circle cx="520" cy="55" r="210" fill="url(#r)"/><circle cx="105" cy="315" r="170" fill="url(#r)"/><path d="M0 285 Q150 205 290 285 T640 250 V360 H0Z" fill="#07121f" opacity=".28"/><path d="M0 315 Q160 250 320 315 T640 295" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="4"/><text x="320" y="190" text-anchor="middle" font-size="112">'+icon+'</text><text x="320" y="285" text-anchor="middle" font-family="Tahoma,Arial,sans-serif" font-size="30" font-weight="700" fill="#fff">'+title+'</text><text x="320" y="329" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" letter-spacing="5" fill="#fff" opacity=".68">LAYALI RIYADH</text></svg>';
+  return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
+}
 function renderGames(){
   const list=$('gamesList'); list.innerHTML='';
   if(!LIBRARY_GAMES.length){
@@ -500,7 +517,7 @@ function renderGames(){
   arr.forEach(g=>{
     const paid=!!g.enc, open=isOpen(g);
     const c=el('article','card'); c.style.setProperty('--h',hue(g.id));
-    const cv=el('div','cover'); cv.appendChild(el('span','em',g.icon||'🎮'));
+    const cv=el('div','cover'); const coverImg=el('img','coverArt'); coverImg.alt=gameName(g); coverImg.src=g.image||gameCoverArt(g); cv.appendChild(coverImg);
     cv.appendChild(el('span','tag '+(paid?(open?'un':'pd'):'fr'),paid?(open?'✓ مفعّلة':priceTxt(g)):'مجاني'));
     const b=el('div','body'); b.appendChild(el('h3','',gameName(g)));
     b.appendChild(el('div','mini',gameDesc(g)));
@@ -534,6 +551,16 @@ function openSheet(g){
   if(currentLanguage==='en')localizeText($('shBody'));
 }
 const savedLang=LS.get('wrg_lang');if(savedLang==='ar'||savedLang==='en')applyLanguage();
+/* Requested five-game card set: each entry is independent and bilingual. */
+const requestedLibraryGames=[
+  {id:'rocketSoccer3D',name:'روكت سوكر',nameEn:'Rocket Soccer',icon:'🚗',desc:'كرة قدم بالسيارات ثلاثية الأبعاد؛ اختر سيارتك وخض مباريات بفيزياء قيادة واقعية، وتحكّم من الجوال عبر شاشة التلفزيون.',descEn:'Drive, boost and score in a 3D car-football match. Play on the TV and control your car from your phone.',url:'https://raw.githubusercontent.com/mabuba1983-maker/aipatJaevrhardkor/main/Rocket_Soccer-6.html'},
+  {id:'secret_detective',name:'المحقق السري',nameEn:'Secret Detective',icon:'🕵️',desc:'لعبة تحقيق جماعية؛ حلّوا القضايا واكتشفوا هوية المشتبه به من خلال الأدلة والأسئلة والنقاش.',descEn:'A group mystery game. Examine the clues, ask questions and work together to identify the suspect.',url:'https://raw.githubusercontent.com/mabuba1983-maker/aipatJaevrhardkor/main/al_muhaqqiq_4360_cases.html'},
+  {id:'cube_city',name:'مدينة المكعبات',nameEn:'Cube City',icon:'🧊',desc:'عالم مكعبات ثلاثي الأبعاد؛ ادخلوا الغرفة من الجوال واستكشفوا العالم والعبوا معًا عبر شاشة التلفزيون.',descEn:'Explore a 3D block world together. Join from your phones and play on the TV.',url:'https://raw.githubusercontent.com/mabuba1983-maker/aipatJaevrhardkor/main/cube-world-compat.html'},
+  {id:'bean_war',name:'حرب الآباط',nameEn:'Bean War',icon:'🫘',desc:'معركة جماعية سريعة في ساحة لعب؛ تحرّك وواجه اللاعبين في جولات مليئة بالحركة.',descEn:'A fast-paced multiplayer arena battle. Move around and compete against other players in action-packed rounds.',url:'https://raw.githubusercontent.com/mabuba1983-maker/aipatJaevrhardkor/main/harb_alabat.html'},
+  {id:'nogoom_almalaab_2d',name:'نجوم الملاعب 2D',nameEn:'Stadium Stars 2D',icon:'⚽',desc:'كرة قدم جماعية حتى 6 لاعبين، مع 9 أطوار لعب و30 فريقًا وكرات قوى وقدرات سوبر.',descEn:'A multiplayer 2D football game for up to 6 players, featuring 9 game modes, 30 teams, power-ups and super abilities.',url:'https://raw.githubusercontent.com/mabuba1983-maker/aipatJaevrhardkor/main/nogoom-almalaab-2d-layali%20(1).html'}
+];
+for(const game of requestedLibraryGames) if(!LIBRARY_GAMES.some(existing=>existing.id===game.id)) LIBRARY_GAMES.push(game);
+
 renderGames(); checkSeal();
 
 function setConnected(on){
@@ -615,15 +642,3 @@ function closeQrScan(){
 </script>
 </body>
 </html>
-
-
-LIBRARY_GAMES.push({"id":"secret_detective","name":"المحقق السري","nameEn":"Secret Detective","icon":"🕵️","desc":"لعبة تحقيق جماعية؛ حلّوا القضايا واكتشفوا هوية المشتبه به من خلال الأدلة والأسئلة والنقاش.","descEn":"A group mystery game. Examine the clues, ask questions and work together to identify the suspect.","url":"https://raw.githubusercontent.com/mabuba1983-maker/aipatJaevrhardkor/main/al_muhaqqiq_4360_cases.html"});
-
-
-LIBRARY_GAMES.push({"id":"cube_city","name":"مدينة المكعبات","nameEn":"Cube City","icon":"🧊","desc":"عالم مكعبات ثلاثي الأبعاد؛ ادخلوا الغرفة من الجوال واستكشفوا العالم والعبوا معًا عبر شاشة التلفزيون.","descEn":"Explore a 3D block world together. Join from your phones and play on the TV.","url":"https://raw.githubusercontent.com/mabuba1983-maker/aipatJaevrhardkor/main/cube-world-compat.html"});
-
-
-LIBRARY_GAMES.push({"id":"bean_war","name":"حرب الآباط","nameEn":"Bean War","icon":"🫘","desc":"معركة جماعية سريعة في ساحة لعب؛ تحرّك وواجه اللاعبين في جولات مليئة بالحركة.","descEn":"A fast-paced multiplayer arena battle. Move around and compete against other players in action-packed rounds.","url":"https://raw.githubusercontent.com/mabuba1983-maker/aipatJaevrhardkor/main/harb_alabat.html"});
-
-
-LIBRARY_GAMES.push({"id":"nogoom_almalaab_2d","name":"نجوم الملاعب 2D","nameEn":"Stadium Stars 2D","icon":"⚽","desc":"كرة قدم جماعية حتى 6 لاعبين، مع 9 أطوار لعب و30 فريقًا وكرات قوى وقدرات سوبر.","descEn":"A multiplayer 2D football game for up to 6 players, featuring 9 game modes, 30 teams, power-ups and super abilities.","url":"https://raw.githubusercontent.com/mabuba1983-maker/aipatJaevrhardkor/main/nogoom-almalaab-2d-layali%20(1).html"});
