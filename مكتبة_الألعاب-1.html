@@ -565,12 +565,12 @@ const CHUNK_SIZE=16000;
 function sendGameToTv(game,btn,pctEl){
   if(!connected||!conn||!conn.open){ openConnModal(); return; }
   if(!game.b64){ alert('هذي اللعبة ما فيها محتوى (b64) بعد'); return; }
-  btn.disabled=true; btn.textContent='جاري الإرسال...';
+  btn.disabled=true; btn.textContent=currentLanguage==='en'?'Sending...':'جاري الإرسال...';
   const total=Math.ceil(game.b64.length/CHUNK_SIZE);
-  conn.send(JSON.stringify({t:'meta',name:game.name,icon:game.icon,totalChunks:total}));
+  conn.send(JSON.stringify({t:'meta',name:gameName(game),icon:game.icon,totalChunks:total}));
   let i=0;
   function sendNext(){
-    if(i>=total){ btn.textContent='✅ أُضيفت'; pctEl.textContent=''; return; }
+    if(i>=total){ btn.textContent=currentLanguage==='en'?'✅ Added':'✅ أُضيفت'; pctEl.textContent=''; return; }
     const piece=game.b64.slice(i*CHUNK_SIZE,(i+1)*CHUNK_SIZE);
     try{ conn.send(JSON.stringify({t:'chunk',i,data:piece})); }catch(e){}
     i++;
