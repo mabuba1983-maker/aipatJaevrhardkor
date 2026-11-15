@@ -1,4 +1,4 @@
-name: PAUSED - Layali Riyadh APK (Manual Only)
+name: Layali Riyadh APK (Manual Only)
 
 on:
   workflow_dispatch:
@@ -92,8 +92,8 @@ jobs:
               def handle_data(self, data):
                   pass
 
-          # Copy local resources referenced by either game, preserving relative paths.
-          for game in (challenge_src, captain_src):
+          # Copy local resources referenced by every root-level game, preserving relative paths.
+          for game in (p for p in root.glob("*.html") if p.name != "مكتبة_الألعاب-1.html"):
               parser = References()
               parser.feed(game.read_text(encoding="utf-8", errors="replace"))
               source_text = game.read_text(encoding="utf-8", errors="replace")
