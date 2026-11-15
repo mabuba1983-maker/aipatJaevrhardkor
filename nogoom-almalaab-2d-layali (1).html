@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<!--
+  اسم اللعبة: نجوم الملاعب 2D
+  المعرّف: nogoom_almalaab_2d
+  الوصف: لعبة كرة قدم 2D جماعية سريعة للتلفزيون والجوال: حتى 6 لاعبين، 9 أطوار حماسية (فوضى خارقة، مضاربة، كرة عملاقة، 3 كرات، هدف ذهبي، ركلات ترجيح)، 30 فريقاً ومنتخباً مبتكراً، كرات قوى وقدرة سوبر.
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>نجوم الملاعب 2D — ليالي الرياض</title>
+<meta name="description" content="لعبة كرة قدم 2D جماعية سريعة للتلفزيون والجوال: حتى 6 لاعبين، 9 أطوار حماسية (فوضى خارقة، مضاربة، كرة عملاقة، 3 كرات، هدف ذهبي، ركلات ترجيح)، 30 فريقاً ومنتخباً مبتكراً، كرات قوى وقدرة سوبر.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCI+PHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHJ4PSIyNiIgZmlsbD0iIzE5MGQyNiIvPjxyZWN0IHg9IjQiIHk9IjQiIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iMjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZDE2NiIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHJlY3QgeD0iMTQiIHk9IjM0IiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjYwIiByeD0iMTIiIGZpbGw9IiMxODdjNGIiLz48bGluZSB4MT0iNjQiIHkxPSIzNCIgeDI9IjY0IiB5Mj0iOTQiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1vcGFjaXR5PSIwLjg1Ii8+PGNpcmNsZSBjeD0iNjQiIGN5PSI2NCIgcj0iMTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1vcGFjaXR5PSIwLjg1Ii8+PGNpcmNsZSBjeD0iNjQiIGN5PSI2NCIgcj0iMTUiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iIzBmMTcyYSIgc3Ryb2tlLXdpZHRoPSIzIi8+PGNpcmNsZSBjeD0iNjQiIGN5PSI2NCIgcj0iNSIgZmlsbD0iIzBmMTcyYSIvPjxjaXJjbGUgY3g9IjU1IiBjeT0iNTciIHI9IjIuNiIgZmlsbD0iIzBmMTcyYSIvPjxjaXJjbGUgY3g9IjczIiBjeT0iNTciIHI9IjIuNiIgZmlsbD0iIzBmMTcyYSIvPjxjaXJjbGUgY3g9IjU3IiBjeT0iNzMiIHI9IjIuNiIgZmlsbD0iIzBmMTcyYSIvPjxjaXJjbGUgY3g9IjcxIiBjeT0iNzMiIHI9IjIuNiIgZmlsbD0iIzBmMTcyYSIvPjxwb2x5Z29uIHBvaW50cz0iMTAyLDE2IDEwNSwyMyAxMTIsMjMgMTA2LDI3IDEwOCwzNCAxMDIsMzAgOTYsMzQgOTgsMjcgOTIsMjMgOTksMjMiIGZpbGw9IiNmZmQxNjYiLz48L3N2Zz4=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+<script>try{if(window.self!==window.top)document.documentElement.classList.add('emb-pending')}catch(e){}</script>
+<style>html.emb-pending body{visibility:hidden}</style>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#190d26;color:#f8fafc;font-family:'Tajawal',system-ui,sans-serif}
+#root{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:20px;max-width:520px;text-align:center}
+.gold-code{background:linear-gradient(135deg,#ffd166,#ff9a3d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;letter-spacing:0.12em}
+.btn{border:none;border-radius:12px;padding:9px 15px;font-family:inherit;font-weight:800;cursor:pointer;font-size:14px;transition:transform .12s}
+.btn:active{transform:scale(0.96)}
+.btn-gold{background:linear-gradient(135deg,#ffd166,#ff9a3d);color:#190d26}
+.btn-dark{background:rgba(255,255,255,0.09);color:#fff;border:1px solid rgba(255,255,255,0.16)}
+.btn-sm{padding:6px 11px;font-size:12px;border-radius:10px}
+.tv-shell{width:100%;height:100%;display:flex;flex-direction:column;background:radial-gradient(circle at 50% 0%,#2d1747 0%,#190d26 68%)}
+.tv-header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.28);gap:12px;flex-wrap:wrap}
+.tv-body{flex:1;display:flex;align-items:center;justify-content:center;padding:10px;position:relative;overflow:hidden}
+.lobby-grid{width:100%;max-width:1180px;max-height:100%;overflow:auto;display:grid;grid-template-columns:1.35fr 1fr;gap:14px}
+.panel{background:rgba(15,10,28,0.84);border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:15px}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mode-btn{padding:7px 11px;border-radius:10px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.06);color:#e2e8f0;font-family:inherit;font-weight:700;cursor:pointer;font-size:12px}
+.mode-btn.active{background:linear-gradient(135deg,#ffd166,#ff9a3d);color:#190d26;border-color:transparent}
+.mode-btn.rose{background:rgba(244,63,94,0.24);border-color:#fb7185;color:#fecdd3}
+.sel{width:100%;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.16);background:#120a21;color:#fff;font-family:inherit;font-weight:700;font-size:13px}
+.player-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,0.05);margin-bottom:8px;font-size:13px;font-weight:700}
+.color-dot{width:12px;height:12px;border-radius:99px;display:inline-block;vertical-align:middle}
+#stage2d{width:100%;height:100%;display:block;border-radius:14px;background:#0e071a}
+.hud-bar{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:rgba(10,12,24,0.92);border:1px solid rgba(255,255,255,0.18);border-radius:14px;padding:6px 16px;font-weight:800;z-index:5;font-size:14px;white-space:nowrap}
+.hud-actions{position:absolute;top:14px;left:18px;display:flex;gap:6px;z-index:5}
+.chaos-wrap{position:absolute;top:56px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;z-index:5;pointer-events:none}
+.chaos-pill{background:#e11d48;border:1px solid #fde047;color:#fff;padding:4px 14px;border-radius:10px;font-weight:900;font-size:13px;display:none}
+.comm-pill{background:rgba(14,7,24,0.92);border:1px solid rgba(251,191,36,0.5);color:#fde68a;padding:3px 12px;border-radius:9px;font-weight:800;font-size:12px;display:none}
+.goal-overlay,.ft-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:6}
+.goal-overlay{pointer-events:none}
+.ft-overlay{background:rgba(0,0,0,0.78)}
+.goal-card,.ft-card{background:rgba(15,10,28,0.96);border:2px solid #ffd166;border-radius:20px;padding:20px 34px;text-align:center;min-width:300px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0;background:rgba(255,255,255,0.05);border-radius:12px;padding:10px;font-size:12px}
+/* Phone rectangular black controller */
+.ph-wrap{width:100%;height:100%;background:#050507;display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px;direction:ltr}
+.ph-top{display:flex;align-items:center;justify-content:space-between;background:#111218;border:1px solid #27272f;border-radius:12px;padding:6px 10px;font-size:12px;font-weight:700;direction:rtl;gap:8px;flex-wrap:wrap}
+.ph-pad{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 4px}
+.joy-base{width:138px;height:138px;border-radius:50%;background:#12141c;border:2px solid #2e313d;position:relative;touch-action:none;flex-shrink:0}
+.joy-knob{width:52px;height:52px;border-radius:50%;background:#323747;border:2px solid #64748b;position:absolute;left:41px;top:41px;pointer-events:none}
+.ab-grid{display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(3,48px);gap:5px;align-items:center;justify-items:center;flex-shrink:0}
+.pad-btn{width:56px;height:46px;border-radius:13px;border:2px solid #333847;background:#151821;color:#f8fafc;font-family:'Tajawal',sans-serif;font-weight:800;font-size:12px;cursor:pointer;touch-action:none;display:flex;align-items:center;justify-content:center}
+.pad-btn:active,.pad-btn.down{transform:scale(0.92);filter:brightness(1.25)}
+.pad-shoot{border-color:#ef4444;background:#2b1116;color:#fca5a5}
+.pad-pass{border-color:#38bdf8;background:#0e2233;color:#bae6fd}
+.pad-tackle{border-color:#f59e0b;background:#271b0c;color:#fde68a}
+.pad-switch{border-color:#22c55e;background:#0e2919;color:#bbf7d0}
+.pad-sprint{border-color:#f59e0b;background:#2b1e0a;color:#fde68a}
+.pad-punch{border-color:#f43f5e;background:#4c0519;color:#fecdd3}
+.pad-super{border-color:#fde047;background:linear-gradient(135deg,#f59e0b,#e11d48);color:#111827;font-weight:900}
+</style>
+</head>
+<body>
+<div id="root">
+<div id="role" class="card"><p>هذي اللعبة جزء من لوبي «ليالي الرياض» — افتحها من هناك حتى تتوصل تلقائيًا.</p></div>
+</div>
+<script>
+/* ===================== EMB BRIDGE (لا تغيّر هذا الجزء) ===================== */
+let EMB=null; const embHostConns={};
+window.addEventListener('message', e=>{
+  const m=e&&e.data; if(!m||!m.__emb) return;
+  if(m.init){ EMB={role:m.role,code:m.code,name:m.name}; return embStart(); }
+  if(!EMB) return;
+  if(EMB.role==='tv'){
+    if(m.event==='data'){
+      let c=embHostConns[m.id];
+      if(!c)c=embHostConns[m.id]={id:m.id,send:obj=>{try{parent.postMessage({__emb:1,to:m.id,data:obj},'*')}catch(e){}}};
+      try{onHostMsg(c,m.data)}catch(e){}
+    } else if(m.event==='disconnect'){
+      try{onPlayerLeave(m.id)}catch(e){}
+      delete embHostConns[m.id];
+    }
+  } else if(EMB.role==='ph'){
+    if(m.data!==undefined){try{onCtlMsg(m.data)}catch(e){}}
+  }
+});
+function embReveal(){try{document.documentElement.classList.remove('emb-pending')}catch(e){}}
+function embStart(){
+  embReveal();
+  if(EMB.role==='tv'){ startTv(); } else { startPhone(); }
+}
+setTimeout(()=>{ if(!EMB) embReveal(); }, 2500);
+
+/* ===================== من هنا تبدأ لعبتك ===================== */
+const GAME_INFO={id:'nogoom_almalaab_2d',name:'نجوم الملاعب 2D',description:'لعبة كرة قدم 2D جماعية سريعة للتلفزيون والجوال: حتى 6 لاعبين، 9 أطوار حماسية (فوضى خارقة، مضاربة، كرة عملاقة، 3 كرات، هدف ذهبي، ركلات ترجيح)، 30 فريقاً ومنتخباً مبتكراً، كرات قوى وقدرة سوبر.'};
+const COLORS=[{"hex":"#38BDF8","name":"أزرق"},{"hex":"#EF4444","name":"أحمر"},{"hex":"#22C55E","name":"أخضر"},{"hex":"#F59E0B","name":"ذهبي"},{"hex":"#EC4899","name":"وردي"},{"hex":"#A855F7","name":"بنفسجي"}];
+const LEAGUES=[{"id":"saudi_pro","name":"دوري النخبة المحلي"},{"id":"euro_elite","name":"الدوري القاري الممتاز"},{"id":"afro_asia","name":"دوري الأبطال الإقليمي"},{"id":"world_cup","name":"كأس العالم للمنتخبات"}];
+const TEAMS=[{"id":"capital_blue","name":"نادي العاصمة","shortName":"CAP","c1":"#1D4ED8","c2":"#FFFFFF","gk":"#F59E0B","ovr":85,"lgId":"saudi_pro","lg":"دوري النخبة المحلي","r":[{"n":"سلطان العنزي","num":1,"role":"GK","pace":74,"shot":45,"pass":78},{"n":"فيصل الغامدي","num":4,"role":"DEF","pace":80,"shot":58,"pass":78},{"n":"نايف الحربي","num":5,"role":"DEF","pace":81,"shot":60,"pass":79},{"n":"سعد العتيبي","num":8,"role":"MID","pace":84,"shot":82,"pass":87},{"n":"راكان الشهراني","num":10,"role":"MID","pace":87,"shot":85,"pass":88},{"n":"فهد السبيعي","num":9,"role":"FWD","pace":88,"shot":90,"pass":82}]},{"id":"desert_stars","name":"فرسان الصحراء","shortName":"DES","c1":"#FACC15","c2":"#1E3A8A","gk":"#10B981","ovr":84,"lgId":"saudi_pro","lg":"دوري النخبة المحلي","r":[{"n":"بندر المطيري","num":1,"role":"GK","pace":74,"shot":45,"pass":78},{"n":"خالد العسيري","num":4,"role":"DEF","pace":80,"shot":58,"pass":78},{"n":"عمر الشهري","num":5,"role":"DEF","pace":81,"shot":60,"pass":79},{"n":"طلال القحطاني","num":8,"role":"MID","pace":84,"shot":82,"pass":87},{"n":"ياسر المولد","num":10,"role":"MID","pace":87,"shot":85,"pass":88},{"n":"ماجد الشمري","num":9,"role":"FWD","pace":88,"shot":90,"pass":82}]},{"id":"coast_tigers","name":"نمور الساحل","shortName":"TIG","c1":"#18181B","c2":"#FBBF24","gk":"#06B6D4","ovr":83,"lgId":"saudi_pro","lg":"دوري النخبة المحلي","r":[{"n":"عبدالله الجهني","num":1,"role":"GK","pace":73,"shot":45,"pass":77},{"n":"سامي الزهراني","num":4,"role":"DEF","pace":79,"shot":58,"pass":77},{"n":"وليد المالكي","num":5,"role":"DEF","pace":80,"shot":60,"pass":78},{"n":"أحمد باوزير","num":8,"role":"MID","pace":83,"shot":81,"pass":86},{"n":"هتان السالم","num":10,"role":"MID","pace":86,"shot":84,"pass":87},{"n":"مشاري النمر","num":9,"role":"FWD","pace":87,"shot":89,"pass":81}]},{"id":"hejaz_falcons","name":"صقور الحجاز","shortName":"HJD","c1":"#15803D","c2":"#FFFFFF","gk":"#F97316","ovr":82,"lgId":"saudi_pro","lg":"دوري النخبة المحلي","r":[{"n":"تركي العلي","num":1,"role":"GK","pace":72,"shot":45,"pass":76},{"n":"زياد الحازمي","num":4,"role":"DEF","pace":78,"shot":58,"pass":76},{"n":"مازن البلوي","num":5,"role":"DEF","pace":79,"shot":60,"pass":77},{"n":"عادل السلمي","num":8,"role":"MID","pace":82,"shot":80,"pass":85},{"n":"كريم فؤاد","num":10,"role":"MID","pace":85,"shot":83,"pass":86},{"n":"رائد الصقري","num":9,"role":"FWD","pace":86,"shot":88,"pass":80}]},{"id":"tuwaiq_heroes","name":"أبطال طويق","shortName":"TWQ","c1":"#9F1239","c2":"#F8FAFC","gk":"#38BDF8","ovr":81,"lgId":"saudi_pro","lg":"دوري النخبة المحلي","r":[{"n":"حمد السالم","num":1,"role":"GK","pace":71,"shot":45,"pass":75},{"n":"سلمان الخالدي","num":4,"role":"DEF","pace":77,"shot":58,"pass":75},{"n":"صالح الرشيد","num":5,"role":"DEF","pace":78,"shot":60,"pass":76},{"n":"مروان الفهيد","num":8,"role":"MID","pace":81,"shot":79,"pass":84},{"n":"عبدالعزيز الطويق","num":10,"role":"MID","pace":84,"shot":82,"pass":85},{"n":"ثامر السهلي","num":9,"role":"FWD","pace":85,"shot":87,"pass":79}]},{"id":"gulf_wave","name":"موج الخليج","shortName":"GWV","c1":"#0284C7","c2":"#0F172A","gk":"#EAB308","ovr":80,"lgId":"saudi_pro","lg":"دوري النخبة المحلي","r":[{"n":"جاسم الدخيل","num":1,"role":"GK","pace":70,"shot":45,"pass":74},{"n":"يوسف البوعينين","num":4,"role":"DEF","pace":76,"shot":58,"pass":74},{"n":"هادي الفردان","num":5,"role":"DEF","pace":77,"shot":60,"pass":75},{"n":"عبدالرحمن النعيمي","num":8,"role":"MID","pace":80,"shot":78,"pass":83},{"n":"سالم المهندي","num":10,"role":"MID","pace":83,"shot":81,"pass":84},{"n":"باسل الشرقاوي","num":9,"role":"FWD","pace":84,"shot":86,"pass":78}]},{"id":"ula_youth","name":"شباب العلا","shortName":"ULA","c1":"#EA580C","c2":"#1E293B","gk":"#22C55E","ovr":79,"lgId":"saudi_pro","lg":"دوري النخبة المحلي","r":[{"n":"منصور الجابر","num":1,"role":"GK","pace":69,"shot":45,"pass":73},{"n":"أنس الشعلان","num":4,"role":"DEF","pace":75,"shot":58,"pass":73},{"n":"مراد التميمي","num":5,"role":"DEF","pace":76,"shot":60,"pass":74},{"n":"عزام العسيري","num":8,"role":"MID","pace":79,"shot":77,"pass":82},{"n":"قصي الوابصي","num":10,"role":"MID","pace":82,"shot":80,"pass":83},{"n":"معاذ النخلي","num":9,"role":"FWD","pace":83,"shot":85,"pass":77}]},{"id":"abha_eagles","name":"نسور السحاب","shortName":"ABH","c1":"#DC2626","c2":"#111827","gk":"#FACC15","ovr":79,"lgId":"saudi_pro","lg":"دوري النخبة المحلي","r":[{"n":"علي الشهراني","num":1,"role":"GK","pace":69,"shot":45,"pass":73},{"n":"مؤيد القحطاني","num":4,"role":"DEF","pace":75,"shot":58,"pass":73},{"n":"غسان عسيري","num":5,"role":"DEF","pace":76,"shot":60,"pass":74},{"n":"إياد آل سيف","num":8,"role":"MID","pace":79,"shot":77,"pass":82},{"n":"ناصر البقمي","num":10,"role":"MID","pace":82,"shot":80,"pass":83},{"n":"يزن الجنوبي","num":9,"role":"FWD","pace":83,"shot":85,"pass":77}]},{"id":"royal_crown","name":"التاج الأبيض","shortName":"CRN","c1":"#F8FAFC","c2":"#D97706","gk":"#7C3AED","ovr":87,"lgId":"euro_elite","lg":"الدوري القاري الممتاز","r":[{"n":"أليكس مورينو","num":1,"role":"GK","pace":76,"shot":45,"pass":80},{"n":"كارلوس فيغا","num":4,"role":"DEF","pace":82,"shot":58,"pass":80},{"n":"دييغو سيلفا","num":5,"role":"DEF","pace":83,"shot":60,"pass":81},{"n":"ماركو نافاس","num":8,"role":"MID","pace":86,"shot":84,"pass":89},{"n":"لوكاس فاسكيزا","num":10,"role":"MID","pace":89,"shot":87,"pass":90},{"n":"إيفان كاستيلو","num":9,"role":"FWD","pace":90,"shot":92,"pass":84}]},{"id":"crimson_bay","name":"خليج القرمزي","shortName":"BAY","c1":"#991B1B","c2":"#1D4ED8","gk":"#22C55E","ovr":86,"lgId":"euro_elite","lg":"الدوري القاري الممتاز","r":[{"n":"جوردي توريس","num":1,"role":"GK","pace":75,"shot":45,"pass":79},{"n":"باو روكا","num":4,"role":"DEF","pace":81,"shot":58,"pass":79},{"n":"أوريول مارتن","num":5,"role":"DEF","pace":82,"shot":60,"pass":80},{"n":"إريك سولير","num":8,"role":"MID","pace":85,"shot":83,"pass":88},{"n":"مارك كوستا","num":10,"role":"MID","pace":88,"shot":86,"pass":89},{"n":"داني بلانكو","num":9,"role":"FWD","pace":89,"shot":91,"pass":83}]},{"id":"thames_lions","name":"أسود التايمز","shortName":"THM","c1":"#1E40AF","c2":"#E2E8F0","gk":"#F97316","ovr":85,"lgId":"euro_elite","lg":"الدوري القاري الممتاز","r":[{"n":"هاري ويلسون","num":1,"role":"GK","pace":75,"shot":45,"pass":79},{"n":"أوليفر كلارك","num":4,"role":"DEF","pace":81,"shot":58,"pass":79},{"n":"جاك بينيت","num":5,"role":"DEF","pace":82,"shot":60,"pass":80},{"n":"توم ريد","num":8,"role":"MID","pace":85,"shot":83,"pass":88},{"n":"آدم بروكس","num":10,"role":"MID","pace":88,"shot":86,"pass":89},{"n":"ليام كارتر","num":9,"role":"FWD","pace":89,"shot":91,"pass":83}]},{"id":"north_storm","name":"عاصفة الشمال","shortName":"STM","c1":"#38BDF8","c2":"#0F172A","gk":"#EC4899","ovr":86,"lgId":"euro_elite","lg":"الدوري القاري الممتاز","r":[{"n":"نوح لارسن","num":1,"role":"GK","pace":76,"shot":45,"pass":80},{"n":"إريك فورد","num":4,"role":"DEF","pace":82,"shot":58,"pass":80},{"n":"ماتياس بيرغ","num":5,"role":"DEF","pace":83,"shot":60,"pass":81},{"n":"روبن دايك","num":8,"role":"MID","pace":86,"shot":84,"pass":89},{"n":"لويس غرين","num":10,"role":"MID","pace":89,"shot":87,"pass":90},{"n":"كاي ستروم","num":9,"role":"FWD","pace":90,"shot":92,"pass":84}]},{"id":"red_harbor","name":"الميناء الأحمر","shortName":"HRB","c1":"#B91C1C","c2":"#F8FAFC","gk":"#14B8A6","ovr":85,"lgId":"euro_elite","lg":"الدوري القاري الممتاز","r":[{"n":"بن ووكر","num":1,"role":"GK","pace":75,"shot":45,"pass":79},{"n":"ديكلان هايز","num":4,"role":"DEF","pace":81,"shot":58,"pass":79},{"n":"تياغو موريرا","num":5,"role":"DEF","pace":82,"shot":60,"pass":80},{"n":"مايلز كين","num":8,"role":"MID","pace":85,"shot":83,"pass":88},{"n":"سليم صادق","num":10,"role":"MID","pace":88,"shot":86,"pass":89},{"n":"ريان إيفانز","num":9,"role":"FWD","pace":89,"shot":91,"pass":83}]},{"id":"rhine_fortress","name":"قلعة الراين","shortName":"RHN","c1":"#DC2626","c2":"#1E293B","gk":"#FACC15","ovr":85,"lgId":"euro_elite","lg":"الدوري القاري الممتاز","r":[{"n":"توباياس ماير","num":1,"role":"GK","pace":75,"shot":45,"pass":79},{"n":"جان فاغنر","num":4,"role":"DEF","pace":81,"shot":58,"pass":79},{"n":"ماكسيم براندت","num":5,"role":"DEF","pace":82,"shot":60,"pass":80},{"n":"ليون بيتر","num":8,"role":"MID","pace":85,"shot":83,"pass":88},{"n":"نيلز فيشر","num":10,"role":"MID","pace":88,"shot":86,"pass":89},{"n":"دومينيك كراوس","num":9,"role":"FWD","pace":89,"shot":91,"pass":83}]},{"id":"alpine_wolves","name":"ذئاب الألب","shortName":"WLF","c1":"#1E293B","c2":"#38BDF8","gk":"#22C55E","ovr":83,"lgId":"euro_elite","lg":"الدوري القاري الممتاز","r":[{"n":"ماتيو كونتي","num":1,"role":"GK","pace":73,"shot":45,"pass":77},{"n":"لورينزو ريتشي","num":4,"role":"DEF","pace":79,"shot":58,"pass":77},{"n":"فيديريكو بيللي","num":5,"role":"DEF","pace":80,"shot":60,"pass":78},{"n":"أندريا لومباردي","num":8,"role":"MID","pace":83,"shot":81,"pass":86},{"n":"نيكولا برونو","num":10,"role":"MID","pace":86,"shot":84,"pass":87},{"n":"دايفيد غريغو","num":9,"role":"FWD","pace":87,"shot":89,"pass":81}]},{"id":"seine_lights","name":"أضواء السين","shortName":"SEN","c1":"#1E1B4B","c2":"#EC4899","gk":"#F59E0B","ovr":84,"lgId":"euro_elite","lg":"الدوري القاري الممتاز","r":[{"n":"لوكاس دوبوا","num":1,"role":"GK","pace":74,"shot":45,"pass":78},{"n":"توم لوران","num":4,"role":"DEF","pace":80,"shot":58,"pass":78},{"n":"أمين بن علي","num":5,"role":"DEF","pace":81,"shot":60,"pass":79},{"n":"هوغو مارتان","num":8,"role":"MID","pace":84,"shot":82,"pass":87},{"n":"إنزو غارسيا","num":10,"role":"MID","pace":87,"shot":85,"pass":88},{"n":"كليمان روي","num":9,"role":"FWD","pace":88,"shot":90,"pass":82}]},{"id":"nile_pyramids","name":"أهرامات النيل","shortName":"NIL","c1":"#DC2626","c2":"#FFFFFF","gk":"#22C55E","ovr":82,"lgId":"afro_asia","lg":"دوري الأبطال الإقليمي","r":[{"n":"عمرو الشناوي","num":1,"role":"GK","pace":72,"shot":45,"pass":76},{"n":"حسام عبدالمجيد","num":4,"role":"DEF","pace":78,"shot":58,"pass":76},{"n":"كريم فريد","num":5,"role":"DEF","pace":79,"shot":60,"pass":77},{"n":"أكرم منصور","num":8,"role":"MID","pace":82,"shot":80,"pass":85},{"n":"مروان زيدان","num":10,"role":"MID","pace":85,"shot":83,"pass":86},{"n":"مصطفى شريف","num":9,"role":"FWD","pace":86,"shot":88,"pass":80}]},{"id":"atlas_summit","name":"أطلس القمة","shortName":"ATL","c1":"#16A34A","c2":"#DC2626","gk":"#F59E0B","ovr":82,"lgId":"afro_asia","lg":"دوري الأبطال الإقليمي","r":[{"n":"منير الراجحي","num":1,"role":"GK","pace":72,"shot":45,"pass":76},{"n":"أمين بنجلون","num":4,"role":"DEF","pace":78,"shot":58,"pass":76},{"n":"سفيان لمراني","num":5,"role":"DEF","pace":79,"shot":60,"pass":77},{"n":"نبيل التازي","num":8,"role":"MID","pace":82,"shot":80,"pass":85},{"n":"يونس الزرهوني","num":10,"role":"MID","pace":85,"shot":83,"pass":86},{"n":"أيوب الفاسي","num":9,"role":"FWD","pace":86,"shot":88,"pass":80}]},{"id":"med_wave","name":"موج قرطاج","shortName":"MED","c1":"#E11D48","c2":"#F8FAFC","gk":"#38BDF8","ovr":80,"lgId":"afro_asia","lg":"دوري الأبطال الإقليمي","r":[{"n":"أيمن بن مراد","num":1,"role":"GK","pace":70,"shot":45,"pass":74},{"n":"وسيم الطرابلسي","num":4,"role":"DEF","pace":76,"shot":58,"pass":74},{"n":"ماهر الحاج","num":5,"role":"DEF","pace":77,"shot":60,"pass":75},{"n":"الياس الغربي","num":8,"role":"MID","pace":80,"shot":78,"pass":83},{"n":"حازم الساحلي","num":10,"role":"MID","pace":83,"shot":81,"pass":84},{"n":"سيف التونسي","num":9,"role":"FWD","pace":84,"shot":86,"pass":78}]},{"id":"tigris_palms","name":"نخيل دجلة","shortName":"DJL","c1":"#15803D","c2":"#FACC15","gk":"#06B6D4","ovr":80,"lgId":"afro_asia","lg":"دوري الأبطال الإقليمي","r":[{"n":"جلال الربيعي","num":1,"role":"GK","pace":70,"shot":45,"pass":74},{"n":"ضرغام العزاوي","num":4,"role":"DEF","pace":76,"shot":58,"pass":74},{"n":"مصطفى ناظم","num":5,"role":"DEF","pace":77,"shot":60,"pass":75},{"n":"أمجد عطوان","num":8,"role":"MID","pace":80,"shot":78,"pass":83},{"n":"علي الحسيني","num":10,"role":"MID","pace":83,"shot":81,"pass":84},{"n":"مهند الرافد","num":9,"role":"FWD","pace":84,"shot":86,"pass":78}]},{"id":"gulf_pearl","name":"لؤلؤة الخليج","shortName":"PRL","c1":"#881337","c2":"#FDE047","gk":"#10B981","ovr":81,"lgId":"afro_asia","lg":"دوري الأبطال الإقليمي","r":[{"n":"سعد الشيباني","num":1,"role":"GK","pace":71,"shot":45,"pass":75},{"n":"بسام الكبيسي","num":4,"role":"DEF","pace":77,"shot":58,"pass":75},{"n":"عبدالكريم الكواري","num":5,"role":"DEF","pace":78,"shot":60,"pass":76},{"n":"حسن المري","num":8,"role":"MID","pace":81,"shot":79,"pass":84},{"n":"أكرم فاضل","num":10,"role":"MID","pace":84,"shot":82,"pass":85},{"n":"طلال المهري","num":9,"role":"FWD","pace":85,"shot":87,"pass":79}]},{"id":"east_sun","name":"شمس الشرق","shortName":"SUN","c1":"#2563EB","c2":"#FB923C","gk":"#FACC15","ovr":81,"lgId":"afro_asia","lg":"دوري الأبطال الإقليمي","r":[{"n":"تاكومي ساتو","num":1,"role":"GK","pace":71,"shot":45,"pass":75},{"n":"رين ناكامورا","num":4,"role":"DEF","pace":77,"shot":58,"pass":75},{"n":"دايكي هاياشي","num":5,"role":"DEF","pace":78,"shot":60,"pass":76},{"n":"كينجي يامادا","num":8,"role":"MID","pace":81,"shot":79,"pass":84},{"n":"شينجي تاناكا","num":10,"role":"MID","pace":84,"shot":82,"pass":85},{"n":"كاورو ميتو","num":9,"role":"FWD","pace":85,"shot":87,"pass":79}]},{"id":"wc_green","name":"منتخب الصقور الأخضر","shortName":"GRN","c1":"#16A34A","c2":"#FFFFFF","gk":"#F59E0B","ovr":84,"lgId":"world_cup","lg":"كأس العالم للمنتخبات","r":[{"n":"محمد الراجحي","num":1,"role":"GK","pace":74,"shot":45,"pass":78},{"n":"حسان العبدالله","num":4,"role":"DEF","pace":80,"shot":58,"pass":78},{"n":"علي الشمراني","num":5,"role":"DEF","pace":81,"shot":60,"pass":79},{"n":"ناصر القحطاني","num":8,"role":"MID","pace":84,"shot":82,"pass":87},{"n":"سلمان الفيصل","num":10,"role":"MID","pace":87,"shot":85,"pass":88},{"n":"ريان البقمي","num":9,"role":"FWD","pace":88,"shot":90,"pass":82}]},{"id":"wc_samba","name":"منتخب السامبا الذهبية","shortName":"SMB","c1":"#EAB308","c2":"#15803D","gk":"#1D4ED8","ovr":87,"lgId":"world_cup","lg":"كأس العالم للمنتخبات","r":[{"n":"تياغو كوستا","num":1,"role":"GK","pace":77,"shot":45,"pass":81},{"n":"ماركوس نونيس","num":4,"role":"DEF","pace":83,"shot":58,"pass":81},{"n":"رافائيل ليما","num":5,"role":"DEF","pace":84,"shot":60,"pass":82},{"n":"برونو كاردوزو","num":8,"role":"MID","pace":87,"shot":85,"pass":90},{"n":"كاي سيلفا","num":10,"role":"MID","pace":90,"shot":88,"pass":91},{"n":"لوكاس سانتوس","num":9,"role":"FWD","pace":91,"shot":93,"pass":85}]},{"id":"wc_tango","name":"منتخب التانغو السماوي","shortName":"TNG","c1":"#38BDF8","c2":"#FFFFFF","gk":"#10B981","ovr":87,"lgId":"world_cup","lg":"كأس العالم للمنتخبات","r":[{"n":"سيرجيو فالديز","num":1,"role":"GK","pace":77,"shot":45,"pass":81},{"n":"توماس روميرو","num":4,"role":"DEF","pace":83,"shot":58,"pass":81},{"n":"ماتياس دياز","num":5,"role":"DEF","pace":84,"shot":60,"pass":82},{"n":"فرانكو باريرا","num":8,"role":"MID","pace":87,"shot":85,"pass":90},{"n":"داريو موراليس","num":10,"role":"MID","pace":90,"shot":88,"pass":91},{"n":"غونزالو أورتيغا","num":9,"role":"FWD","pace":91,"shot":93,"pass":85}]},{"id":"wc_blues","name":"منتخب الديوك الأزرق","shortName":"BLS","c1":"#1D4ED8","c2":"#EF4444","gk":"#F59E0B","ovr":86,"lgId":"world_cup","lg":"كأس العالم للمنتخبات","r":[{"n":"آرثر رينو","num":1,"role":"GK","pace":76,"shot":45,"pass":80},{"n":"جوليان ليفير","num":4,"role":"DEF","pace":82,"shot":58,"pass":80},{"n":"باسكال ديلان","num":5,"role":"DEF","pace":83,"shot":60,"pass":81},{"n":"روبين ميرسييه","num":8,"role":"MID","pace":86,"shot":84,"pass":89},{"n":"أنطوان موري","num":10,"role":"MID","pace":89,"shot":87,"pass":90},{"n":"كريم بلال","num":9,"role":"FWD","pace":90,"shot":92,"pass":84}]},{"id":"wc_red","name":"منتخب الماتادور الأحمر","shortName":"MAT","c1":"#DC2626","c2":"#FACC15","gk":"#0EA5E9","ovr":86,"lgId":"world_cup","lg":"كأس العالم للمنتخبات","r":[{"n":"أوناي رويز","num":1,"role":"GK","pace":76,"shot":45,"pass":80},{"n":"أندريس باديلا","num":4,"role":"DEF","pace":82,"shot":58,"pass":80},{"n":"خافي غالان","num":5,"role":"DEF","pace":83,"shot":60,"pass":81},{"n":"سيرجي مارتينز","num":8,"role":"MID","pace":86,"shot":84,"pass":89},{"n":"بيدرو أرياس","num":10,"role":"MID","pace":89,"shot":87,"pass":90},{"n":"ألفارو توريس","num":9,"role":"FWD","pace":90,"shot":92,"pass":84}]},{"id":"wc_lions","name":"منتخب الأسود الأبيض","shortName":"LNS","c1":"#F8FAFC","c2":"#1E3A8A","gk":"#22C55E","ovr":85,"lgId":"world_cup","lg":"كأس العالم للمنتخبات","r":[{"n":"جيمس هول","num":1,"role":"GK","pace":75,"shot":45,"pass":79},{"n":"ماركوس وارد","num":4,"role":"DEF","pace":81,"shot":58,"pass":79},{"n":"إيثان هاربر","num":5,"role":"DEF","pace":82,"shot":60,"pass":80},{"n":"تشارلي غرانت","num":8,"role":"MID","pace":85,"shot":83,"pass":88},{"n":"كيران شو","num":10,"role":"MID","pace":88,"shot":86,"pass":89},{"n":"أوليفر فوستر","num":9,"role":"FWD","pace":89,"shot":91,"pass":83}]},{"id":"wc_machines","name":"منتخب الماكينات","shortName":"MCH","c1":"#F1F5F9","c2":"#0F172A","gk":"#F97316","ovr":85,"lgId":"world_cup","lg":"كأس العالم للمنتخبات","r":[{"n":"فيلكس باومان","num":1,"role":"GK","pace":75,"shot":45,"pass":79},{"n":"لوكاس ريختر","num":4,"role":"DEF","pace":81,"shot":58,"pass":79},{"n":"فيليب كوخل","num":5,"role":"DEF","pace":82,"shot":60,"pass":80},{"n":"ستيفان فرانك","num":8,"role":"MID","pace":85,"shot":83,"pass":88},{"n":"تيمو شنايدر","num":10,"role":"MID","pace":88,"shot":86,"pass":89},{"n":"مارفن هوفمان","num":9,"role":"FWD","pace":89,"shot":91,"pass":83}]},{"id":"wc_atlas","name":"منتخب نسور القارة","shortName":"CON","c1":"#991B1B","c2":"#15803D","gk":"#EAB308","ovr":84,"lgId":"world_cup","lg":"كأس العالم للمنتخبات","r":[{"n":"رشيد المنير","num":1,"role":"GK","pace":74,"shot":45,"pass":78},{"n":"عزيز الزاوي","num":4,"role":"DEF","pace":80,"shot":58,"pass":78},{"n":"سمير بنعيسى","num":5,"role":"DEF","pace":81,"shot":60,"pass":79},{"n":"بلال التونسي","num":8,"role":"MID","pace":84,"shot":82,"pass":87},{"n":"أنس المغربي","num":10,"role":"MID","pace":87,"shot":85,"pass":88},{"n":"هشام البقالي","num":9,"role":"FWD","pace":88,"shot":90,"pass":82}]}];
+const MODES=[
+  {id:'classic',label:'كلاسيك 6v6'},
+  {id:'chaos_arcade',label:'فوضى الملاعب الخارقة 🔥'},
+  {id:'brawl',label:'مضاربة بدون قوانين'},
+  {id:'giant_ball',label:'الكرة العملاقة 2D'},
+  {id:'multiball',label:'عاصفة 3 كرات'},
+  {id:'volta',label:'كرة الشوارع 3v3'},
+  {id:'golden_goal',label:'الهدف الذهبي'},
+  {id:'duel_1v1',label:'تحدي 1 ضد 1'},
+  {id:'penalty',label:'ركلات الترجيح'}
+];
+const PU_LIST=[
+  {kind:'turbo',col:'#38bdf8',sym:'⚡',lbl:'⚡ صاروخ'},
+  {kind:'fire_shot',col:'#fb7185',sym:'🔥',lbl:'🔥 نارية'},
+  {kind:'freeze',col:'#67e8f9',sym:'❄️',lbl:'❄️ تجميد'},
+  {kind:'magnet',col:'#facc15',sym:'🧲',lbl:'🧲 مغناطيس'},
+  {kind:'titan',col:'#a855f7',sym:'🛡️',lbl:'🛡️ عملاق'}
+];
+const CHAOS_POOL=[
+  {kind:'turbo_pitch',banner:'⚡ حدث مجنون: سرعة البرق في الملعب!'},
+  {kind:'double_goal',banner:'🔥 هدف مزدوج x2 — كل هدف يُحسب بهدفين!'},
+  {kind:'low_gravity',banner:'🎈 جاذبية القمر — الكرات تطير في الهواء!'},
+  {kind:'crazy_wind',banner:'🌪️ رياح عاتية تغيّر مسار الكرة!'}
+];
+const PW=1000,PH=600,GT=248,GB=352,MX=48,MY=44,WW=PW+MX*2,WH=PH+MY*2;
+const fans=[];
+(function(){
+  const pal=['#ffd166','#38bdf8','#f43f5e','#34d399','#f8fafc','#c084fc'];
+  for(let i=0;i<64;i++){
+    fans.push({x:MX+18+i*15.2,y:16+(i%2)*14,c:pal[i%pal.length],p:i*0.55});
+    fans.push({x:MX+18+i*15.2,y:MY+PH+14+(i%2)*14,c:pal[(i+2)%pal.length],p:i*0.7+1.1});
+  }
+})();
+
+let actx=null,muted=false;
+function sfx(freq,dur,type,vol,endF){
+  if(muted)return;
+  try{
+    if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended')actx.resume();
+    const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;
+    o.type=type||'sine';o.frequency.setValueAtTime(freq,t);
+    if(endF)o.frequency.exponentialRampToValueAtTime(endF,t+dur);
+    g.gain.setValueAtTime(vol||0.12,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+dur);
+  }catch(e){}
+}
+
+const G={
+  screen:'lobby',
+  mode:'chaos_arcade',
+  lgFilter:'all',
+  homeIdx:0,
+  awayIdx:1,
+  diff:'balanced',
+  dur:120,
+  puOn:true,
+  chaosOn:true,
+  cam:'full',
+  camX:WW/2,
+  camY:WH/2,
+  shake:0,
+  hitstop:0,
+  crowd:0.25,
+  netR:[0,0],
+  score:[0,0],
+  timeLeft:120,
+  goalTimer:0,
+  goalText:'',
+  goalSub:'',
+  humans:{},
+  players:[],
+  balls:[],
+  orbs:[],
+  pts:[],
+  orbTimer:2.8,
+  chaos:'none',
+  chaosTimer:0,
+  nextChaos:9.5,
+  chaosText:'',
+  wx:0,
+  wy:0,
+  comm:'',
+  commT:0,
+  pen:null,
+  stats:{sh:[0,0],pa:[0,0],tk:[0,0],pn:[0,0],sup:[0,0],pu:[0,0]}
+};
+const inputs={};
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function dist(ax,ay,bx,by){return Math.hypot(bx-ax,by-ay);}
+function makeBall(id,x,y,r){return {id,x,y,z:0,vx:0,vy:0,vz:0,r,spin:0,owner:null,lastTeam:null,lastId:null,lastName:'',passTarget:null,passTeam:null,passFromHuman:null,fire:false};}
+function puff(x,y,n,col,spd,life,sz){
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2,s=(0.3+Math.random()*0.7)*spd;
+    G.pts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,col,life,max:life,sz});
+  }
+}
+
+function createPlayers(){
+  let slots0=[[28,300,'GK'],[170,180,'DEF'],[170,420,'DEF'],[315,156,'MID'],[315,444,'MID'],[438,300,'FWD']];
+  let slots1=[[972,300,'GK'],[830,180,'DEF'],[830,420,'DEF'],[685,156,'MID'],[685,444,'MID'],[562,300,'FWD']];
+  if(G.mode==='volta'){
+    slots0=[[32,300,'GK'],[250,204,'DEF'],[310,408,'MID'],[435,300,'FWD']];
+    slots1=[[968,300,'GK'],[750,204,'DEF'],[690,408,'MID'],[565,300,'FWD']];
+  } else if(G.mode==='duel_1v1'){
+    slots0=[[28,300,'GK'],[410,300,'FWD']];
+    slots1=[[972,300,'GK'],[590,300,'FWD']];
+  }
+  G.players=[];
+  const t0=TEAMS[G.homeIdx],t1=TEAMS[G.awayIdx];
+  slots0.forEach((s,i)=>{
+    const r=t0.r[i%t0.r.length];
+    G.players.push({id:'t0_'+i,team:0,name:r.n,num:r.num,role:s[2],x:s[0],y:s[1],hx:s[0],hy:s[1],vx:0,vy:0,facing:0,r:11,stam:100,pace:r.pace,shot:r.shot,pass:r.pass,hasBall:false,kcd:0,tcd:0,tanim:0,pcd:0,panim:0,knock:0,tumble:0,spin:0,fric:0.08,chg:0,dive:0,dvy:0,ait:0.18+Math.random()*0.15,pu:null,put:0,frz:0,fire:false});
+  });
+  slots1.forEach((s,i)=>{
+    const r=t1.r[i%t1.r.length];
+    G.players.push({id:'t1_'+i,team:1,name:r.n,num:r.num,role:s[2],x:s[0],y:s[1],hx:s[0],hy:s[1],vx:0,vy:0,facing:Math.PI,r:11,stam:100,pace:r.pace,shot:r.shot,pass:r.pass,hasBall:false,kcd:0,tcd:0,tanim:0,pcd:0,panim:0,knock:0,tumble:0,spin:0,fric:0.08,chg:0,dive:0,dvy:0,ait:0.18+Math.random()*0.15,pu:null,put:0,frz:0,fire:false});
+  });
+  const isCrazy=G.mode==='chaos_arcade'||G.mode==='brawl'||G.mode==='giant_ball'||G.mode==='multiball';
+  Object.values(G.humans).forEach(h=>{
+    const cand=G.players.find(p=>p.team===h.team&&p.role==='FWD')||G.players.find(p=>p.team===h.team&&p.role!=='GK');
+    h.pid=cand?cand.id:null;h.sup=isCrazy?55:25;
+  });
+}
+
+function setupPenalty(){
+  const pen=G.pen;if(!pen)return;
+  const kt=pen.turn,gt=kt===0?1:0;
+  G.players.forEach((p,idx)=>{
+    p.vx=0;p.vy=0;p.hasBall=false;p.knock=0;p.chg=0;p.frz=0;
+    if(p.team===gt&&p.role==='GK'){p.x=PW-30;p.y=PH/2;p.facing=Math.PI;}
+    else if(p.team===kt&&p.role==='FWD'){p.x=PW-185;p.y=PH/2;p.facing=0;}
+    else{p.x=PW*0.48+(p.team===0?-25:25);p.y=95+(idx%6)*75;p.facing=0;}
+  });
+  G.balls=[makeBall('main',PW-145,PH/2,6)];
+  const kicker=G.players.find(p=>p.team===kt&&p.role==='FWD');
+  const keeper=G.players.find(p=>p.team===gt&&p.role==='GK');
+  Object.values(G.humans).forEach(h=>{
+    if(h.team===kt&&kicker)h.pid=kicker.id;
+    if(h.team===gt&&keeper)h.pid=keeper.id;
+  });
+}
+
+function resetBalls(){
+  if(G.mode==='penalty'&&G.pen){setupPenalty();return;}
+  G.players.forEach(p=>{p.x=p.hx;p.y=p.hy;p.vx=0;p.vy=0;p.hasBall=false;p.knock=0;p.tumble=0;p.chg=0;p.frz=0;p.facing=p.team===0?0:Math.PI;});
+  const br=G.mode==='giant_ball'?17:6;
+  G.balls=[makeBall('main',PW/2,PH/2,br)];
+  if(G.mode==='multiball'){G.balls.push(makeBall('e1',PW/2,PH*0.25,br),makeBall('e2',PW/2,PH*0.75,br));}
+}
+
+function broadcastState(){
+  const payload={t:'state',screen:G.screen,mode:G.mode,score:G.score,timeLeft:Math.ceil(G.timeLeft),home:TEAMS[G.homeIdx].name,away:TEAMS[G.awayIdx].name};
+  Object.keys(embHostConns).forEach(id=>{
+    const h=G.humans[id];
+    const pl=h?G.players.find(x=>x.id===h.pid):null;
+    embHostConns[id].send({...payload,me:h?{color:h.color,colorName:h.colorName,team:h.team,isHost:h.isHost,sup:Math.round(h.sup||0),pu:pl?pl.pu:null}:null});
+  });
+}
+
+function switchPlayer(h){
+  const cur=h.pid,b=G.balls[0]||{x:PW/2,y:PH/2};
+  const taken=new Set(Object.values(G.humans).filter(x=>x.id!==h.id).map(x=>x.pid));
+  const cands=G.players.filter(p=>p.team===h.team&&p.role!=='GK'&&p.id!==cur&&p.knock<=0&&!taken.has(p.id))
+    .sort((a,c)=>dist(a.x,a.y,b.x,b.y)-dist(c.x,c.y,b.x,b.y));
+  if(cands[0])h.pid=cands[0].id;
+}
+
+function doPass(p,b,ax,ay,humanId){
+  const tms=G.players.filter(x=>x.team===p.team&&x.id!==p.id&&x.knock<=0);
+  const hasAim=Math.hypot(ax,ay)>0.25;
+  const ang=hasAim?Math.atan2(ay,ax):p.facing;
+  let best=null,bestS=-999;
+  tms.forEach(tm=>{
+    const d=dist(p.x,p.y,tm.x,tm.y);
+    const diff=Math.abs(Math.atan2(Math.sin(Math.atan2(tm.y-p.y,tm.x-p.x)-ang),Math.cos(Math.atan2(tm.y-p.y,tm.x-p.x)-ang)));
+    const sc=Math.cos(diff)*2.2+(1-clamp(d/600,0,0.8));
+    if(sc>bestS){bestS=sc;best=tm;}
+  });
+  p.hasBall=false;p.kcd=0.34;b.owner=null;b.fire=false;b.passTeam=p.team;b.passFromHuman=humanId;b.passTarget=best?best.id:null;
+  G.stats.pa[p.team]++;
+  if(best){
+    const d=dist(p.x,p.y,best.x,best.y);
+    const spd=clamp(220+d*0.45+(p.pass-70)*1.3,235,410);
+    const a=Math.atan2(best.y-b.y,best.x-b.x);
+    b.vx=Math.cos(a)*spd;b.vy=Math.sin(a)*spd;b.vz=clamp(d*0.09,10,42);
+  } else {
+    b.vx=Math.cos(ang)*290;b.vy=Math.sin(ang)*290;
+  }
+  puff(b.x,b.y,4,'#e2e8f0',70,0.22,2.2);
+  sfx(340,0.06,'sine',0.08,190);
+}
+
+function doShot(p,b,pwr,ax,ay,isSup){
+  const gx=p.team===0?PW+6:-6;
+  const ty=clamp(300+ay*46+(Math.random()-0.5)*22,GT+8,GB-8);
+  const ang=Math.atan2(ty-b.y,gx-b.x);
+  const fire=Boolean(isSup||p.fire);p.fire=false;
+  const spd=fire?670:clamp(330+(pwr||0.7)*220+(p.shot-70)*1.4,340,560);
+  p.hasBall=false;p.kcd=0.42;p.chg=0;b.owner=null;b.fire=fire;b.passTeam=null;b.passFromHuman=null;b.passTarget=null;
+  b.vx=Math.cos(ang)*spd;b.vy=Math.sin(ang)*spd;b.vz=fire?60:(45+(pwr||0.7)*115);
+  b.spin=(Math.random()-0.5)*14;
+  G.stats.sh[p.team]++;
+  if(fire){G.hitstop=0.04;G.shake=0.55;G.comm='🔥 '+p.name+' يطلق تسديدة التنين الخارقة!!';G.commT=2.5;puff(b.x,b.y,18,'#fb7185',200,0.45,3.8);sfx(520,0.22,'sawtooth',0.16,140);}
+  else{puff(b.x,b.y,7,'#ffffff',120,0.28,2.6);sfx(145,0.09,'triangle',0.15,65);}
+}
+
+function doPunch(att){
+  if(att.pcd>0||att.knock>0||att.frz>0)return;
+  att.pcd=0.65;att.panim=0.22;G.stats.pn[att.team]++;
+  let vic=null,bd=38;
+  G.players.forEach(p=>{if(p.team!==att.team&&p.knock<=0&&p.pu!=='titan'){const d=dist(att.x,att.y,p.x,p.y);if(d<bd){bd=d;vic=p;}}});
+  if(!vic){sfx(210,0.05,'sine',0.06,120);return;}
+  const ka=Math.atan2(vic.y-att.y,vic.x-att.x)+(Math.random()-0.5)*1.75;
+  const ks=145+Math.random()*140;
+  vic.vx=Math.cos(ka)*ks;vic.vy=Math.sin(ka)*ks;
+  vic.knock=1.2+Math.random()*0.95;
+  vic.spin=(Math.random()>0.5?1:-1)*(7+Math.random()*12);
+  vic.fric=0.05+Math.random()*0.14;
+  G.hitstop=0.04;G.shake=0.45;G.crowd=Math.min(1,G.crowd+0.25);
+  G.balls.forEach(b=>{
+    if(b.owner===vic.id){vic.hasBall=false;b.owner=null;const pa=ka+(Math.random()-0.5)*2;b.vx=Math.cos(pa)*190;b.vy=Math.sin(pa)*190;b.vz=75;}
+  });
+  puff(vic.x,vic.y,12,'#fb7185',160,0.42,3.4);
+  sfx(110,0.14,'sawtooth',0.18,52);
+}
+
+function doSuper(h,p,ax,ay){
+  if((h.sup||0)<100||p.knock>0||p.frz>0)return false;
+  h.sup=0;G.stats.sup[p.team]++;G.hitstop=0.045;G.shake=0.55;G.crowd=1;
+  const ob=G.balls.find(b=>b.owner===p.id);
+  if(ob){doShot(p,ob,1,ax,ay,true);}
+  else{
+    const ang=Math.hypot(ax,ay)>0.2?Math.atan2(ay,ax):p.facing;
+    p.facing=ang;p.vx=Math.cos(ang)*320;p.vy=Math.sin(ang)*320;p.tanim=0.34;p.pu='turbo';p.put=3;
+    puff(p.x,p.y,18,'#38bdf8',180,0.45,3.6);
+    G.players.forEach(op=>{
+      if(op.team!==p.team&&op.pu!=='titan'&&dist(p.x,p.y,op.x,op.y)<70){
+        const ka=Math.atan2(op.y-p.y,op.x-p.x);op.vx=Math.cos(ka)*190;op.vy=Math.sin(ka)*190;op.knock=0.85;
+        if(op.hasBall){op.hasBall=false;G.balls.forEach(b=>{if(b.owner===op.id)b.owner=null;});}
+      }
+    });
+    G.comm='⚡ '+p.name+' يفجّر اندفاعة البرق الخارقة!';G.commT=2.4;
+    sfx(580,0.2,'sawtooth',0.16,220);
+  }
+  return true;
+}
+
+function launchPenalty(){
+  const pen=G.pen;if(!pen)return;
+  const kt=pen.turn,gt=kt===0?1:0;
+  const keeper=G.players.find(p=>p.team===gt&&p.role==='GK');
+  if(!keeper)return;
+  pen.phase='flight';pen.t=0;
+  const hasHK=Object.values(G.humans).some(h=>h.team===gt);
+  if(!hasHK){const ch=[-0.85,0,0.85];pen.dive=ch[Math.floor(Math.random()*3)];}
+  const ty=clamp(PH/2+pen.aim*44,GT+6,GB-6);
+  const b=G.balls[0];
+  const ang=Math.atan2(ty-b.y,PW+12-b.x);
+  b.vx=Math.cos(ang)*440;b.vy=Math.sin(ang)*440;b.vz=65;
+  G.stats.sh[kt]++;sfx(150,0.09,'triangle',0.14,70);
+  keeper.dive=0.55;keeper.dvy=pen.dive*180;keeper.vy=pen.dive*180;
+}
+
+function advancePenalty(){
+  const pen=G.pen;if(!pen)return;
+  const [k0,k1]=pen.taken,[s0,s1]=G.score;
+  if((k0>=5&&k1>=5&&k0===k1&&s0!==s1)||(k0<=5&&k1<=5&&(s0>s1+(5-k1)||s1>s0+(5-k0)))){
+    G.screen='fulltime';renderTv();broadcastState();return;
+  }
+  pen.turn=pen.turn===0?1:0;pen.phase='aim';pen.t=0;pen.aim=0;pen.dive=0;
+  setupPenalty();
+}
+
+function startMatch(){
+  G.score=[0,0];G.timeLeft=G.dur;G.goalTimer=0;G.orbs=[];G.pts=[];G.orbTimer=2.8;
+  G.chaos='none';G.chaosTimer=0;G.nextChaos=9.5;G.chaosText='';G.wx=0;G.wy=0;
+  G.stats={sh:[0,0],pa:[0,0],tk:[0,0],pn:[0,0],sup:[0,0],pu:[0,0]};
+  const isC=G.mode==='chaos_arcade'||G.mode==='brawl'||G.mode==='giant_ball'||G.mode==='multiball';
+  G.comm=isC?'استعد! كرات القوى الخارقة والضربة السوبر جاهزة!':'';G.commT=isC?3.2:0;
+  G.pen=G.mode==='penalty'?{turn:0,taken:[0,0],phase:'aim',t:0,aim:0,dive:0}:null;
+  G.screen='match';createPlayers();resetBalls();renderTv();broadcastState();
+  sfx(760,0.12,'sine',0.12);setTimeout(()=>sfx(920,0.18,'sine',0.12),150);
+}
+
+function startTv(){
+  renderTv();
+  setInterval(broadcastState,140);
+  let last=performance.now();
+  function loop(now){
+    const dt=Math.min((now-last)/1000,0.05);last=now;
+    if(G.screen==='match'){tickMatch(dt);render2DFrame(now*0.001);}
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+}
+
+function render2DFrame(tSec){
+  const cv=document.getElementById('stage2d');if(!cv)return;
+  const ctx=cv.getContext('2d',{alpha:false});if(!ctx)return;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const pw=Math.max(320,cv.clientWidth),ph=Math.max(200,cv.clientHeight);
+  if(cv.width!==Math.floor(pw*dpr)||cv.height!==Math.floor(ph*dpr)){cv.width=Math.floor(pw*dpr);cv.height=Math.floor(ph*dpr);}
+  const cw=cv.width,ch=cv.height;
+  const z=G.cam==='close'?1.24:1.0;
+  const mb=G.balls[0]||{x:PW/2,y:PH/2};
+  const tx=z>1?clamp(MX+mb.x,WW*0.34,WW*0.66):WW/2;
+  const ty=z>1?clamp(MY+mb.y,WH*0.36,WH*0.64):WH/2;
+  G.camX+=(tx-G.camX)*0.1;G.camY+=(ty-G.camY)*0.1;
+  const sx=G.shake>0?(Math.random()-0.5)*G.shake*14:0;
+  const sy=G.shake>0?(Math.random()-0.5)*G.shake*14:0;
+  const sc=Math.min(cw/WW,ch/WH)*z;
+
+  ctx.fillStyle='#0e071a';ctx.fillRect(0,0,cw,ch);
+  ctx.save();
+  ctx.translate(cw/2+sx,ch/2+sy);ctx.scale(sc,sc);ctx.translate(-G.camX,-G.camY);
+  ctx.fillStyle='#1b112c';ctx.fillRect(0,0,WW,WH);
+
+  // Cheering 2D crowd
+  const amp=1.5+G.crowd*5.5;
+  for(const f of fans){
+    const dy=Math.abs(Math.sin(tSec*(3.2+G.crowd*5)+f.p))*amp;
+    ctx.fillStyle=f.c;ctx.beginPath();ctx.arc(f.x,f.y-dy,4.5,0,Math.PI*2);ctx.fill();
+  }
+
+  // Matte pitch turf (ZERO shadows, ZERO reflections)
+  ctx.fillStyle='#11613a';ctx.fillRect(MX-18,MY-12,PW+36,PH+24);
+  for(let i=0;i<12;i++){ctx.fillStyle=i%2===0?'#187c4b':'#146d41';ctx.fillRect(MX+i*(PW/12),MY,PW/12,PH);}
+  ctx.strokeStyle='rgba(255,255,255,0.9)';ctx.lineWidth=2.5;ctx.strokeRect(MX,MY,PW,PH);
+  ctx.beginPath();ctx.moveTo(MX+PW/2,MY);ctx.lineTo(MX+PW/2,MY+PH);ctx.stroke();
+  ctx.beginPath();ctx.arc(MX+PW/2,MY+PH/2,68,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(MX+PW/2,MY+PH/2,4,0,Math.PI*2);ctx.fill();
+  ctx.strokeRect(MX,MY+135,130,330);ctx.strokeRect(MX,MY+210,48,180);
+  ctx.strokeRect(MX+PW-130,MY+135,130,330);ctx.strokeRect(MX+PW-48,MY+210,48,180);
+
+  if(G.chaos==='crazy_wind'){
+    ctx.strokeStyle='rgba(186,230,253,0.35)';ctx.lineWidth=2;
+    for(let w=0;w<10;w++){
+      const wx=MX+((w*130+tSec*240)%PW),wy=MY+45+(w*54)%(PH-90);
+      ctx.beginPath();ctx.moveTo(wx,wy);ctx.lineTo(wx+34,wy+(G.wy>0?18:-18));ctx.stroke();
+    }
+  }
+  if(G.chaos==='double_goal'){ctx.strokeStyle='#facc15';ctx.lineWidth=4;ctx.strokeRect(MX-4,MY-4,PW+8,PH+8);}
+
+  // Goals with mesh & ripple
+  [false,true].forEach((isR,idx)=>{
+    const x0=MX+(isR?PW:-28),w=28,y0=MY+GT,h=GB-GT,bg=G.netR[idx]*(isR?9:-9);
+    ctx.fillStyle='rgba(248,250,252,0.14)';
+    ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0+w+bg,y0+4);ctx.lineTo(x0+w+bg,y0+h-4);ctx.lineTo(x0,y0+h);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='rgba(226,232,240,0.5)';ctx.lineWidth=1;
+    for(let gx=6;gx<w;gx+=7){ctx.beginPath();ctx.moveTo(x0+gx,y0);ctx.lineTo(x0+gx,y0+h);ctx.stroke();}
+    for(let gy=10;gy<h;gy+=12){ctx.beginPath();ctx.moveTo(x0,y0+gy);ctx.lineTo(x0+w+bg*0.6,y0+gy);ctx.stroke();}
+    ctx.strokeStyle='#fff';ctx.lineWidth=3.5;ctx.beginPath();
+    if(isR){ctx.moveTo(x0,y0);ctx.lineTo(x0+w+bg,y0);ctx.lineTo(x0+w+bg,y0+h);ctx.lineTo(x0,y0+h);}
+    else{ctx.moveTo(x0+w,y0);ctx.lineTo(x0+bg,y0);ctx.lineTo(x0+bg,y0+h);ctx.lineTo(x0+w,y0+h);}
+    ctx.stroke();
+  });
+
+  // Orbs
+  G.orbs.forEach(o=>{
+    const oy=MY+o.y+Math.sin(tSec*5+o.x)*3;
+    ctx.fillStyle=o.col;ctx.beginPath();ctx.arc(MX+o.x,oy,13,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#0f172a';ctx.font='bold 14px Tajawal,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(o.sym,MX+o.x,oy+1);
+  });
+
+  // Particles
+  G.pts.forEach(pt=>{
+    ctx.globalAlpha=clamp(pt.life/pt.max,0,1);ctx.fillStyle=pt.col;
+    ctx.beginPath();ctx.arc(MX+pt.x,MY+pt.y,pt.sz,0,Math.PI*2);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+
+  // Players
+  const cmap={};Object.values(G.humans).forEach(h=>{if(h.pid)cmap[h.pid]=h;});
+  G.players.forEach(p=>{
+    const t=TEAMS[p.team===0?G.homeIdx:G.awayIdx],h=cmap[p.id];
+    ctx.save();ctx.translate(MX+p.x,MY+p.y);
+    if(h){ctx.strokeStyle=h.color;ctx.lineWidth=2.8;ctx.beginPath();ctx.arc(0,0,p.r+6,0,Math.PI*2);ctx.stroke();}
+    if(p.pu){const pv=PU_LIST.find(x=>x.kind===p.pu);if(pv){ctx.strokeStyle=pv.col;ctx.lineWidth=2.3;ctx.setLineDash([4,3]);ctx.beginPath();ctx.arc(0,0,p.r+3.5,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);}}
+    if(p.chg>0.05){ctx.strokeStyle=p.chg>0.78?'#ef4444':'#facc15';ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(0,0,p.r+9,-Math.PI/2,-Math.PI/2+Math.PI*2*p.chg);ctx.stroke();}
+    ctx.save();
+    if(p.knock>0){ctx.rotate(p.tumble);ctx.scale(1.18,0.72);}else ctx.rotate(p.facing);
+    ctx.fillStyle='#0f172a';ctx.beginPath();ctx.arc(p.r*0.75,-4,3.1,0,Math.PI*2);ctx.arc(p.r*0.75,4,3.1,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=p.frz>0?'#67e8f9':(p.role==='GK'?t.gk:t.c1);
+    ctx.beginPath();ctx.arc(0,0,p.r,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=p.frz>0?'#ecfeff':t.c2;ctx.lineWidth=2.3;ctx.beginPath();ctx.moveTo(-p.r*0.3,-p.r*0.8);ctx.lineTo(-p.r*0.3,p.r*0.8);ctx.stroke();
+    ctx.strokeStyle='#0f172a';ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(0,0,p.r,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle=p.frz>0?'#cffafe':'#e6b48a';ctx.beginPath();ctx.arc(1.5,0,p.r*0.48,0,Math.PI*2);ctx.fill();
+    if(p.panim>0){ctx.fillStyle='#fb7185';ctx.beginPath();ctx.arc(p.r+7,0,5.5,0,Math.PI*2);ctx.fill();}
+    ctx.restore();
+    if(h){
+      const bob=Math.sin(tSec*6)*2.5,ty2=-p.r-13+bob;
+      ctx.fillStyle=h.color;ctx.beginPath();ctx.moveTo(0,ty2+6);ctx.lineTo(-5,ty2-1);ctx.lineTo(5,ty2-1);ctx.closePath();ctx.fill();
+      if(h.name){
+        ctx.font='800 11px Tajawal,sans-serif';const tw=ctx.measureText(h.name).width+12;
+        ctx.fillStyle='rgba(14,7,24,0.92)';ctx.strokeStyle=h.color;ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.roundRect(-tw/2,ty2-21,tw,17,5);ctx.fill();ctx.stroke();
+        ctx.fillStyle=h.color;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(h.name,0,ty2-12);
+      }
+    } else {
+      ctx.font='700 9px monospace';ctx.fillStyle='rgba(248,250,252,0.85)';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(p.num),0,p.r+9);
+    }
+    ctx.restore();
+  });
+
+  // Matte 2D Soccer Balls (zero shadows)
+  G.balls.forEach(b=>{
+    const r=b.r*(1+Math.min(b.z*0.008,0.35)),bx=MX+b.x,by=MY+b.y-b.z*0.45;
+    ctx.save();ctx.translate(bx,by);
+    if(b.fire){ctx.strokeStyle='#fb7185';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,r+4,0,Math.PI*2);ctx.stroke();}
+    ctx.fillStyle=b.fire?'#fed7aa':'#ffffff';ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=b.fire?'#ea580c':'#1e293b';ctx.lineWidth=Math.max(1.4,r*0.2);ctx.stroke();
+    ctx.fillStyle=b.fire?'#ea580c':'#0f172a';ctx.beginPath();ctx.arc(0,0,r*0.34,0,Math.PI*2);ctx.fill();
+    for(let k=0;k<4;k++){const a=(b.spin+b.x*0.04)+(k*Math.PI)/2;ctx.beginPath();ctx.arc(Math.cos(a)*r*0.68,Math.sin(a)*r*0.68,r*0.17,0,Math.PI*2);ctx.fill();}
+    ctx.restore();
+  });
+
+  if(G.mode==='penalty'&&G.pen&&G.pen.phase==='aim'){
+    const ay=clamp(PH/2+G.pen.aim*44,GT+6,GB-6);
+    ctx.strokeStyle='#ffd166';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(MX+PW-4,MY+ay,10,0,Math.PI*2);
+    ctx.moveTo(MX+PW-18,MY+ay);ctx.lineTo(MX+PW+10,MY+ay);ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function tickMatch(dt){
+  G.shake=Math.max(0,G.shake-dt*2.2);G.netR[0]=Math.max(0,G.netR[0]-dt*1.4);G.netR[1]=Math.max(0,G.netR[1]-dt*1.4);G.crowd=Math.max(0.2,G.crowd-dt*0.18);
+  for(let i=G.pts.length-1;i>=0;i--){const pt=G.pts[i];pt.x+=pt.vx*dt;pt.y+=pt.vy*dt;pt.vx*=Math.pow(0.25,dt);pt.vy*=Math.pow(0.25,dt);pt.life-=dt;if(pt.life<=0)G.pts.splice(i,1);}
+  if(G.commT>0){G.commT-=dt;if(G.commT<=0)G.comm='';}
+  const cpEl=document.getElementById('comm-pill');if(cpEl){cpEl.textContent=G.comm;cpEl.style.display=G.comm?'block':'none';}
+  if(G.hitstop>0){G.hitstop-=dt;return;}
+
+  if(G.goalTimer>0){
+    G.goalTimer-=dt;
+    if(G.goalTimer<=0){
+      if(G.mode==='golden_goal'){G.screen='fulltime';renderTv();broadcastState();}
+      else if(G.mode==='penalty'&&G.pen){const go=document.getElementById('goal-ov');if(go)go.style.display='none';advancePenalty();}
+      else{resetBalls();const go=document.getElementById('goal-ov');if(go)go.style.display='none';}
+    }
+    return;
+  }
+
+  if(G.mode==='penalty'&&G.pen){
+    const pen=G.pen;
+    Object.values(G.humans).forEach(h=>{
+      const inp=inputs[h.id];if(!inp||pen.phase!=='aim')return;
+      if(h.team===pen.turn){pen.aim=clamp(pen.aim+inp.my*dt*1.9,-1,1);if(inp.sh||inp.pa){inp.sh=false;inp.pa=false;launchPenalty();}}
+      else pen.dive=clamp(inp.my,-1,1);
+    });
+    if(pen.phase==='aim'&&!Object.values(G.humans).some(h=>h.team===pen.turn)){
+      pen.t+=dt;pen.aim=Math.sin(pen.t*3.1)*0.75;if(pen.t>1.1)launchPenalty();
+    } else if(pen.phase==='flight'){
+      pen.t+=dt;
+      const gt=pen.turn===0?1:0,kp=G.players.find(p=>p.team===gt&&p.role==='GK'),b=G.balls[0];
+      if(kp){kp.y=clamp(kp.y+kp.vy*dt,16,PH-16);kp.dive-=dt;if(kp.dive<=0)kp.vy*=0.7;}
+      b.x+=b.vx*dt;b.y+=b.vy*dt;
+      if(kp&&dist(kp.x,kp.y,b.x,b.y)<kp.r+b.r+7){b.vx=-b.vx*0.4;pen.taken[pen.turn]++;pen.phase='res';pen.t=1.1;sfx(180,0.08,'square',0.1);}
+      else if(b.x>PW+4&&b.y>GT&&b.y<GB){G.score[pen.turn]++;pen.taken[pen.turn]++;G.netR[1]=1;G.goalTimer=1.6;G.goalText='هدف ترجيحي!!';G.goalSub=TEAMS[pen.turn===0?G.homeIdx:G.awayIdx].name;const go=document.getElementById('goal-ov');if(go){document.getElementById('goal-txt').textContent=G.goalText;document.getElementById('goal-sub').textContent=G.goalSub;go.style.display='flex';}sfx(523,0.3,'triangle',0.16);broadcastState();}
+      else if(pen.t>1.8){pen.taken[pen.turn]++;pen.phase='res';pen.t=0.9;}
+    } else if(pen.phase==='res'){pen.t-=dt;if(pen.t<=0)advancePenalty();}
+    return;
+  }
+
+  G.timeLeft=Math.max(0,G.timeLeft-dt);
+  if(G.timeLeft<=0){G.screen='fulltime';sfx(760,0.2,'sine',0.12);renderTv();broadcastState();return;}
+
+  Object.values(G.humans).forEach(h=>{
+    h.sup=Math.min(100,(h.sup||0)+dt*3.8);
+    const inp=inputs[h.id];if(!inp)return;
+    if(inp.sw){inp.sw=false;switchPlayer(h);}
+    const p=G.players.find(x=>x.id===h.pid);if(!p||p.knock>0||p.frz>0)return;
+    if(inp.sup){inp.sup=false;if(doSuper(h,p,inp.mx,inp.my))return;}
+    const mag=Math.hypot(inp.mx,inp.my),spr=inp.sp&&p.stam>8&&mag>0.1;
+    p.stam=spr?Math.max(0,p.stam-22*dt):Math.min(100,p.stam+14*dt);
+    const base=(95+p.pace*0.38)*(p.pu==='turbo'?1.48:1)*(G.chaos==='turbo_pitch'?1.32:1);
+    const spd=(spr?base*1.28:base)*(p.hasBall?0.92:1);
+    if(p.tanim<=0){
+      const a=clamp(9.5*dt,0,1);
+      if(mag>0.12){p.vx+=((inp.mx/Math.max(1,mag))*spd-p.vx)*a;p.vy+=((inp.my/Math.max(1,mag))*spd-p.vy)*a;}
+      else{p.vx*=Math.pow(0.03,dt);p.vy*=Math.pow(0.03,dt);}
+    }
+    if(inp.pu){inp.pu=false;if(G.mode==='brawl')doPunch(p);}
+    const ob=G.balls.find(b=>b.owner===p.id);
+    if(p.hasBall&&ob){
+      if(inp.pa){inp.pa=false;h.sup=Math.min(100,(h.sup||0)+14);doPass(p,ob,inp.mx,inp.my,h.id);p.chg=0;return;}
+      if(inp.shH||inp.sh){inp.sh=false;p.chg=clamp(p.chg+dt*1.8,0.2,1);}
+      if(inp.shR||(p.chg>=0.99&&inp.shH)){inp.shR=false;h.sup=Math.min(100,(h.sup||0)+12);doShot(p,ob,p.chg,inp.mx,inp.my,false);return;}
+    }else{
+      p.chg=0;
+      if((inp.tk||inp.sh)&&p.tcd<=0){
+        inp.tk=false;inp.sh=false;p.tcd=0.72;p.tanim=0.22;G.stats.tk[p.team]++;
+        const ls=195*(p.pu==='turbo'?1.48:1);p.vx=Math.cos(p.facing)*ls;p.vy=Math.sin(p.facing)*ls;
+        puff(p.x,p.y,4,'#cbd5e1',70,0.25,2.2);
+      }
+      inp.tk=false;inp.sh=false;inp.shR=false;
+    }
+  });
+
+  if(G.puOn){
+    G.orbTimer-=dt;
+    if(G.orbTimer<=0&&G.orbs.length<3){
+      const pk=PU_LIST[Math.floor(Math.random()*PU_LIST.length)];
+      G.orbs.push({...pk,x:150+Math.random()*(PW-300),y:75+Math.random()*(PH-150),ttl:14});
+      G.orbTimer=6.5;
+    }
+    for(let i=G.orbs.length-1;i>=0;i--){
+      const o=G.orbs[i];o.ttl-=dt;if(o.ttl<=0){G.orbs.splice(i,1);continue;}
+      for(const p of G.players){
+        if(p.knock<=0&&p.frz<=0&&dist(p.x,p.y,o.x,o.y)<=p.r+15){
+          G.orbs.splice(i,1);G.stats.pu[p.team]++;
+          if(o.kind==='freeze'){G.players.forEach(op=>{if(op.team!==p.team&&op.role!=='GK'&&op.pu!=='titan'){op.frz=3.2;puff(op.x,op.y,8,'#67e8f9',90,0.45,3);}});G.comm='🧊 '+p.name+' جمّد الخصوم!';}
+          else{p.pu=o.kind;p.put=6.5;p.r=o.kind==='titan'?14.5:11;if(o.kind==='fire_shot')p.fire=true;G.comm=o.lbl+' — '+p.name;}
+          G.commT=2.4;
+          const ch=Object.values(G.humans).find(h=>h.pid===p.id);if(ch)ch.sup=Math.min(100,(ch.sup||0)+25);
+          puff(o.x,o.y,14,'#fde047',140,0.42,3.4);sfx(660,0.14,'sine',0.12,920);break;
+        }
+      }
+    }
+  }
+
+  if(G.chaosOn){
+    const chEl=document.getElementById('chaos-pill');
+    if(G.chaos!=='none'){
+      G.chaosTimer-=dt;if(G.chaosTimer<=0){G.chaos='none';G.chaosText='';G.wx=0;G.wy=0;if(chEl)chEl.style.display='none';}
+    } else {
+      G.nextChaos-=dt;
+      if(G.nextChaos<=0){
+        const pk=CHAOS_POOL[Math.floor(Math.random()*CHAOS_POOL.length)];
+        G.chaos=pk.kind;G.chaosText=pk.banner;G.chaosTimer=10;G.nextChaos=14;
+        if(pk.kind==='crazy_wind'){G.wx=(Math.random()>0.5?1:-1)*55;G.wy=(Math.random()>0.5?1:-1)*145;}else{G.wx=0;G.wy=0;}
+        if(chEl){chEl.textContent=pk.banner;chEl.style.display='block';}
+        sfx(320,0.22,'square',0.1,640);
+      }
+    }
+  }
+
+  const mainB=G.balls[0],ctrl=new Set(Object.values(G.humans).map(h=>h.pid));
+  const owner=mainB.owner?G.players.find(x=>x.id===mainB.owner):null;
+  const presser={0:null,1:null};
+  [0,1].forEach(tm=>{
+    if(owner&&owner.team===tm)return;
+    let best=null,bd=1e9;
+    G.players.forEach(p=>{if(p.team===tm&&p.role!=='GK'&&!ctrl.has(p.id)&&p.knock<=0&&p.frz<=0){const d=dist(p.x,p.y,mainB.x,mainB.y);if(d<bd){bd=d;best=p.id;}}});
+    presser[tm]=best;
+  });
+  const aiPace=G.diff==='easy'?0.86:G.diff==='pro'?1.04:0.95;
+
+  G.players.forEach(p=>{
+    if(ctrl.has(p.id)||p.knock>0||p.frz>0)return;
+    p.ait-=dt;const dir=p.team===0?1:-1,a=clamp(7.5*dt,0,1);
+    if(p.role==='GK'){
+      const tx=p.team===0?28:PW-28,ty=clamp(mainB.y,GT+10,GB-10),ob=G.balls.find(b=>b.owner===p.id);
+      if(p.hasBall&&ob){p.vx=0;p.vy=0;if(p.ait<=0){p.ait=0.55;doPass(p,ob,dir,0,null);}return;}
+      const dx=tx-p.x,dy=ty-p.y,d=Math.hypot(dx,dy);
+      p.vx+=((d>3?(dx/d)*112:0)-p.vx)*a;p.vy+=((d>3?(dy/d)*112:0)-p.vy)*a;p.facing=p.team===0?0:Math.PI;return;
+    }
+    const ob=G.balls.find(b=>b.owner===p.id);
+    if(p.hasBall&&ob){
+      const dg=dist(p.x,p.y,p.team===0?PW:0,300);
+      if(p.ait<=0){p.ait=0.34;if(dg<220){doShot(p,ob,0.75,dir,0,false);return;}}
+      const spd=(94+p.pace*0.32)*aiPace*0.92;
+      p.vx+=(dir*spd-p.vx)*a;p.vy+=(clamp((300-p.y)/200,-0.4,0.4)*spd-p.vy)*a;return;
+    }
+    const isChasePass=!owner&&mainB.passTeam===p.team&&(mainB.passTarget===p.id||presser[p.team]===p.id);
+    let tx=p.hx,ty=p.hy,spd=(95+p.pace*0.32)*aiPace;
+    if(isChasePass){tx=clamp(mainB.x+mainB.vx*0.14,18,PW-18);ty=clamp(mainB.y+mainB.vy*0.14,18,PH-18);spd*=1.16;}
+    else if(presser[p.team]===p.id){
+      if(owner&&owner.team!==p.team){
+        const ownG=p.team===0?26:PW-26;tx=clamp(owner.x+(ownG>owner.x?34:-34),42,PW-42);ty=owner.y;
+        if(dist(p.x,p.y,mainB.x,mainB.y)<26&&p.tcd<=0&&p.ait<=0){p.ait=1.6;p.tcd=1.6;p.tanim=0.22;const ta=Math.atan2(mainB.y-p.y,mainB.x-p.x);p.vx=Math.cos(ta)*165;p.vy=Math.sin(ta)*165;return;}
+      }else{tx=mainB.x;ty=mainB.y;}
+    }else if(owner&&owner.team===p.team){tx=clamp(p.hx+dir*110,90,PW-90);ty=p.hy;}
+    else{tx=clamp(p.hx+(mainB.x-500)*0.35,80,PW-80);ty=p.hy*0.75+mainB.y*0.25;}
+    const dx=tx-p.x,dy=ty-p.y,d=Math.hypot(dx,dy);
+    p.vx+=((d>8?(dx/d)*spd:0)-p.vx)*a;p.vy+=((d>8?(dy/d)*spd:0)-p.vy)*a;
+  });
+
+  // Magnet attraction
+  G.players.forEach(p=>{
+    if(p.pu==='magnet'&&p.knock<=0){
+      G.balls.forEach(b=>{if(!b.owner&&dist(p.x,p.y,b.x,b.y)<125){const ang=Math.atan2(p.y-b.y,p.x-b.x);b.vx+=Math.cos(ang)*420*dt;b.vy+=Math.sin(ang)*420*dt;}});
+    }
+  });
+
+  G.players.forEach(p=>{
+    if(p.kcd>0)p.kcd-=dt;if(p.tcd>0)p.tcd-=dt;if(p.tanim>0)p.tanim-=dt;if(p.pcd>0)p.pcd-=dt;if(p.panim>0)p.panim-=dt;
+    if(p.frz>0)p.frz-=dt;if(p.put>0){p.put-=dt;if(p.put<=0){p.pu=null;p.r=11;p.fire=false;}}
+    if(p.frz>0){p.vx*=0.8;p.vy*=0.8;}
+    else if(p.knock>0){p.knock-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=Math.pow(p.fric,dt);p.vy*=Math.pow(p.fric,dt);p.tumble+=p.spin*dt;}
+    else{p.tumble=0;p.x+=p.vx*dt;p.y+=p.vy*dt;if(Math.hypot(p.vx,p.vy)>12)p.facing=Math.atan2(p.vy,p.vx);}
+    p.x=clamp(p.x,14,PW-14);p.y=clamp(p.y,16,PH-16);
+  });
+
+  // Player collisions + Titan knockback
+  for(let i=0;i<G.players.length;i++){
+    for(let j=i+1;j<G.players.length;j++){
+      const a=G.players[i],b=G.players[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),md=a.r+b.r;
+      if(d>0&&d<md){
+        const nx=dx/d,ny=dy/d,ov=(md-d)*0.5;
+        a.x-=nx*ov;a.y-=ny*ov;b.x+=nx*ov;b.y+=ny*ov;
+        if(a.team!==b.team){
+          if(a.pu==='titan'&&b.pu!=='titan'&&b.knock<=0){b.vx=nx*185;b.vy=ny*185;b.knock=0.55;}
+          else if(b.pu==='titan'&&a.pu!=='titan'&&a.knock<=0){a.vx=-nx*185;a.vy=-ny*185;a.knock=0.55;}
+        }
+      }
+    }
+  }
+
+  const grav=G.chaos==='low_gravity'?155:320;
+  for(const b of G.balls){
+    if(b.owner){
+      const ow=G.players.find(x=>x.id===b.owner);
+      if(ow&&ow.knock<=0&&ow.frz<=0){b.x=ow.x+Math.cos(ow.facing)*(ow.r+b.r+1);b.y=ow.y+Math.sin(ow.facing)*(ow.r+b.r+1);b.z=0;b.vx=ow.vx;b.vy=ow.vy;}
+      else b.owner=null;
+    }else{
+      if(b.fire)puff(b.x,b.y,1,'#fb923c',40,0.22,3.4);
+      b.vx+=G.wx*dt;b.vy+=G.wy*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;
+      if(b.z>0||b.vz>0){b.z+=b.vz*dt;b.vz-=grav*dt;if(b.z<=0){b.z=0;b.vz=Math.abs(b.vz)>36?-b.vz*0.55:0;}}
+      const damp=Math.pow(b.fire?0.68:0.42,dt);b.vx*=damp;b.vy*=damp;
+      if(b.y<12){b.y=12;b.vy=Math.abs(b.vy)*0.68;}if(b.y>PH-12){b.y=PH-12;b.vy=-Math.abs(b.vy)*0.68;}
+      const inG=b.y>GT&&b.y<GB;
+      if(inG&&(b.x>PW+4||b.x<-4)){
+        const sTeam=b.x>PW+4?0:1,pts=G.chaos==='double_goal'?2:1;
+        G.score[sTeam]+=pts;G.goalTimer=2.1;G.netR[sTeam===0?1:0]=1;G.shake=0.6;G.crowd=1;
+        G.goalText=pts===2?'هدف مزدوج x2!!':'هدف رائع!!';
+        G.goalSub=(b.lastName||TEAMS[sTeam===0?G.homeIdx:G.awayIdx].name)+' — '+TEAMS[sTeam===0?G.homeIdx:G.awayIdx].name;
+        const go=document.getElementById('goal-ov');
+        if(go){document.getElementById('goal-txt').textContent=G.goalText;document.getElementById('goal-sub').textContent=G.goalSub;go.style.display='flex';}
+        puff(b.x,b.y,26,'#ffd166',240,0.85,4.5);sfx(523,0.35,'triangle',0.16);
+        broadcastState();return;
+      }
+      if(!inG){if(b.x<10){b.x=10;b.vx=Math.abs(b.vx)*0.65;}if(b.x>PW-10){b.x=PW-10;b.vx=-Math.abs(b.vx)*0.65;}}
+    }
+    if(b.z<=42){
+      const curO=b.owner?G.players.find(x=>x.id===b.owner):null;
+      for(const p of G.players){
+        if(p.knock>0||p.frz>0||p.kcd>0)continue;
+        if(!curO&&p.hasBall)continue;
+        const d=dist(p.x,p.y,b.x,b.y),isRcv=!curO&&b.passTeam===p.team&&b.passTarget===p.id;
+        const pr=p.r+b.r+(p.tanim>0?8:isRcv?9:3);
+        if(d>pr)continue;
+        if(!curO){
+          p.hasBall=true;b.owner=p.id;b.fire=false;b.lastTeam=p.team;b.lastId=p.id;b.lastName=p.name;
+          if(p.role==='GK')p.ait=0.45;
+          if(b.passTeam===p.team&&b.passFromHuman&&G.humans[b.passFromHuman])G.humans[b.passFromHuman].pid=p.id;
+          else if(b.passTeam!==p.team){Object.values(G.humans).forEach(h=>{if(h.team!==p.team){const c=G.players.find(x=>x.id===h.pid);if(!c||c.knock>0||dist(c.x,c.y,b.x,b.y)>220)switchPlayer(h);}});}
+          b.passTeam=null;b.passTarget=null;b.passFromHuman=null;break;
+        }else if(curO.team!==p.team&&curO.pu!=='titan'){
+          const dx=p.x-curO.x,dy=p.y-curO.y,dl=Math.hypot(dx,dy)||1;
+          const front=(dx/dl)*Math.cos(curO.facing)+(dy/dl)*Math.sin(curO.facing)>0.35;
+          if((p.tanim>0&&d<=p.r+b.r+6)||(front&&d<=p.r+b.r-1)){
+            curO.hasBall=false;curO.kcd=0.55;curO.chg=0;p.hasBall=true;b.owner=p.id;b.lastTeam=p.team;b.lastId=p.id;b.lastName=p.name;
+            b.passTeam=null;b.passTarget=null;b.passFromHuman=null;
+            const ch=Object.values(G.humans).find(h=>h.pid===p.id);if(ch)ch.sup=Math.min(100,(ch.sup||0)+16);
+            puff(b.x,b.y,8,'#f8fafc',120,0.3,2.8);
+            Object.values(G.humans).forEach(h=>{if(h.team===curO.team){const c=G.players.find(x=>x.id===h.pid);if(!c||dist(c.x,c.y,b.x,b.y)>170)switchPlayer(h);}});
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  const hc=document.getElementById('hud-clock'),hs=document.getElementById('hud-score');
+  if(hc){const m=Math.floor(G.timeLeft/60),s=Math.floor(G.timeLeft%60);hc.textContent=G.mode==='penalty'?'ترجيح':(m+':'+(s<10?'0'+s:s));}
+  if(hs)hs.textContent=G.score[0]+' - '+G.score[1];
+}
+
+function setLeague(id){
+  G.lgFilter=id;
+  const list=id==='all'?TEAMS:TEAMS.filter(t=>t.lgId===id);
+  if(list[0])G.homeIdx=TEAMS.indexOf(list[0]);
+  if(list[1])G.awayIdx=TEAMS.indexOf(list[1]);
+  renderTv();
+}
+
+function renderTv(){
+  const root=document.getElementById('root');
+  const realCode=EMB&&EMB.code?String(EMB.code):null;
+  const codeBadge=realCode?'<span class="gold-code" style="font-size:26px">'+realCode+'</span>':'<span style="font-size:13px;color:#fbbf24">يظهر تلقائياً عند التشغيل داخل ليالي الرياض</span>';
+
+  if(G.screen==='lobby'){
+    const list=G.lgFilter==='all'?TEAMS:TEAMS.filter(t=>t.lgId===G.lgFilter);
+    const opts=list.map(t=>{const ix=TEAMS.indexOf(t);return '<option value="'+ix+'">'+t.name+' ('+t.ovr+')</option>';}).join('');
+    const plist=Object.values(G.humans).map(h=>'<div class="player-item"><span><span class="color-dot" style="background:'+h.color+'"></span> '+h.name+(h.isHost?' (المضيف)':'')+'</span><span>'+(h.team===0?TEAMS[G.homeIdx].name:TEAMS[G.awayIdx].name)+'</span></div>').join('')||'<p style="opacity:.7;font-size:13px">بانتظار دخول اللاعبين من هواتفهم...</p>';
+    const mBtns=MODES.map(m=>'<button class="mode-btn '+(G.mode===m.id?'active':'')+'" onclick="G.mode=\''+m.id+'\';renderTv();broadcastState()">'+m.label+'</button>').join('');
+    const lBtns='<button class="mode-btn '+(G.lgFilter==='all'?'active':'')+'" onclick="setLeague(\'all\')">الكل ('+TEAMS.length+')</button>'+LEAGUES.map(l=>'<button class="mode-btn '+(G.lgFilter===l.id?'active':'')+'" onclick="setLeague(\''+l.id+'\')">'+l.name+'</button>').join('');
+
+    root.innerHTML='<div class="tv-shell"><div class="tv-header"><div><strong style="font-size:20px">نجوم الملاعب 2D — ليالي الرياض</strong> <span style="opacity:.7;font-size:12px">('+TEAMS.length+' فريقاً · 9 أطوار)</span><div style="opacity:.72;font-size:11px;margin-top:2px">'+GAME_INFO.description+'</div></div><div>رمز الغرفة: '+codeBadge+'</div></div><div class="tv-body"><div class="lobby-grid"><div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><h3 style="margin:0">اختر المود الخارق (9 أطوار 2D)</h3><div style="display:flex;gap:6px"><button class="mode-btn '+(G.puOn?'active':'')+'" onclick="G.puOn=!G.puOn;renderTv()">كرات القوى: '+(G.puOn?'مفعلة':'مطفأة')+'</button><button class="mode-btn '+(G.chaosOn?'rose':'')+'" onclick="G.chaosOn=!G.chaosOn;renderTv()">أحداث المجنونة: '+(G.chaosOn?'مفعلة':'مطفأة')+'</button></div></div><div class="chip-row">'+mBtns+'</div><div class="chip-row" style="margin-top:12px">'+lBtns+'</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label style="font-size:11px;opacity:.75">الفريق الأول</label><select class="sel" onchange="G.homeIdx=Number(this.value);renderTv();broadcastState()">'+opts.replace('value="'+G.homeIdx+'"','value="'+G.homeIdx+'" selected')+'</select></div><div><label style="font-size:11px;opacity:.75">الفريق الثاني</label><select class="sel" onchange="G.awayIdx=Number(this.value);renderTv();broadcastState()">'+opts.replace('value="'+G.awayIdx+'"','value="'+G.awayIdx+'" selected')+'</select></div></div><div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:12px"><div class="chip-row"><button class="mode-btn '+(G.diff==='easy'?'active':'')+'" onclick="G.diff=\'easy\';renderTv()">سهل</button><button class="mode-btn '+(G.diff==='balanced'?'active':'')+'" onclick="G.diff=\'balanced\';renderTv()">متوازن</button><button class="mode-btn '+(G.diff==='pro'?'active':'')+'" onclick="G.diff=\'pro\';renderTv()">محترف</button><button class="mode-btn '+(G.dur===90?'active':'')+'" onclick="G.dur=90;renderTv()">1:30</button><button class="mode-btn '+(G.dur===120?'active':'')+'" onclick="G.dur=120;renderTv()">2:00</button><button class="mode-btn '+(G.dur===180?'active':'')+'" onclick="G.dur=180;renderTv()">3:00</button></div><button class="btn btn-gold" onclick="startMatch()">ابدأ المباراة 2D</button></div></div><div class="panel"><h3 style="margin:0 0 10px">اللاعبون المتصلون ('+Object.keys(G.humans).length+')</h3>'+plist+'</div></div></div></div>';
+  } else {
+    const isFt=G.screen==='fulltime';
+    root.innerHTML='<div class="tv-shell"><div class="tv-body"><div class="hud-actions"><button class="btn btn-dark btn-sm" onclick="G.cam=G.cam===\'full\'?\'close\':\'full\';renderTv()">'+(G.cam==='full'?'كاميرا قريبة':'ملعب كامل')+'</button><button class="btn btn-dark btn-sm" onclick="muted=!muted;renderTv()">'+(muted?'تشغيل الصوت':'كتم')+'</button><button class="btn btn-dark btn-sm" onclick="G.screen=\'lobby\';renderTv();broadcastState()">اللوبي</button></div><div class="hud-bar"><span>'+TEAMS[G.homeIdx].name+'</span><span id="hud-score" style="color:#ffd166;font-size:19px">'+G.score[0]+' - '+G.score[1]+'</span><span>'+TEAMS[G.awayIdx].name+'</span><span id="hud-clock" style="opacity:.8">'+(Math.floor(G.timeLeft/60)+':'+String(Math.floor(G.timeLeft%60)).padStart(2,'0'))+'</span></div><div class="chaos-wrap"><div id="chaos-pill" class="chaos-pill" style="display:'+(G.chaosText?'block':'none')+'">'+G.chaosText+'</div><div id="comm-pill" class="comm-pill" style="display:'+(G.comm?'block':'none')+'">'+G.comm+'</div></div><canvas id="stage2d"></canvas><div id="goal-ov" class="goal-overlay" style="display:none"><div class="goal-card"><div id="goal-txt" style="font-size:30px;font-weight:900;color:#ffd166">هدف!</div><div id="goal-sub" style="font-size:14px;font-weight:700;margin-top:4px"></div></div></div>'+(isFt?'<div class="ft-overlay"><div class="ft-card"><h2 style="margin:0 0 8px;color:#ffd166">صافرة النهاية</h2><div style="font-size:26px;font-weight:900">'+TEAMS[G.homeIdx].name+' '+G.score[0]+' - '+G.score[1]+' '+TEAMS[G.awayIdx].name+'</div><div class="stats-grid"><div><div style="opacity:.7">التسديدات</div><b>'+G.stats.sh[0]+' - '+G.stats.sh[1]+'</b></div><div><div style="opacity:.7">التمريرات</div><b>'+G.stats.pa[0]+' - '+G.stats.pa[1]+'</b></div><div><div style="opacity:.7">السوبر</div><b>'+G.stats.sup[0]+' - '+G.stats.sup[1]+'</b></div></div><div style="display:flex;gap:10px;justify-content:center"><button class="btn btn-gold" onclick="startMatch()">لعب مجدداً</button><button class="btn btn-dark" onclick="G.screen=\'lobby\';renderTv();broadcastState()">اللوبي الرئيسي</button></div></div></div>':'')+'</div></div>';
+  }
+}
+
+function onHostMsg(c,data){
+  if(!data||!data.t)return;
+  if(data.t==='join'){
+    const idx=Object.keys(G.humans).length,pal=COLORS[idx%COLORS.length];
+    if(!G.humans[c.id]){
+      G.humans[c.id]={id:c.id,name:data.name||('لاعب '+(idx+1)),team:(idx%2),color:pal.hex,colorName:pal.name,pid:null,isHost:idx===0,sup:55};
+      inputs[c.id]={mx:0,my:0,sp:false,sh:false,shH:false,shR:false,pa:false,sw:false,tk:false,pu:false,sup:false};
+      if(G.screen==='match'){
+        const cand=G.players.find(p=>p.team===G.humans[c.id].team&&p.role!=='GK');
+        G.humans[c.id].pid=cand?cand.id:null;
+      }
+      if(G.screen==='lobby')renderTv();
+    }
+    broadcastState();
+  }else if(data.t==='ctl'){
+    const inp=inputs[c.id]||(inputs[c.id]={mx:0,my:0,sp:false,sh:false,shH:false,shR:false,pa:false,sw:false,tk:false,pu:false,sup:false});
+    if(data.mx!==undefined)inp.mx=data.mx;
+    if(data.my!==undefined)inp.my=data.my;
+    if(data.sp!==undefined)inp.sp=!!data.sp;
+    if(data.btn==='shD'){inp.sh=true;inp.shH=true;}
+    if(data.btn==='shU'){inp.shH=false;inp.shR=true;}
+    if(data.btn==='pass')inp.pa=true;
+    if(data.btn==='switch')inp.sw=true;
+    if(data.btn==='tackle')inp.tk=true;
+    if(data.btn==='punch')inp.pu=true;
+    if(data.btn==='super')inp.sup=true;
+  }else if(data.t==='cmd'){
+    if(data.action==='start')startMatch();
+    if(data.action==='lobby'){G.screen='lobby';renderTv();broadcastState();}
+    if(data.action==='swapTeam'&&G.humans[c.id]){
+      const h=G.humans[c.id];h.team=h.team===0?1:0;
+      if(G.screen==='match'){const cand=G.players.find(p=>p.team===h.team&&p.role!=='GK');h.pid=cand?cand.id:null;}
+      if(G.screen==='lobby')renderTv();
+      broadcastState();
+    }
+  }
+}
+
+function onPlayerLeave(id){
+  delete G.humans[id];delete inputs[id];
+  if(G.screen==='lobby')renderTv();
+  broadcastState();
+}
+
+let PH_STATE=null;
+function startPhone(){
+  ctlSend({t:'join',name:(EMB&&EMB.name)?EMB.name:''});
+  renderPhone();
+}
+function onCtlMsg(data){
+  if(!data)return;
+  if(data.t==='state'){PH_STATE=data;renderPhone();}
+}
+function attachJoy(){
+  const joy=document.getElementById('joy'),knob=document.getElementById('knob');
+  if(!joy||!knob)return;
+  let drag=false;
+  const upd=(cx,cy)=>{
+    const r=joy.getBoundingClientRect(),dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2),max=42,d=Math.hypot(dx,dy),s=d>max?max/d:1,x=dx*s,y=dy*s;
+    knob.style.left=(41+x)+'px';knob.style.top=(41+y)+'px';
+    ctlSend({t:'ctl',mx:Number((x/max).toFixed(2)),my:Number((y/max).toFixed(2))});
+  };
+  const reset=()=>{drag=false;knob.style.left='41px';knob.style.top='41px';ctlSend({t:'ctl',mx:0,my:0});};
+  joy.onpointerdown=e=>{drag=true;joy.setPointerCapture(e.pointerId);upd(e.clientX,e.clientY);};
+  joy.onpointermove=e=>{if(drag)upd(e.clientX,e.clientY);};
+  joy.onpointerup=reset;joy.onpointercancel=reset;
+}
+function renderPhone(){
+  const root=document.getElementById('root');
+  if(!PH_STATE||!PH_STATE.me){
+    root.innerHTML='<div class="card"><h3 style="margin:0 0 8px">نجوم الملاعب 2D — ليالي الرياض</h3><p style="margin:0;opacity:.8">جاري الاتصال بشاشة التلفزيون...</p></div>';
+    return;
+  }
+  const me=PH_STATE.me,isBrawl=PH_STATE.mode==='brawl',supR=(me.sup||0)>=100;
+  const puInfo=me.pu?PU_LIST.find(x=>x.kind===me.pu):null;
+  if(!document.getElementById('joy')){
+    root.innerHTML='<div class="ph-wrap"><div class="ph-top"><span id="ph-info"></span><span id="ph-score"></span><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="ctlSend({t:\'cmd\',action:\'swapTeam\'})">تبديل الفريق</button><span id="ph-host"></span></div></div><div class="ph-pad"><div class="joy-base" id="joy"><div class="joy-knob" id="knob"></div></div><div style="display:flex;flex-direction:column;gap:7px;align-items:center"><button class="pad-btn pad-sprint" style="width:88px;height:36px" ontouchstart="ctlSend({t:\'ctl\',sp:1})" ontouchend="ctlSend({t:\'ctl\',sp:0})" onmousedown="ctlSend({t:\'ctl\',sp:1})" onmouseup="ctlSend({t:\'ctl\',sp:0})">سرعة (R2)</button><button id="ph-sup" class="pad-btn" style="width:92px;height:40px" onclick="ctlSend({t:\'ctl\',btn:\'super\'})"></button><button id="ph-punch" class="pad-btn pad-punch" style="width:88px;height:36px;display:none" onclick="ctlSend({t:\'ctl\',btn:\'punch\'})">ضرب!</button></div><div class="ab-grid"><button class="pad-btn pad-switch" style="grid-column:2;grid-row:1" onclick="ctlSend({t:\'ctl\',btn:\'switch\'})">تبديل</button><button class="pad-btn pad-pass" style="grid-column:1;grid-row:2" onclick="ctlSend({t:\'ctl\',btn:\'pass\'})">ناوِل</button><button class="pad-btn pad-tackle" style="grid-column:3;grid-row:2" onclick="ctlSend({t:\'ctl\',btn:\'tackle\'})">تقطيع</button><button class="pad-btn pad-shoot" style="grid-column:2;grid-row:3" ontouchstart="ctlSend({t:\'ctl\',btn:\'shD\'})" ontouchend="ctlSend({t:\'ctl\',btn:\'shU\'})" onmousedown="ctlSend({t:\'ctl\',btn:\'shD\'})" onmouseup="ctlSend({t:\'ctl\',btn:\'shU\'})">شوت</button></div></div></div>';
+    attachJoy();
+  }
+  const info=document.getElementById('ph-info'),sc=document.getElementById('ph-score'),hostEl=document.getElementById('ph-host'),supEl=document.getElementById('ph-sup'),punEl=document.getElementById('ph-punch');
+  if(info)info.innerHTML='<span class="color-dot" style="background:'+me.color+'"></span> '+((EMB&&EMB.name)||'')+' ('+me.colorName+')'+(puInfo?' · '+puInfo.lbl:'');
+  if(sc)sc.textContent=PH_STATE.home+' '+PH_STATE.score[0]+' - '+PH_STATE.score[1]+' '+PH_STATE.away;
+  if(hostEl)hostEl.innerHTML=me.isHost?(PH_STATE.screen!=='match'?'<button class="btn btn-gold btn-sm" onclick="ctlSend({t:\'cmd\',action:\'start\'})">ابدأ</button>':'<button class="btn btn-dark btn-sm" onclick="ctlSend({t:\'cmd\',action:\'lobby\'})">اللوبي</button>'):'';
+  if(supEl){supEl.textContent=supR?'سوبر 🔥 جاهز!':'سوبر '+me.sup+'%';supEl.className='pad-btn '+(supR?'pad-super':'');}
+  if(punEl)punEl.style.display=isBrawl?'flex':'none';
+}
+function ctlSend(obj){ try{parent.postMessage({__emb:1,data:obj},'*')}catch(e){} }
+</script>
+</body>
+</html>
