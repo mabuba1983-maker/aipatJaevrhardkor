@@ -1,10 +1,6 @@
-name: Layali Riyadh APK (Manual Only)
+name: Layali Riyadh APK - STOPPED
 
-on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-
+on: []
 permissions:
   contents: read
 
