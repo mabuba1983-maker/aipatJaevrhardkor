@@ -2,6 +2,8 @@ name: Layali Riyadh APK (Manual Only)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 permissions:
   contents: read
