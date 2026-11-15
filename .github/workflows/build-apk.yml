@@ -224,23 +224,33 @@ jobs:
 
           apk = next(Path("app/build/outputs/apk/debug").glob("*.apk"))
           checks = [(p.name, p) for p in sorted(Path.cwd().glob("*.html")) if p.name != "مكتبة_الألعاب-1.html"]
-          checks.append(("game-library.html", Path("app/src/main/assets/مكتبة_الألعاب-1.html")))
+          checks.append(("game-library.html", Path("app/src/main/assets/game-library.html")))
           checks.extend((p.relative_to(Path.cwd()).as_posix(), p) for p in sorted(Path("prepared-games").rglob("*")) if p.is_file())
+          missing = []
+          mismatched = []
           with ZipFile(apk) as z:
               names = set(z.namelist())
               for asset_name, source in checks:
                   entry = "assets/" + asset_name
                   if entry not in names:
-                      raise SystemExit(f"APK is missing: {entry}")
+                      missing.append(entry)
+                      continue
                   actual = z.read(entry)
                   expected = source.read_bytes()
                   if hashlib.sha256(actual).digest() != hashlib.sha256(expected).digest():
-                      raise SystemExit(f"APK asset differs from verified source: {entry}")
-                  print(f"VERIFIED {entry}: {len(actual)} bytes, SHA-256 matches")
+                      mismatched.append(entry)
+                  else:
+                      print(f"VERIFIED {entry}: {len(actual)} bytes, SHA-256 matches")
+          print(f"APK contains {len(names)} entries; checked {len(checks)} game/resource files.")
+          if missing or mismatched:
+              print("MISSING ENTRIES:", missing)
+              print("CONTENT MISMATCHES:", mismatched)
+              raise SystemExit(1)
           print(f"APK verified: {apk} ({apk.stat().st_size} bytes)")
           PY
 
       - name: Upload APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Layali-Riyadh-APK
