@@ -191,18 +191,31 @@ jobs:
               const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
               const errors = [];
               page.on('pageerror', error => errors.push(error.message));
-              await page.goto(pathToFileURL(path.resolve(file)).href, { waitUntil: 'domcontentloaded', timeout: 60000 });
-              await page.waitForTimeout(3500);
-              const state = await page.evaluate(() => ({
-                title: document.title,
-                text: (document.body?.innerText || '').trim(),
-                elements: document.body?.children.length || 0,
-                canvas: document.querySelectorAll('canvas').length
-              }));
-              console.log(JSON.stringify({ file, ...state, pageErrors: errors }));
-              if (!state.title || (!state.text && state.elements === 0 && state.canvas === 0) || errors.length) {
-                failed = true;
-              }
+              const gameUrl = pathToFileURL(path.resolve(file)).href;
+              await page.setContent('<!doctype html><html><body style="margin:0"><iframe id="game" style="width:100vw;height:100vh;border:0"></iframe></body></html>');
+              await page.evaluate(url => {
+                const frame = document.getElementById('game');
+                frame.src = url;
+                frame.addEventListener('load', () => {
+                  frame.contentWindow.postMessage({__emb:1,init:1,role:'tv',code:'TEST42',name:'اختبار'}, '*');
+                }, {once:true});
+              }, gameUrl);
+              const frame = page.frameLocator('#game');
+              await page.waitForTimeout(4000);
+              const state = await page.evaluate(() => {
+                const frame = document.getElementById('game');
+                const d = frame.contentDocument;
+                return {
+                  title: d?.title || '',
+                  text: (d?.body?.innerText || '').trim(),
+                  visible: !!d?.body && getComputedStyle(d.body).visibility !== 'hidden',
+                  children: d?.body?.children.length || 0,
+                  canvas: d?.querySelectorAll('canvas').length || 0
+                };
+              });
+              console.log(JSON.stringify({file,...state,pageErrors:errors}));
+              const lobbyOnly = state.text.includes('افتحها من هناك') && state.children <= 2;
+              if (!state.title || !state.visible || lobbyOnly || (!state.text && !state.canvas) || errors.length) failed = true;
               await page.close();
             }
             await browser.close();
@@ -225,7 +238,7 @@ jobs:
           apk = next(Path("app/build/outputs/apk/debug").glob("*.apk"))
           checks = [(p.name, p) for p in sorted(Path.cwd().glob("*.html")) if p.name != "مكتبة_الألعاب-1.html"]
           checks.append(("game-library.html", Path("app/src/main/assets/game-library.html")))
-          checks.extend((p.relative_to(Path.cwd()).as_posix(), p) for p in sorted(Path("prepared-games").rglob("*")) if p.is_file())
+          checks.extend((p.as_posix(), p) for p in sorted(Path("prepared-games").rglob("*")) if p.is_file())
           missing = []
           mismatched = []
           with ZipFile(apk) as z:
