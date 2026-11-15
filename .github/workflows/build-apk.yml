@@ -35,7 +35,7 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          from shutil import copy2
+          from shutil import copy2, copytree
           from html.parser import HTMLParser
           from urllib.parse import urlsplit, unquote
           import re
@@ -58,13 +58,18 @@ jobs:
           # Android's asset path is ASCII to avoid filename/encoding edge cases in APK packaging.
           copy2(library, assets / "game-library.html")
 
-          # Copy root HTML games only when the app does not already have an app-specific copy.
-          # The library is intentionally preserved because its Android asset copy contains the
-          # latest app-specific cards and must not be overwritten by a possibly older root copy.
+          # Include every standalone HTML game at repository root, not just a hard-coded pair.
+          # Keep the app library source as the canonical library file.
           for src in root.glob("*.html"):
-              dst = assets / src.name
-              if not dst.exists():
-                  copy2(src, dst)
+              if src.name == "مكتبة_الألعاب-1.html":
+                  continue
+              copy2(src, assets / src.name)
+
+          # Include the complete prepared-games tree (HTML, JS, CSS, images, JSON and archives)
+          # while preserving its directory structure so relative references keep working.
+          prepared = root / "prepared-games"
+          if prepared.is_dir():
+              copytree(prepared, assets / "prepared-games", dirs_exist_ok=True)
 
           # Always install the exact uploaded versions of these two requested games.
           challenge_src = required[0]
@@ -153,10 +158,8 @@ jobs:
                       self.scripts.append(self.current)
                       self.current = None
 
-          games = [
-              Path("tahadi_al_ashara (1).html"),
-              Path("captain-bean-layali-riyadh (1).html"),
-          ]
+          games = sorted(p for p in Path.cwd().glob("*.html") if p.name != "مكتبة_الألعاب-1.html")
+          games += sorted(Path("prepared-games").rglob("*.html")) if Path("prepared-games").exists() else []
           checked = 0
           with tempfile.TemporaryDirectory() as tmp:
               for game in games:
@@ -228,10 +231,10 @@ jobs:
           JS
           node /tmp/game-smoke-test.cjs
 
-      - name: Build installable debug APK and release AAB
+      - name: Build APK only
         run: gradle --no-daemon assembleDebug
 
-      - name: Verify requested games are inside the APK byte-for-byte
+      - name: Verify all repository game files are packaged in the APK
         shell: bash
         run: |
           python3 - <<'PY'
@@ -240,12 +243,9 @@ jobs:
           import hashlib
 
           apk = next(Path("app/build/outputs/apk/debug").glob("*.apk"))
-          checks = [
-              ("tahadi_al_ashara (1).html", Path("tahadi_al_ashara (1).html")),
-              ("captain-bean-layali-riyadh (1).html", Path("captain-bean-layali-riyadh (1).html")),
-              ("captain-bean-layali-riyadh.html", Path("captain-bean-layali-riyadh (1).html")),
-              ("game-library.html", Path("app/src/main/assets/مكتبة_الألعاب-1.html")),
-          ]
+          checks = [(p.name, p) for p in sorted(Path.cwd().glob("*.html")) if p.name != "مكتبة_الألعاب-1.html"]
+          checks.append(("game-library.html", Path("app/src/main/assets/مكتبة_الألعاب-1.html")))
+          checks.extend((p.relative_to(Path.cwd()).as_posix(), p) for p in sorted(Path("prepared-games").rglob("*")) if p.is_file())
           with ZipFile(apk) as z:
               names = set(z.namelist())
               for asset_name, source in checks:
