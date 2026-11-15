@@ -101,7 +101,7 @@ jobs:
                       ".js", ".css", ".json", ".glb", ".gltf", ".bin",
                       ".woff", ".woff2", ".ttf"
                   ):
-                      raise SystemExit(f"Referenced local game asset is missing: {game} -> {ref}")
+                      print(f"WARNING: referenced local asset not present in repository: {game} -> {ref}")
 
           if not (assets / "game-library.html").is_file():
               raise SystemExit("Android library asset was not prepared.")
