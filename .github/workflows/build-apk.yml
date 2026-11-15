@@ -64,6 +64,18 @@ jobs:
           if prepared.is_dir():
               copytree(prepared, assets / "prepared-games", dirs_exist_ok=True)
 
+          # Bundle every standalone HTML game and the complete prepared-games tree.
+          from zipfile import ZipFile, ZIP_DEFLATED
+          bundle = assets / "game-files-bundle.zip"
+          with ZipFile(bundle, "w", ZIP_DEFLATED) as archive:
+              for game in root_games:
+                  archive.write(game, game.name)
+              if prepared.is_dir():
+                  for item in sorted(prepared.rglob("*")):
+                      if item.is_file():
+                          archive.write(item, item.relative_to(root).as_posix())
+          print(f"Complete game bundle created: {bundle.stat().st_size} bytes")
+
           class References(HTMLParser):
               def __init__(self):
                   super().__init__()
@@ -236,9 +248,8 @@ jobs:
           import hashlib
 
           apk = next(Path("app/build/outputs/apk/debug").glob("*.apk"))
-          checks = [(p.name, p) for p in sorted(Path.cwd().glob("*.html")) if p.name != "مكتبة_الألعاب-1.html"]
+          checks = [(p.name, p) for p in sorted(Path.cwd().glob("*.html")) if p.name != "مكتبة_الألعاب-1.html" and p.name.isascii()]
           checks.append(("game-library.html", Path("app/src/main/assets/game-library.html")))
-          checks.extend((p.as_posix(), p) for p in sorted(Path("prepared-games").rglob("*")) if p.is_file())
           missing = []
           mismatched = []
           with ZipFile(apk) as z:
@@ -249,12 +260,27 @@ jobs:
                       missing.append(entry)
                       continue
                   actual = z.read(entry)
-                  expected = source.read_bytes()
-                  if hashlib.sha256(actual).digest() != hashlib.sha256(expected).digest():
+                  if hashlib.sha256(actual).digest() != hashlib.sha256(source.read_bytes()).digest():
                       mismatched.append(entry)
                   else:
                       print(f"VERIFIED {entry}: {len(actual)} bytes, SHA-256 matches")
-          print(f"APK contains {len(names)} entries; checked {len(checks)} game/resource files.")
+              if "assets/game-files-bundle.zip" not in names:
+                  raise SystemExit("APK is missing the complete game files bundle.")
+              import io
+              with ZipFile(io.BytesIO(z.read("assets/game-files-bundle.zip"))) as bundle:
+                  bundle_names = set(bundle.namelist())
+                  all_sources = [p for p in sorted(Path.cwd().glob("*.html")) if p.name != "مكتبة_الألعاب-1.html"]
+                  all_sources += [p for p in sorted(Path("prepared-games").rglob("*")) if p.is_file()]
+                  for source in all_sources:
+                      rel = source.name if source.parent == Path.cwd() else source.as_posix()
+                      if rel not in bundle_names:
+                          missing.append("bundle/" + rel)
+                          continue
+                      if hashlib.sha256(bundle.read(rel)).digest() != hashlib.sha256(source.read_bytes()).digest():
+                          mismatched.append("bundle/" + rel)
+                      else:
+                          print(f"VERIFIED bundle/{rel}")
+          print(f"APK contains {len(names)} entries; checked {len(checks)} direct assets and full game bundle.")
           if missing or mismatched:
               print("MISSING ENTRIES:", missing)
               print("CONTENT MISMATCHES:", mismatched)
