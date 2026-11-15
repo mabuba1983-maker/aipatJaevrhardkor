@@ -44,42 +44,23 @@ jobs:
           assets = root / "app/src/main/assets"
           assets.mkdir(parents=True, exist_ok=True)
 
-          required = [
-              Path("tahadi_al_ashara (1).html"),
-              Path("captain-bean-layali-riyadh (1).html"),
-          ]
-          for src in required:
-              if not src.is_file() or src.stat().st_size < 1000:
-                  raise SystemExit(f"Required game file missing or incomplete: {src}")
-
           library = assets / "مكتبة_الألعاب-1.html"
           if not library.is_file() or library.stat().st_size < 1000:
               raise SystemExit("The app-specific game library asset is missing or incomplete.")
           # Android's asset path is ASCII to avoid filename/encoding edge cases in APK packaging.
           copy2(library, assets / "game-library.html")
 
-          # Include every standalone HTML game at repository root, not just a hard-coded pair.
-          # Keep the app library source as the canonical library file.
-          for src in root.glob("*.html"):
-              if src.name == "مكتبة_الألعاب-1.html":
-                  continue
+          # Copy every standalone HTML game from the repository root.
+          root_games = sorted(p for p in root.glob("*.html") if p.name != "مكتبة_الألعاب-1.html")
+          if not root_games:
+              raise SystemExit("No standalone HTML game files were found.")
+          for src in root_games:
               copy2(src, assets / src.name)
 
-          # Include the complete prepared-games tree (HTML, JS, CSS, images, JSON and archives)
-          # while preserving its directory structure so relative references keep working.
+          # Preserve the complete prepared-games directory tree and all relative resources.
           prepared = root / "prepared-games"
           if prepared.is_dir():
               copytree(prepared, assets / "prepared-games", dirs_exist_ok=True)
-
-          # Always install the exact uploaded versions of these two requested games.
-          challenge_src = required[0]
-          captain_src = required[1]
-          copy2(challenge_src, assets / challenge_src.name)
-          copy2(captain_src, assets / captain_src.name)
-
-          # Keep the old Captain Bean filename as an alias so the retained library card
-          # continues to resolve even though the uploaded replacement has "(1)" in its name.
-          copy2(captain_src, assets / "captain-bean-layali-riyadh.html")
 
           class References(HTMLParser):
               def __init__(self):
@@ -92,8 +73,8 @@ jobs:
               def handle_data(self, data):
                   pass
 
-          # Copy local resources referenced by every root-level game, preserving relative paths.
-          for game in (p for p in root.glob("*.html") if p.name != "مكتبة_الألعاب-1.html"):
+          # Copy local resources referenced by every root-level game, preserving paths.
+          for game in root_games:
               parser = References()
               parser.feed(game.read_text(encoding="utf-8", errors="replace"))
               source_text = game.read_text(encoding="utf-8", errors="replace")
@@ -120,17 +101,14 @@ jobs:
                   ):
                       raise SystemExit(f"Referenced local game asset is missing: {game} -> {ref}")
 
-          for name in (
-              "مكتبة_الألعاب-1.html",
-              "game-library.html",
-              "tahadi_al_ashara (1).html",
-              "captain-bean-layali-riyadh (1).html",
-              "captain-bean-layali-riyadh.html",
-          ):
-              path = assets / name
-              if not path.is_file() or path.stat().st_size == 0:
-                  raise SystemExit(f"APK asset was not prepared: {name}")
-              print(f"APK asset ready: {name} ({path.stat().st_size} bytes)")
+          if not (assets / "game-library.html").is_file():
+              raise SystemExit("Android library asset was not prepared.")
+          print(f"Prepared {len(root_games)} root-level HTML games.")
+          for game in root_games:
+              copied = assets / game.name
+              if not copied.is_file() or copied.stat().st_size != game.stat().st_size:
+                  raise SystemExit(f"Game file copy failed: {game}")
+              print(f"APK asset ready: {game.name} ({copied.stat().st_size} bytes)")
           PY
 
       - name: Check game HTML and inline JavaScript syntax
