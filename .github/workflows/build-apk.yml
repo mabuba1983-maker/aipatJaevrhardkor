@@ -1,17 +1,7 @@
-name: Layali Riyadh APK
+name: PAUSED - Layali Riyadh APK (Manual Only)
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'prepared-games/**'
-      - 'مكتبة_الألعاب-1.html'
-      - 'app/src/main/assets/مكتبة_الألعاب-1.html'
-      - 'tahadi_al_ashara (1).html'
-      - 'captain-bean-layali-riyadh (1).html'
-      - '.github/workflows/build-apk.yml'
 
 permissions:
   contents: read
@@ -61,11 +51,6 @@ jobs:
           for src in required:
               if not src.is_file() or src.stat().st_size < 1000:
                   raise SystemExit(f"Required game file missing or incomplete: {src}")
-
-          rocket_src = root / "prepared-games/العاب ليالي الرياض/Rocket_Soccer-4.html"
-          if not rocket_src.is_file() or rocket_src.stat().st_size < 1000:
-              raise SystemExit("New Rocket Soccer file missing")
-          copy2(rocket_src, assets / "Rocket_Soccer-4.html")
 
           library = assets / "مكتبة_الألعاب-1.html"
           if not library.is_file() or library.stat().st_size < 1000:
