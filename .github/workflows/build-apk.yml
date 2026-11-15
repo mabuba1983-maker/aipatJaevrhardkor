@@ -176,6 +176,9 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install chromium --with-deps
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/game-http.log 2>&1 &
+          echo $! >/tmp/game-http.pid
+          sleep 2
           cat > /tmp/game-smoke-test.cjs <<'JS'
           const { chromium } = require(process.cwd() + '/node_modules/playwright');
           const path = require('path');
@@ -191,28 +194,26 @@ jobs:
               const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
               const errors = [];
               page.on('pageerror', error => errors.push(error.message));
-              const gameUrl = pathToFileURL(path.resolve(file)).href;
-              await page.setContent('<!doctype html><html><body style="margin:0"><iframe id="game" style="width:100vw;height:100vh;border:0"></iframe></body></html>');
-              await page.evaluate(url => {
-                const frame = document.getElementById('game');
-                frame.src = url;
+              await page.goto('http://127.0.0.1:8765/', {waitUntil:'domcontentloaded'});
+              await page.evaluate(file => {
+                const frame = document.createElement('iframe');
+                frame.id = 'game';
+                frame.style.cssText = 'width:100vw;height:100vh;border:0';
+                document.body.appendChild(frame);
                 frame.addEventListener('load', () => {
                   frame.contentWindow.postMessage({__emb:1,init:1,role:'tv',code:'TEST42',name:'اختبار'}, '*');
                 }, {once:true});
-              }, gameUrl);
-              const frame = page.frameLocator('#game');
+                frame.src = 'http://127.0.0.1:8765/' + encodeURIComponent(file);
+              }, file);
               await page.waitForTimeout(4000);
-              const state = await page.evaluate(() => {
-                const frame = document.getElementById('game');
-                const d = frame.contentDocument;
-                return {
-                  title: d?.title || '',
-                  text: (d?.body?.innerText || '').trim(),
-                  visible: !!d?.body && getComputedStyle(d.body).visibility !== 'hidden',
-                  children: d?.body?.children.length || 0,
-                  canvas: d?.querySelectorAll('canvas').length || 0
-                };
-              });
+              const gameFrame = page.frames().find(f => f.url().includes(encodeURIComponent(file)));
+              const state = gameFrame ? await gameFrame.evaluate(() => ({
+                title: document.title,
+                text: (document.body?.innerText || '').trim(),
+                visible: !!document.body && getComputedStyle(document.body).visibility !== 'hidden',
+                children: document.body?.children.length || 0,
+                canvas: document.querySelectorAll('canvas').length
+              })) : {title:'',text:'',visible:false,children:0,canvas:0};
               console.log(JSON.stringify({file,...state,pageErrors:errors}));
               const lobbyOnly = state.text.includes('افتحها من هناك') && state.children <= 2;
               if (!state.title || !state.visible || lobbyOnly || (!state.text && !state.canvas) || errors.length) failed = true;
@@ -220,8 +221,7 @@ jobs:
             }
             await browser.close();
             if (failed) process.exit(1);
-          })().catch(error => { console.error(error); process.exit(1); });
-          JS
+          })().catch(error => { console.error(error); process.exit(1); });          JS
           node /tmp/game-smoke-test.cjs
 
       - name: Build APK only
