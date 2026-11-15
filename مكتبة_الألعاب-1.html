@@ -423,7 +423,7 @@ async function activate(g,inp,msg,btn){
 async function addGame(g,btn,pct){
   if(!connected||!conn||!conn.open){ openConnModal(); return; }
   if(!g.enc){
-    if(g.url&&!g.b64){btn.disabled=true;btn.textContent=currentLanguage==='en'?'Downloading game...':'جاري تحميل اللعبة...';try{const r=await fetch(g.url,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const source=await r.text();const payload=btoa(unescape(encodeURIComponent(source)));sendGameToTv(Object.assign({},g,{b64:payload}),btn,pct);}catch(e){btn.disabled=false;btn.textContent=currentLanguage==='en'?'Add to TV':'إضافة للتلفزيون';toast(currentLanguage==='en'?'Could not download the game file':'تعذر تحميل ملف اللعبة');}return;}
+    if(g.url&&!g.b64){btn.disabled=true;btn.textContent=currentLanguage==='en'?'Downloading game...':'جاري تحميل اللعبة...';try{const r=await fetch(g.url,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);let source=await r.text();source=source.replace(/<head([^>]*)>/i,(m,a)=>m+`<script>window.__LAYALI_LANGUAGE__='${currentLanguage}';</script>`);const payload=btoa(unescape(encodeURIComponent(source)));sendGameToTv(Object.assign({},g,{b64:payload}),btn,pct);}catch(e){btn.disabled=false;btn.textContent=currentLanguage==='en'?'Add to TV':'إضافة للتلفزيون';toast(currentLanguage==='en'?'Could not download the game file':'تعذر تحميل ملف اللعبة');}return;}
     sendGameToTv(g,btn,pct); return;
   }
   if(sealBad){ toast('الكتالوج مقفل — الختم غير مطابق'); return; }
