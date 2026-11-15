@@ -9,8 +9,6 @@ on:
       - 'مكتبة_الألعاب-1.html'
       - 'app/src/main/assets/مكتبة_الألعاب-1.html'
       - 'Rocket_Soccer-4.html'
-      - 'العاب ليالي الرياض (١).zip'
-      - '.github/workflows/prepare-games.yml'
       - 'highway-race-1.html'
 
 permissions:
